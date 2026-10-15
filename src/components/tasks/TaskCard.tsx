@@ -145,7 +145,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
                 e.stopPropagation();
                 moveTaskStatus(task.id, nextStatus);
               }}
-              className="opacity-0 group-hover:opacity-100 p-1 rounded-md bg-emerald-50 dark:bg-emerald-600/20 hover:bg-emerald-600 text-emerald-600 dark:text-emerald-300 hover:text-white transition text-[10px] flex items-center gap-0.5"
+              className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 rounded-md bg-emerald-50 dark:bg-emerald-600/20 hover:bg-emerald-600 text-emerald-600 dark:text-emerald-300 hover:text-white transition text-[10px] flex items-center gap-0.5"
               title={`Pindahkan ke ${nextStatus.toUpperCase()}`}
             >
               <ArrowRight className="w-3 h-3" />

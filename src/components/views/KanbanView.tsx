@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useProject } from '../../context/ProjectContext';
 import { TaskCard } from '../tasks/TaskCard';
 import { TaskStatus, TaskPriority } from '../../types';
-import { Filter, Sparkles, X, FolderKanban, Users, Search, Layers } from 'lucide-react';
+import { Filter, Sparkles, X, FolderKanban, Users, Search, Layers, ChevronDown, ChevronUp } from 'lucide-react';
 
 export const KanbanView: React.FC = () => {
   const {
@@ -21,6 +21,14 @@ export const KanbanView: React.FC = () => {
   } = useProject();
 
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
+  const [collapsedColumns, setCollapsedColumns] = useState<Record<string, boolean>>({});
+
+  const toggleColumnCollapse = (columnId: string) => {
+    setCollapsedColumns(prev => ({
+      ...prev,
+      [columnId]: !prev[columnId],
+    }));
+  };
 
   const columns: { id: TaskStatus; label: string; color: string; badge: string }[] = [
     { id: 'backlog', label: 'Backlog', color: 'border-t-slate-500', badge: 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300' },
@@ -143,24 +151,33 @@ export const KanbanView: React.FC = () => {
         </span>
       </div>
 
-      {/* Kanban Board Columns Container */}
-      <div className="flex-1 min-h-0 flex gap-3.5 overflow-x-auto pb-2 items-stretch" style={{ 
-        WebkitOverflowScrolling: 'touch',
-        overscrollBehavior: 'contain',
-        touchAction: 'pan-x'
-      }}>
+      {/* Kanban Board Columns Container:
+          - Mobile: flex-col, overflow-y-auto (scroll up/down naturally)
+          - Desktop (md+): flex-row, overflow-x-auto, overflow-y-hidden
+      */}
+      <div 
+        className="flex-1 min-h-0 flex flex-col md:flex-row gap-3.5 overflow-y-auto md:overflow-y-hidden md:overflow-x-auto pb-6 md:pb-2 md:items-stretch"
+        style={{ 
+          WebkitOverflowScrolling: 'touch',
+          overscrollBehavior: 'contain',
+        }}
+      >
         {columns.map((col) => {
           const colTasks = filteredTasks.filter((t) => t.status === col.id);
+          const isCollapsed = Boolean(collapsedColumns[col.id]);
 
           return (
             <div
               key={col.id}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, col.id)}
-              className={`flex flex-col h-full min-w-[270px] sm:min-w-[290px] lg:flex-1 bg-slate-50 dark:bg-surface/70 backdrop-blur rounded-lg border border-slate-200 dark:border-white/8 border-t-[3px] ${col.color} p-3 transition shadow-xs`}
+              className={`flex flex-col w-full md:w-auto md:h-full md:min-w-[270px] sm:md:min-w-[290px] lg:flex-1 shrink-0 bg-slate-50 dark:bg-surface/70 backdrop-blur rounded-lg border border-slate-200 dark:border-white/8 border-t-[3px] ${col.color} p-3 transition shadow-xs`}
             >
               {/* Column Header */}
-              <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-200/80 dark:border-white/8 shrink-0">
+              <div 
+                onClick={() => toggleColumnCollapse(col.id)}
+                className="flex items-center justify-between pb-2 mb-2 border-b border-slate-200/80 dark:border-white/8 shrink-0 cursor-pointer md:cursor-default select-none"
+              >
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-slate-900 dark:text-readable">
                     {col.label}
@@ -169,14 +186,28 @@ export const KanbanView: React.FC = () => {
                     {colTasks.length}
                   </span>
                 </div>
+
+                {/* Mobile Accordion Toggle */}
+                <div className="md:hidden flex items-center gap-1 text-slate-400 dark:text-slate-500">
+                  <span className="text-[10px] text-slate-400">
+                    {isCollapsed ? 'Buka' : 'Tutup'}
+                  </span>
+                  {isCollapsed ? (
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  ) : (
+                    <ChevronUp className="w-3.5 h-3.5" />
+                  )}
+                </div>
               </div>
 
               {/* Tasks List Column Area */}
-              <div className="flex-1 overflow-y-auto space-y-2.5 pr-0.5 min-h-[120px]" style={{ 
-                WebkitOverflowScrolling: 'touch',
-                overscrollBehavior: 'contain',
-                touchAction: 'pan-y'
-              }}>
+              <div 
+                className={`${isCollapsed ? 'hidden md:block' : 'block'} space-y-2.5 pr-0.5 md:flex-1 md:overflow-y-auto min-h-[40px] md:min-h-[120px]`}
+                style={{ 
+                  WebkitOverflowScrolling: 'touch',
+                  overscrollBehavior: 'contain',
+                }}
+              >
                 {colTasks.map((task) => (
                   <div
                     key={task.id}
@@ -189,7 +220,7 @@ export const KanbanView: React.FC = () => {
                 ))}
 
                 {colTasks.length === 0 && (
-                  <div className="h-28 rounded-lg border border-dashed border-slate-300 dark:border-white/10 flex items-center justify-center text-slate-400 dark:text-muted text-xs">
+                  <div className="py-6 rounded-lg border border-dashed border-slate-300 dark:border-white/10 flex items-center justify-center text-slate-400 dark:text-muted text-xs">
                     Tidak ada tugas
                   </div>
                 )}

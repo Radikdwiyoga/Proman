@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useProject } from '../../context/ProjectContext';
 import { useTheme } from '../../context/ThemeContext';
 import { 
@@ -15,11 +15,58 @@ import {
   Crown,
   Layers,
   Menu,
-  FileSpreadsheet
+  Clock
 } from 'lucide-react';
 import { TechLogo } from '../common/TechLogo';
 import { UserAvatar } from '../common/UserAvatar';
-import { exportTasksToExcel } from '../../services/backupService';
+
+function getOperationalTime(tzString?: string): { time: string; date: string; label: string } {
+  let iana = 'Asia/Jakarta';
+  let label = 'WIB';
+
+  if (tzString) {
+    if (tzString.includes('Makassar') || tzString.includes('WITA') || tzString.includes('UTC+8') || tzString.includes('GMT+8')) {
+      iana = 'Asia/Makassar';
+      label = 'WITA';
+    } else if (tzString.includes('Jayapura') || tzString.includes('WIT') || tzString.includes('UTC+9') || tzString.includes('GMT+9')) {
+      iana = 'Asia/Jayapura';
+      label = 'WIT';
+    } else if (tzString.includes('UTC') || tzString.includes('GMT+0')) {
+      iana = 'UTC';
+      label = 'UTC';
+    } else if (tzString.includes('Jakarta') || tzString.includes('WIB') || tzString.includes('UTC+7') || tzString.includes('GMT+7')) {
+      iana = 'Asia/Jakarta';
+      label = 'WIB';
+    } else {
+      try {
+        Intl.DateTimeFormat(undefined, { timeZone: tzString });
+        iana = tzString;
+        label = tzString.split('/').pop() || tzString;
+      } catch {
+        iana = 'Asia/Jakarta';
+        label = 'WIB';
+      }
+    }
+  }
+
+  const now = new Date();
+  const time = new Intl.DateTimeFormat('en-GB', {
+    timeZone: iana,
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).format(now);
+
+  const date = new Intl.DateTimeFormat('id-ID', {
+    timeZone: iana,
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+  }).format(now);
+
+  return { time, date, label };
+}
 
 export const Navbar: React.FC = () => {
   const {
@@ -37,14 +84,19 @@ export const Navbar: React.FC = () => {
     isCopilotOpen,
     setActiveView,
     setIsMobileSidebarOpen,
-    tasks,
-    users,
-    showToast,
   } = useProject();
 
   const { theme, toggleTheme } = useTheme();
   const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState(() => getOperationalTime(systemSettings?.timezone));
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(getOperationalTime(systemSettings?.timezone));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [systemSettings?.timezone]);
 
   return (
     <div className="flex flex-col z-30 shrink-0 select-none">
@@ -230,22 +282,19 @@ export const Navbar: React.FC = () => {
             {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-800" />}
           </button>
 
-          {/* Backup Semua Tugas ke Excel */}
-          <button
-            onClick={() => {
-              try {
-                exportTasksToExcel(tasks, users, projects, systemSettings);
-                showToast('Backup semua tugas ke Excel berhasil diunduh!', 'success');
-              } catch (err) {
-                console.error('Excel export failed:', err);
-                showToast('Gagal membuat backup Excel. Coba lagi.', 'warning');
-              }
-            }}
-            className="p-2 rounded-md bg-slate-100 dark:bg-elevated hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 transition shadow-xs cursor-pointer"
-            title="Backup Semua Tugas ke Excel (.xlsx)"
+          {/* Live Operational Time Display */}
+          <div 
+            className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-md bg-slate-100 dark:bg-elevated/70 border border-slate-200 dark:border-white/10 text-xs text-slate-700 dark:text-slate-300 elevated-tray select-none"
+            title={`Zona Waktu Operasional: ${systemSettings?.timezone || 'Asia/Jakarta'} • ${currentTime.date}`}
           >
-            <FileSpreadsheet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-          </button>
+            <Clock className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span className="font-bold text-slate-800 dark:text-white tracking-tight text-[11px] sm:text-xs">
+              {currentTime.time}
+            </span>
+            <span className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0.2 rounded bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 font-bold">
+              {currentTime.label}
+            </span>
+          </div>
 
           {/* User Info */}
           <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">
