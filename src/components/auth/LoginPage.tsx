@@ -210,9 +210,6 @@ export const LoginPage: React.FC = () => {
                 <span className="font-extrabold text-xl tracking-tight text-white leading-none">
                   ProMan
                 </span>
-                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-white/20 text-white border border-white/30 tracking-wider">
-                  DIO
-                </span>
               </div>
             </div>
 
@@ -666,44 +663,6 @@ export const LoginPage: React.FC = () => {
               </div>
             )}
 
-            {/* Social / Quick Demo Divider (Matching reference "or" section) */}
-            {(mode === 'signin' || mode === 'signup') && (
-              <div className="space-y-3 pt-2">
-                <div className="relative flex items-center justify-center">
-                  <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
-                  <span className="bg-white dark:bg-slate-900 px-3 text-[11px] text-slate-400 font-medium absolute">
-                    or
-                  </span>
-                </div>
-
-                {/* Quick Account Test Chips */}
-                <div className="flex flex-col sm:flex-row items-center gap-2 pt-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEmail('admin@bitcorp.id');
-                      setErrorMessage('');
-                    }}
-                    className="w-full flex-1 py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2 transition cursor-pointer"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-amber-500" />
-                    <span>Quick: <strong>Super Admin</strong></span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEmail('radik.dwiyoga@bitcorp.id');
-                      setErrorMessage('');
-                    }}
-                    className="w-full flex-1 py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2 transition cursor-pointer"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-blue-500" />
-                    <span>Quick: <strong>Team Member</strong></span>
-                  </button>
-                </div>
-              </div>
-            )}
 
           </div>
 

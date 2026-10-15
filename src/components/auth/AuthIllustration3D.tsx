@@ -192,3 +192,4 @@ export const AuthIllustration3D: React.FC = () => {
     </div>
   );
 };
+

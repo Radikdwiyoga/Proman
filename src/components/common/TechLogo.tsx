@@ -68,13 +68,10 @@ export const TechLogo: React.FC<TechLogoProps> = ({
             <span className="bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-sky-400 dark:to-cyan-300 bg-clip-text text-transparent">Pro</span>
             <span className="bg-gradient-to-r from-teal-500 to-emerald-500 dark:from-teal-300 dark:to-emerald-400 bg-clip-text text-transparent">Man</span>
           </span>
-          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-extrabold border border-emerald-500/30 tracking-wider shadow-xs">
-            DIO
-          </span>
         </div>
         {showSubtitle && (
           <span className="hidden sm:block text-[9.5px] font-bold tracking-wider text-slate-500 dark:text-slate-400 uppercase -mt-0.5 leading-tight truncate max-w-[210px] sm:max-w-[280px]">
-            IT Infrastructure Operations
+            Enterprise Project Management
           </span>
         )}
       </div>

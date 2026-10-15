@@ -1,8 +1,8 @@
 import { Project, User, Task, Comment, ActivityLog, SystemSettings } from '../types';
 
 export const INITIAL_SYSTEM_SETTINGS: SystemSettings = {
-  companyName: 'Divisi IT Infrastructure Operations (DIO)',
-  logoUrl: '/dio-logo.png',
+  companyName: 'ProMan Enterprise',
+  logoUrl: '/proman-icon.png',
   timezone: 'Asia/Jakarta (GMT+7)',
   defaultWeeklyCapacityHours: 40,
   aiModelEngine: 'gemini-3.7-flash',
