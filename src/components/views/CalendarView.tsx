@@ -274,9 +274,9 @@ export const CalendarView: React.FC = () => {
                   }}
                   className={`w-7 h-7 mx-auto rounded-full flex items-center justify-center text-xs font-semibold transition cursor-pointer ${
                     isSelected
-                      ? 'bg-[#18534C] text-white font-bold shadow-xs'
+                      ? 'bg-[#2563EB] text-white font-bold shadow-xs'
                       : isToday
-                      ? 'border border-emerald-500 text-emerald-600 font-bold'
+                      ? 'border border-blue-500 text-blue-600 font-bold'
                       : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
@@ -287,14 +287,14 @@ export const CalendarView: React.FC = () => {
           </div>
         </div>
 
-        {/* 2. Meeting Reminder Card (Dark Teal Card matching Reference) */}
+        {/* 2. Meeting Reminder Card (Royal Blue Card matching Login Theme) */}
         {upcomingTask ? (
           <div 
             onClick={() => setSelectedTaskId(upcomingTask.id)}
-            className="p-4 rounded-3xl bg-[#18534C] text-white shadow-md relative overflow-hidden transition hover:shadow-lg cursor-pointer space-y-2.5"
+            className="p-4 rounded-3xl bg-linear-to-br from-[#2563EB] via-[#1D4ED8] to-[#1E40AF] text-white shadow-md shadow-blue-500/15 relative overflow-hidden transition hover:shadow-lg cursor-pointer space-y-2.5"
           >
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-medium text-emerald-200/90 tracking-wide">
+              <span className="text-[11px] font-medium text-blue-200/90 tracking-wide">
                 Meeting reminder
               </span>
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-bold uppercase tracking-wider text-white">
@@ -306,8 +306,8 @@ export const CalendarView: React.FC = () => {
               <h4 className="text-sm font-bold text-white leading-snug line-clamp-2">
                 {upcomingTask.title}
               </h4>
-              <div className="flex items-center gap-1.5 text-xs text-emerald-100/90">
-                <Clock className="w-3.5 h-3.5 text-emerald-300" />
+              <div className="flex items-center gap-1.5 text-xs text-blue-100/90">
+                <Clock className="w-3.5 h-3.5 text-blue-200" />
                 <span>09:00 - 10:30 WIB • {upcomingTask.dueDate}</span>
               </div>
             </div>
@@ -316,7 +316,7 @@ export const CalendarView: React.FC = () => {
             <div className="flex items-center justify-between pt-1">
               <div className="flex items-center -space-x-1.5">
                 {users.slice(0, 4).map((u) => (
-                  <div key={u.id} className="ring-2 ring-[#18534C] rounded-full">
+                  <div key={u.id} className="ring-2 ring-[#2563EB] rounded-full">
                     <UserAvatar src={u.avatar} name={u.name} size="xs" />
                   </div>
                 ))}
@@ -335,7 +335,7 @@ export const CalendarView: React.FC = () => {
                     e.stopPropagation();
                     moveTaskStatus(upcomingTask.id, 'done');
                   }}
-                  className="w-7 h-7 rounded-full bg-[#133F3A] hover:bg-emerald-600 flex items-center justify-center text-white transition cursor-pointer"
+                  className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition cursor-pointer"
                   title="Tandai Selesai"
                 >
                   <Check className="w-3.5 h-3.5" />
@@ -344,9 +344,9 @@ export const CalendarView: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="p-4 rounded-3xl bg-[#18534C] text-white shadow-md space-y-2">
-            <span className="text-[11px] text-emerald-200/90">Meeting reminder</span>
-            <p className="text-xs text-emerald-100">Semua tugas dan jadwal terdekat telah selesai dikerjakan.</p>
+          <div className="p-4 rounded-3xl bg-linear-to-br from-[#2563EB] via-[#1D4ED8] to-[#1E40AF] text-white shadow-md shadow-blue-500/15 space-y-2">
+            <span className="text-[11px] text-blue-200/90">Meeting reminder</span>
+            <p className="text-xs text-blue-100">Semua tugas dan jadwal terdekat telah selesai dikerjakan.</p>
           </div>
         )}
 
@@ -363,7 +363,7 @@ export const CalendarView: React.FC = () => {
                 type="checkbox"
                 checked={filterType.meetingsOnly}
                 onChange={(e) => setFilterType(prev => ({ ...prev, meetingsOnly: e.target.checked }))}
-                className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-[#18534C]"
+                className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 accent-[#2563EB]"
               />
               <span className="font-medium">Meetings &amp; Sesi Tim</span>
             </label>
@@ -373,7 +373,7 @@ export const CalendarView: React.FC = () => {
                 type="checkbox"
                 checked={filterType.urgentOnly}
                 onChange={(e) => setFilterType(prev => ({ ...prev, urgentOnly: e.target.checked }))}
-                className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-[#18534C]"
+                className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 accent-[#2563EB]"
               />
               <span className="font-medium">Prioritas Urgent Saja</span>
             </label>
@@ -383,7 +383,7 @@ export const CalendarView: React.FC = () => {
                 type="checkbox"
                 checked={filterType.completed}
                 onChange={(e) => setFilterType(prev => ({ ...prev, completed: e.target.checked }))}
-                className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-[#18534C]"
+                className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 accent-[#2563EB]"
               />
               <span className="font-medium">Tampilkan Tugas Selesai</span>
             </label>
@@ -394,7 +394,7 @@ export const CalendarView: React.FC = () => {
         <div className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-2">
           <span className="text-xs font-bold text-slate-900 dark:text-white">Scope Project</span>
           <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs">
-            <FolderKanban className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <FolderKanban className="w-3.5 h-3.5 text-blue-600 shrink-0" />
             <select
               value={currentProjectId}
               onChange={(e) => setCurrentProjectId(e.target.value)}
@@ -473,10 +473,10 @@ export const CalendarView: React.FC = () => {
             </button>
           </div>
 
-          {/* Create Event Button (Warm Yellow Pill Button matching Reference) */}
+          {/* Create Event Button (Royal Blue Pill Button matching Login Page) */}
           <button
             onClick={() => openCreateTaskModal('todo')}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-forest-accent hover:bg-[#FCD34D] text-[#163628] font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-linear-to-r from-[#4D96FF] to-[#2563EB] hover:from-[#3B82F6] hover:to-[#1D4ED8] text-white font-bold text-xs shadow-md shadow-blue-500/25 transition active:scale-95 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>Create Event</span>
@@ -491,7 +491,7 @@ export const CalendarView: React.FC = () => {
               {/* Top Left Timezone Cell */}
               <div className="p-3 text-center flex flex-col items-center justify-center border-r border-slate-200/60 dark:border-slate-800">
                 <span className="text-[10px] font-bold font-mono text-slate-400">GMT+07</span>
-                <span className="text-[9px] text-emerald-600 font-bold">WIB</span>
+                <span className="text-[9px] text-blue-600 font-bold">WIB</span>
               </div>
 
               {/* 7 Days Columns */}
@@ -505,7 +505,7 @@ export const CalendarView: React.FC = () => {
                     onClick={() => setSelectedDate(d)}
                     className={`p-2.5 text-center transition cursor-pointer flex flex-col items-center justify-center border-r border-slate-200/60 dark:border-slate-800 ${
                       isSelected 
-                        ? 'bg-emerald-500/10 dark:bg-emerald-500/20' 
+                        ? 'bg-blue-500/10 dark:bg-blue-500/20' 
                         : 'hover:bg-slate-100/60 dark:hover:bg-slate-800/40'
                     }`}
                   >
@@ -514,9 +514,9 @@ export const CalendarView: React.FC = () => {
                     </span>
                     <span className={`text-base font-extrabold ${
                       isSelected 
-                        ? 'text-[#18534C] dark:text-emerald-400' 
+                        ? 'text-[#2563EB] dark:text-blue-400' 
                         : isToday 
-                        ? 'text-emerald-600' 
+                        ? 'text-blue-600' 
                         : 'text-slate-800 dark:text-slate-200'
                     }`}>
                       {d.getDate()}
@@ -610,7 +610,7 @@ export const CalendarView: React.FC = () => {
         {/* Mode = Daily View */}
         {mode === 'daily' && (
           <div className="flex-1 flex flex-col min-h-0 overflow-auto p-4 space-y-4">
-            <div className="p-4 rounded-2xl bg-[#18534C]/10 dark:bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500/20 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                   Jadwal Harian: {dayLabelsId[selectedDate.getDay()]}, {selectedDate.getDate()} {monthNames[selectedDate.getMonth()]} {selectedDate.getFullYear()}
@@ -621,7 +621,7 @@ export const CalendarView: React.FC = () => {
               </div>
               <button
                 onClick={() => openCreateTaskModal('todo')}
-                className="px-3.5 py-1.5 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold"
+                className="px-3.5 py-1.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold transition shadow-xs"
               >
                 + Tambah Jadwal Hari Ini
               </button>
@@ -698,12 +698,12 @@ export const CalendarView: React.FC = () => {
                       });
                     }}
                     className={`p-2 min-h-21.25 flex flex-col justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer select-none ${
-                      isToday ? 'bg-emerald-50/50 dark:bg-emerald-500/10' : ''
+                      isToday ? 'bg-blue-50/50 dark:bg-blue-500/10' : ''
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center ${
-                        isToday ? 'bg-emerald-600 text-white' : 'text-slate-700 dark:text-slate-300'
+                        isToday ? 'bg-[#2563EB] text-white' : 'text-slate-700 dark:text-slate-300'
                       }`}>
                         {dayNum}
                       </span>
@@ -753,7 +753,7 @@ export const CalendarView: React.FC = () => {
           >
             <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/60">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-[#18534C] text-white flex items-center justify-center shadow-xs">
+                <div className="w-8 h-8 rounded-xl bg-[#2563EB] text-white flex items-center justify-center shadow-xs">
                   <CalendarIcon className="w-4 h-4" />
                 </div>
                 <div>
@@ -786,7 +786,7 @@ export const CalendarView: React.FC = () => {
                       setSelectedDateDetail(null);
                       setSelectedTaskId(task.id);
                     }}
-                    className="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/50 hover:border-emerald-500/50 transition cursor-pointer space-y-2 shadow-xs group"
+                    className="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/50 hover:border-blue-500/50 transition cursor-pointer space-y-2 shadow-xs group"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-[10px] px-2 py-0.5 rounded-md font-bold uppercase bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
@@ -796,7 +796,7 @@ export const CalendarView: React.FC = () => {
                         {task.startDate} → {task.dueDate}
                       </span>
                     </div>
-                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 transition">
+                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 transition">
                       {task.title}
                     </h4>
                   </div>

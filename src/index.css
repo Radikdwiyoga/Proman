@@ -35,11 +35,16 @@
   --radius-3xl: 1.5rem;
   --radius-4xl: 2rem;
 
-  /* --- Forest Theme Tokens (Matching Reference) --- */
-  --color-forest: #224838;
-  --color-forest-dark: #183628;
-  --color-forest-light: #2b5946;
-  --color-forest-accent: #fee36e;
+  /* --- Brand Blue Theme Tokens (Matching Login Page) --- */
+  --color-brand-blue: #3B82F6;
+  --color-brand-blue-deep: #1E3A8A;
+  --color-brand-blue-dark: #1E40AF;
+  --color-brand-blue-light: #60A5FA;
+  --color-brand-blue-accent: #2563EB;
+  --color-forest: #1E40AF;
+  --color-forest-dark: #172554;
+  --color-forest-light: #3B82F6;
+  --color-forest-accent: #3B82F6;
 
   /* --- Shadows --- */
   --shadow-glow-signal: 0 0 16px -2px rgba(16, 185, 129, 0.45);

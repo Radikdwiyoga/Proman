@@ -130,7 +130,7 @@ export const Sidebar: React.FC = () => {
                 <span className="font-extrabold text-base tracking-tight text-white leading-tight">
                   ProMan
                 </span>
-                <span className="text-[9px] font-medium text-emerald-200/70 tracking-wide uppercase">
+                <span className="text-[9px] font-medium text-blue-200/80 tracking-wide uppercase">
                   Enterprise Workspace
                 </span>
               </div>
@@ -150,8 +150,8 @@ export const Sidebar: React.FC = () => {
             onClick={togglePin}
             className={`p-1.5 rounded-lg transition hidden md:flex items-center justify-center ${
               isPinned 
-                ? 'text-emerald-200 hover:text-white hover:bg-white/10' 
-                : 'text-emerald-300/60 hover:text-white hover:bg-white/10'
+                ? 'text-blue-200 hover:text-white hover:bg-white/10' 
+                : 'text-blue-300/60 hover:text-white hover:bg-white/10'
             }`}
             title={isPinned ? 'Lepas Pin (Auto-Hide Aktif)' : 'Kunci Navigasi (Pin Sidebar)'}
           >
@@ -170,12 +170,12 @@ export const Sidebar: React.FC = () => {
                 title={item.label}
                 className={`w-full flex items-center ${expanded ? 'justify-between px-3.5' : 'justify-center px-0'} py-2.5 rounded-xl text-xs font-semibold transition-all relative group cursor-pointer ${
                   isActive
-                    ? 'bg-forest-accent text-[#163628] font-bold shadow-md'
-                    : 'text-emerald-100/75 hover:text-white hover:bg-white/10'
+                    ? 'bg-white text-[#1D4ED8] font-bold shadow-md shadow-blue-950/20'
+                    : 'text-blue-100/80 hover:text-white hover:bg-white/10'
                 }`}
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <span className={isActive ? 'text-[#163628]' : 'text-emerald-200/80 group-hover:text-white transition'}>
+                  <span className={isActive ? 'text-[#1D4ED8]' : 'text-blue-200/80 group-hover:text-white transition'}>
                     {item.icon}
                   </span>
                   {expanded && <span className="truncate text-[13px]">{item.label}</span>}
@@ -184,15 +184,15 @@ export const Sidebar: React.FC = () => {
                 {expanded && item.badge !== undefined && (
                   <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold shrink-0 ${
                     isActive 
-                      ? 'bg-[#163628]/15 text-[#163628] font-mono' 
-                      : 'bg-white/10 text-emerald-100 font-mono'
+                      ? 'bg-blue-100 text-[#1D4ED8] font-mono' 
+                      : 'bg-white/15 text-blue-100 font-mono'
                   }`}>
                     {item.badge}
                   </span>
                 )}
 
                 {!expanded && item.badge !== undefined && typeof item.badge === 'number' && item.badge > 0 && (
-                  <span className="absolute top-1.5 right-2 w-2 h-2 rounded-full bg-forest-accent ring-2 ring-forest" />
+                  <span className="absolute top-1.5 right-2 w-2 h-2 rounded-full bg-sky-300 ring-2 ring-blue-700" />
                 )}
               </button>
             );
@@ -202,8 +202,8 @@ export const Sidebar: React.FC = () => {
         {/* AI & Analytics Suite */}
         <div className="pt-2">
           {expanded && (
-            <div className="px-3 pb-1.5 text-[10px] font-bold text-emerald-200/60 uppercase tracking-wider flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 text-emerald-300" />
+            <div className="px-3 pb-1.5 text-[10px] font-bold text-blue-200/70 uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 text-blue-300" />
               <span>AI Intelligence</span>
             </div>
           )}
@@ -218,12 +218,12 @@ export const Sidebar: React.FC = () => {
                   title={item.label}
                   className={`w-full flex items-center ${expanded ? 'justify-between px-3.5' : 'justify-center px-0'} py-2.5 rounded-xl text-xs font-medium transition-all relative group cursor-pointer ${
                     isActive
-                      ? 'bg-forest-accent text-[#163628] font-bold shadow-md'
-                      : 'text-emerald-100/75 hover:text-white hover:bg-white/10'
+                      ? 'bg-white text-[#1D4ED8] font-bold shadow-md shadow-blue-950/20'
+                      : 'text-blue-100/80 hover:text-white hover:bg-white/10'
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className={isActive ? 'text-[#163628]' : ''}>
+                    <span className={isActive ? 'text-[#1D4ED8]' : ''}>
                       {item.icon}
                     </span>
                     {expanded && <span className="truncate text-[12.5px]">{item.label}</span>}
@@ -232,7 +232,7 @@ export const Sidebar: React.FC = () => {
                   {expanded && item.badge && (
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border shrink-0 ${
                       isActive 
-                        ? 'bg-[#163628]/15 text-[#163628] border-transparent font-mono' 
+                        ? 'bg-blue-100 text-[#1D4ED8] border-transparent font-mono' 
                         : item.badgeColor
                     }`}>
                       {item.badge}
@@ -249,14 +249,14 @@ export const Sidebar: React.FC = () => {
                 setIsMobileSidebarOpen(false);
               }}
               title="Laporan AI (Auto-Status Summary)"
-              className={`w-full flex items-center ${expanded ? 'justify-between px-3.5' : 'justify-center px-0'} py-2 rounded-xl text-xs font-medium text-emerald-100/75 hover:text-white hover:bg-white/10 transition group cursor-pointer`}
+              className={`w-full flex items-center ${expanded ? 'justify-between px-3.5' : 'justify-center px-0'} py-2 rounded-xl text-xs font-medium text-blue-100/80 hover:text-white hover:bg-white/10 transition group cursor-pointer`}
             >
               <div className="flex items-center gap-3 min-w-0">
-                <FileText className="w-4 h-4 text-emerald-300 shrink-0" />
+                <FileText className="w-4 h-4 text-blue-300 shrink-0" />
                 {expanded && <span className="text-[12.5px]">Auto Summary</span>}
               </div>
               {expanded && (
-                <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-white/10 text-emerald-100 font-bold border border-white/15 shrink-0">
+                <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-white/10 text-blue-100 font-bold border border-white/15 shrink-0">
                   AI Doc
                 </span>
               )}
@@ -268,8 +268,8 @@ export const Sidebar: React.FC = () => {
         {isSuperAdmin && (
           <div className="pt-2">
             {expanded && (
-              <div className="px-3 pb-1.5 text-[10px] font-bold text-emerald-200/60 uppercase tracking-wider flex items-center gap-1">
-                <Crown className="w-3 h-3 text-amber-400" />
+              <div className="px-3 pb-1.5 text-[10px] font-bold text-blue-200/70 uppercase tracking-wider flex items-center gap-1">
+                <Crown className="w-3 h-3 text-amber-300" />
                 <span>Pengaturan</span>
               </div>
             )}
@@ -278,12 +278,12 @@ export const Sidebar: React.FC = () => {
               title="Admin Settings"
               className={`w-full flex items-center ${expanded ? 'justify-between px-3.5' : 'justify-center px-0'} py-2.5 rounded-xl text-xs font-medium transition group cursor-pointer ${
                 activeView === 'admin_settings'
-                  ? 'bg-forest-accent text-[#163628] font-bold shadow-md'
-                  : 'text-emerald-100/75 hover:text-white hover:bg-white/10'
+                  ? 'bg-white text-[#1D4ED8] font-bold shadow-md shadow-blue-950/20'
+                  : 'text-blue-100/80 hover:text-white hover:bg-white/10'
               }`}
             >
               <div className="flex items-center gap-3 min-w-0">
-                <Settings className={`w-4 h-4 shrink-0 ${activeView === 'admin_settings' ? 'text-[#163628]' : 'text-amber-300'}`} />
+                <Settings className={`w-4 h-4 shrink-0 ${activeView === 'admin_settings' ? 'text-[#1D4ED8]' : 'text-amber-300'}`} />
                 {expanded && <span className="text-[12.5px]">Settings</span>}
               </div>
               {expanded && (
@@ -298,7 +298,7 @@ export const Sidebar: React.FC = () => {
         {/* Quick Filter Shortcuts */}
         {expanded && (
           <div className="pt-2 border-t border-white/10">
-            <div className="px-3 pb-1.5 text-[10px] font-bold text-emerald-200/60 uppercase tracking-wider">
+            <div className="px-3 pb-1.5 text-[10px] font-bold text-blue-200/70 uppercase tracking-wider">
               Filter Cepat
             </div>
             <div className="space-y-1">
@@ -310,11 +310,11 @@ export const Sidebar: React.FC = () => {
                 className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs transition ${
                   filters.assigneeId === currentUser.id 
                     ? 'bg-white/20 text-white font-bold' 
-                    : 'text-emerald-100/70 hover:bg-white/10 hover:text-white'
+                    : 'text-blue-100/70 hover:bg-white/10 hover:text-white'
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-blue-300" />
                   <span>Tugas Saya</span>
                 </div>
                 <span className="text-[10px] font-mono">{myTasksCount}</span>
@@ -328,7 +328,7 @@ export const Sidebar: React.FC = () => {
                 className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs transition ${
                   filters.priority === 'urgent' 
                     ? 'bg-rose-500/30 text-white font-bold border border-rose-400/40' 
-                    : 'text-emerald-100/70 hover:bg-white/10 hover:text-white'
+                    : 'text-blue-100/70 hover:bg-white/10 hover:text-white'
                 }`}
               >
                 <div className="flex items-center gap-2">
@@ -356,26 +356,26 @@ export const Sidebar: React.FC = () => {
                   <div className="text-xs font-bold text-white truncate leading-tight">
                     {currentUser.name}
                   </div>
-                  <div className="text-[10.5px] text-emerald-200/80 truncate font-normal">
+                  <div className="text-[10.5px] text-blue-200/80 truncate font-normal">
                     {currentUser.email || `${currentUser.personaType}`}
                   </div>
                 </div>
               </div>
-              <ChevronRight className={`w-4 h-4 text-emerald-200 shrink-0 transition-transform ${isProfileMenuOpen ? 'rotate-90' : ''}`} />
+              <ChevronRight className={`w-4 h-4 text-blue-200 shrink-0 transition-transform ${isProfileMenuOpen ? 'rotate-90' : ''}`} />
             </div>
 
             {/* Profile Dropdown Actions */}
             {isProfileMenuOpen && (
-              <div className="mt-1 p-1 rounded-xl bg-forest-dark border border-white/15 shadow-xl space-y-0.5 animate-in fade-in slide-in-from-bottom-2 duration-150">
+              <div className="mt-1 p-1 rounded-xl bg-[#1E3A8A] dark:bg-[#0F172A] border border-blue-400/20 shadow-xl space-y-0.5 animate-in fade-in slide-in-from-bottom-2 duration-150">
                 <button
                   onClick={() => {
                     setIsProfileMenuOpen(false);
                     setIsMobileSidebarOpen(false);
                     setIsChangePasswordModalOpen(true);
                   }}
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-emerald-100 hover:text-white hover:bg-white/10 transition"
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-blue-100 hover:text-white hover:bg-white/10 transition"
                 >
-                  <Key className="w-3.5 h-3.5 text-emerald-300" />
+                  <Key className="w-3.5 h-3.5 text-blue-300" />
                   <span>Ganti Password</span>
                 </button>
                 <button
@@ -397,7 +397,7 @@ export const Sidebar: React.FC = () => {
             <UserAvatar src={currentUser.avatar} name={currentUser.name} size="sm" />
             <button
               onClick={() => setIsChangePasswordModalOpen(true)}
-              className="p-1.5 rounded-lg text-emerald-200 hover:text-white hover:bg-white/10 transition"
+              className="p-1.5 rounded-lg text-blue-200 hover:text-white hover:bg-white/10 transition"
               title="Ganti Password"
             >
               <Key className="w-3.5 h-3.5" />
@@ -417,11 +417,11 @@ export const Sidebar: React.FC = () => {
 
   return (
     <>
-      {/* Desktop Aside in Deep Forest Theme */}
+      {/* Desktop Aside in Royal Blue Theme */}
       <aside 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`hidden md:flex flex-col justify-between shrink-0 h-full select-none bg-[#244A3A] dark:bg-[#18362A] text-white border-r border-[#1D3E30] dark:border-[#132A21] transition-all duration-300 ease-in-out z-20 ${
+        className={`hidden md:flex flex-col justify-between shrink-0 h-full select-none bg-linear-to-b from-[#1D4ED8] via-[#1E40AF] to-[#1E3A8A] dark:from-[#0F172A] dark:to-[#0B1120] text-white border-r border-blue-900/30 dark:border-slate-800 transition-all duration-300 ease-in-out z-20 ${
           isExpanded ? 'w-64 shadow-xl' : 'w-18'
         }`}
       >
@@ -435,7 +435,7 @@ export const Sidebar: React.FC = () => {
             onClick={() => setIsMobileSidebarOpen(false)}
             className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity" 
           />
-          <div className="relative w-72 max-w-[85vw] bg-[#244A3A] dark:bg-[#18362A] text-white flex flex-col justify-between h-full shadow-2xl z-10 animate-slide-right">
+          <div className="relative w-72 max-w-[85vw] bg-linear-to-b from-[#1D4ED8] via-[#1E40AF] to-[#1E3A8A] dark:from-[#0F172A] dark:to-[#0B1120] text-white flex flex-col justify-between h-full shadow-2xl z-10 animate-slide-right">
             <div className="p-3.5 border-b border-white/10 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <img src="/proman-icon.png" alt="ProMan" className="w-7 h-7 object-contain bg-white rounded-lg p-1" />
@@ -443,7 +443,7 @@ export const Sidebar: React.FC = () => {
               </div>
               <button
                 onClick={() => setIsMobileSidebarOpen(false)}
-                className="p-1.5 rounded-lg text-emerald-200 hover:text-white hover:bg-white/10 transition"
+                className="p-1.5 rounded-lg text-blue-200 hover:text-white hover:bg-white/10 transition"
               >
                 <X className="w-5 h-5" />
               </button>

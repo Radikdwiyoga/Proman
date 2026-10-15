@@ -134,7 +134,7 @@ export const Navbar: React.FC = () => {
               value={filters.searchQuery}
               onChange={(e) => setFilters(prev => ({ ...prev, searchQuery: e.target.value }))}
               placeholder="Search here.."
-              className="w-full pl-10 pr-9 py-2 rounded-full bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 shadow-2xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/40 transition"
+              className="w-full pl-10 pr-9 py-2 rounded-full bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 shadow-2xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 transition"
             />
             {filters.searchQuery && (
               <button
@@ -154,7 +154,7 @@ export const Navbar: React.FC = () => {
             onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
             className={`p-2 rounded-full border md:hidden transition cursor-pointer ${
               isMobileSearchOpen
-                ? 'bg-[#244A3A] text-white border-emerald-500'
+                ? 'bg-[#2563EB] text-white border-blue-500'
                 : 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700 text-slate-600 dark:text-slate-300'
             }`}
             title="Cari Tugas"
@@ -167,14 +167,14 @@ export const Navbar: React.FC = () => {
             onClick={() => setIsCopilotOpen(!isCopilotOpen)}
             className={`relative p-2 sm:px-3 sm:py-2 rounded-full border transition shadow-2xs flex items-center gap-1.5 cursor-pointer ${
               isCopilotOpen 
-                ? 'bg-[#244A3A] text-white border-emerald-600 shadow-sm' 
+                ? 'bg-[#2563EB] text-white border-blue-600 shadow-sm' 
                 : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200/80 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50'
             }`}
             title="Buka ProMan AI Copilot Assistant"
           >
-            <Bot className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <Bot className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             <span className="hidden sm:inline text-xs font-semibold">Copilot</span>
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shrink-0" />
           </button>
 
           {/* Live Operational Time Display */}
@@ -182,11 +182,11 @@ export const Navbar: React.FC = () => {
             className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 text-xs shadow-2xs text-slate-700 dark:text-slate-300 select-none"
             title={`Zona Waktu: ${systemSettings?.timezone || 'Asia/Jakarta'} • ${currentTime.date}`}
           >
-            <Clock className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
             <span className="font-bold text-slate-800 dark:text-white tracking-tight text-xs">
               {currentTime.time}
             </span>
-            <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold">
+            <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-blue-500/10 text-blue-700 dark:text-blue-400 font-bold">
               {currentTime.label}
             </span>
           </div>
@@ -197,8 +197,8 @@ export const Navbar: React.FC = () => {
             className="p-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 shadow-2xs transition cursor-pointer relative"
             title="AI Breakdown & Intelligence Tools"
           >
-            <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-slate-900" />
+            <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-blue-500 ring-2 ring-white dark:ring-slate-900" />
           </button>
 
           {/* Dark / Light Mode Toggle */}

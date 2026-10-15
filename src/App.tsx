@@ -56,8 +56,8 @@ const AppCore: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-screen flex overflow-hidden select-none font-sans bg-[#FAF9F6] dark:bg-[#0D1512] transition-colors relative">
-      {/* Deep Forest Green Sidebar (Full height on left) */}
+    <div className="h-screen w-screen flex overflow-hidden select-none font-sans bg-[#F0F5FD] dark:bg-[#0B1120] transition-colors relative">
+      {/* Royal Blue Sidebar (Full height on left) */}
       <Sidebar />
 
       {/* Right Application Workspace: Navbar + Active View Canvas */}
@@ -65,7 +65,7 @@ const AppCore: React.FC = () => {
         <Navbar />
         
         <main 
-          className="flex-1 flex flex-col min-w-0 overflow-auto bg-gradient-to-br from-[#FCFBF8] via-[#F8FAF8] to-[#F2F6F3] dark:from-[#0E1513] dark:via-[#111A17] dark:to-[#0D1412] text-slate-800 dark:text-readable transition-colors" 
+          className="flex-1 flex flex-col min-w-0 overflow-auto bg-gradient-to-br from-[#F8FAFD] via-[#F0F5FD] to-[#E6F0FD] dark:from-[#0B1120] dark:via-[#0E1726] dark:to-[#0B1120] text-slate-800 dark:text-readable transition-colors" 
           style={{ 
             WebkitOverflowScrolling: 'touch',
             overscrollBehavior: 'contain',

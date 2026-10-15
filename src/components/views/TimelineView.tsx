@@ -141,7 +141,7 @@ export const TimelineView: React.FC = () => {
 
           {/* Project Filter */}
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white dark:bg-canvas border border-slate-200 dark:border-white/10 text-xs font-semibold shadow-xs">
-            <FolderKanban className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <FolderKanban className="w-3.5 h-3.5 text-blue-600 shrink-0" />
             <select
               value={currentProjectId}
               onChange={(e) => setCurrentProjectId(e.target.value)}
@@ -172,7 +172,7 @@ export const TimelineView: React.FC = () => {
             </button>
             <button
               onClick={scrollToToday}
-              className="px-2.5 py-1 rounded-md bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-signal hover:bg-emerald-500/20 text-xs font-bold transition cursor-pointer"
+              className="px-2.5 py-1 rounded-md bg-blue-500/10 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 hover:bg-blue-500/20 text-xs font-bold transition cursor-pointer"
               title="Lompat ke Hari Ini"
             >
               Hari Ini
@@ -240,7 +240,7 @@ export const TimelineView: React.FC = () => {
                     style={{ width: `${dayCellWidth}px` }}
                     className={`py-2 border-r border-slate-200/80 dark:border-white/6 text-center shrink-0 flex flex-col justify-center ${
                       col.isToday
-                        ? 'bg-emerald-100/80 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-extrabold border-emerald-400 dark:border-emerald-500/40'
+                        ? 'bg-blue-100/80 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 font-extrabold border-blue-400 dark:border-blue-500/40'
                         : col.isWeekend
                         ? 'bg-slate-100/50 dark:bg-white/2 text-slate-400'
                         : 'text-slate-700 dark:text-slate-300'
@@ -323,7 +323,7 @@ export const TimelineView: React.FC = () => {
                             </span>
                           )}
                         </div>
-                        <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 dark:group-hover:text-signal-active transition truncate">
+                        <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition truncate">
                           {task.title}
                         </h4>
                         <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] text-slate-400 mt-0.5 font-mono">
@@ -358,7 +358,7 @@ export const TimelineView: React.FC = () => {
                               style={{ width: `${dayCellWidth}px` }}
                               className={`h-full border-r border-slate-100 dark:border-white/5 shrink-0 ${
                                 col.isToday
-                                  ? 'bg-emerald-500/5 dark:bg-emerald-500/10'
+                                  ? 'bg-blue-500/5 dark:bg-blue-500/10'
                                   : col.isWeekend
                                   ? 'bg-slate-50/60 dark:bg-white/2'
                                   : ''
