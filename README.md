@@ -1,8 +1,9 @@
-﻿# 🚀 ProMan — Intelligent Enterprise Project Management System
+# 🚀 ProMan — Intelligent Enterprise Project Management System
 
 **ProMan** adalah platform manajemen proyek modern dan sistem tata kelola operasional berbasis AI (*ProMan AI*) dan real-time database (*Firebase Firestore & Auth*). Dirancang khusus untuk memonitor, mengalokasikan beban kerja, memitigasi risiko keterlambatan, dan mengotomasi breakdown inisiatif proyek dalam skala enterprise.
 
-🌐 **Live URL**: [https://proman-83c57.web.app](https://proman-83c57.web.app)
+🌐 **Live URL**: [https://proman-83c57.web.app](https://proman-83c57.web.app)  
+📦 **Repository**: [https://github.com/Radikdwiyoga/PromanAI](https://github.com/Radikdwiyoga/PromanAI)
 
 ---
 
@@ -15,37 +16,45 @@
 - [Pipeline Otomasi (GitHub Actions)](#-pipeline-otomasi-github-actions)
 - [Struktur Direktori Proyek](#-struktur-direktori-proyek)
 - [Akun Pengguna & Peran](#-akun-pengguna--peran)
+- [Pengembang / Author](#-pengembang--author)
+- [Lisensi](#-lisensi)
 
 ---
 
 ## ✨ Fitur Utama
 
 ### 1. 📋 Multi-View Project Management
-* **Papan Kanban Interaktif**: Drag-and-drop antar status (*Backlog, To Do, In Progress, In Review, Done*) dengan penghitungan sub-tugas otomatis.
-* **Timeline Proyek & Gantt Chart Realtime**: Visualisasi durasi tugas, progress bar, ketergantungan, serta penyesuaian skala Harian (*Daily*) dan Mingguan (*Weekly*).
-* **Kalender Proyek Realtime**: Jadwal tenggat dan milestone yang tersinkronisasi otomatis dengan waktu saat ini (`new Date()`).
+* **Papan Kanban Interaktif**: Drag-and-drop antar status (*Backlog, To Do, In Progress, In Review, Done*) dengan sub-tugas otomatis dan tata letak vertikal adaptif pada perangkat mobile.
+* **Timeline Proyek & Gantt Chart Realtime**: Visualisasi durasi tugas, progress bar, ketergantungan, serta penyesuaian skala Harian (*Daily*) dan Mingguan (*Weekly*) dengan horizontal swipe halus pada layar sentuh.
+* **Kalender Proyek Realtime**: Jadwal tenggat dan milestone yang tersinkronisasi otomatis dengan waktu saat ini (`new Date()`), dilengkapi modal pop-up interaktif detail tugas per tanggal pada tampilan mobile.
 * **Daftar & Tabel**: Tampilan terstruktur tabular dengan fitur sorting dinamis berdasarkan judul, prioritas, tenggat waktu, dan status.
 
-### 2. 🤖 ProMan AI Intelligence Suite
+### 2. 📱 Desain Responsif & Tipografi Selaras (Mobile-First Experience)
+* **Tipografi Bersih & Selaras**: Seluruh antarmuka menggunakan font **Arial** standar korporat untuk keterbacaan optimal di berbagai resolusi layar.
+* **Live Operational Clock**: Jam operasional real-time di bilah navigasi atas untuk sinkronisasi zona waktu tim lintas lokasi.
+* **Mobile-Optimized Layouts**: Tampilan auto-summary, formulir pendaftaran (sign up), serta panel pengaturan admin yang responsif dan mendukung scroll vertikal tanpa terpotong.
+* **Auto-Hide Icon Sidebar**: Navigasi samping ringkas (*icon-only mode*) yang otomatis melebar saat di-*hover* dan dapat dikunci (*pin*).
+
+### 3. 🤖 ProMan AI Intelligence Suite
 * **AI Task Breakdown Engine**: Memecah ide/inisiatif operasional menjadi sub-tugas terstruktur, kategori departemen, estimasi jam kerja, dan rekomendasi PIC pelaksana secara instan.
 * **AI Smart Estimator & Due Date**: Menganalisis judul & deskripsi tugas untuk memberikan rekomendasi tingkat kompleksitas (*Simple, Moderate, Complex*), jam kerja, dan tanggal deadline ideal.
+* **Predictive Risk & Workload Intelligence**: Analisis risiko keterlambatan proyek dan distribusi kapasitas jam kerja tim secara cerdas dan objektif.
 * **AI Solution & Troubleshooting Advisor**: Konsultasi instan berbasis AI di dalam setiap tiket tugas saat terjadi kendala teknis/operasional.
 * **Auto-Status Summary (Laporan Eksekutif)**: Ringkasan capaian proyek, analisis *bottleneck*, risiko delay, dan rekomendasi aksi yang dapat langsung dicetak atau diekspor ke PDF.
 * **Project Copilot Assistant**: AI chatbot interaktif dengan pengetahuan kontekstual mengenai seluruh isi project, daftar tiket, dan anggota tim yang sedang aktif.
 
-### 3. 🏢 Manajemen Multi-Project & Global Board
+### 4. 🏢 Manajemen Multi-Project & Global Board
 * **Global Board**: Melihat seluruh tugas lintas project secara komprehensif dalam satu papan kerja.
 * **Project Induk**: Pengelolaan fleksibel daftar inisiatif/project sebagai induk dari seluruh tiket tugas.
 * **Project Health Score**: Penilaian otomatis kesehatan proyek berbasis perbandingan progres dan risiko keterlambatan.
 
-### 4. 👥 Manajemen Tim & Tata Kelola Enterprise
+### 5. 👥 Manajemen Tim & Tata Kelola Enterprise
 * **Super Admin Control Center**: Manajemen persetujuan akun (*pending approval*), penugasan role/jabatan, manajemen kapasitas jam kerja (*Capacity vs Allocated Hours*), dan privasi data AI.
 * **Smart Resource / Beban Kerja**: Indikator beban kerja tim untuk mencegah kelebihan alokasi (*overload*) personel.
 * **Keamanan Akun**: Password hanya tersimpan di Firebase Authentication (hash), tidak pernah ditulis ke Firestore. Firestore dilindungi *Security Rules* deny-by-default sehingga data tidak bisa dibaca tanpa login.
 * **Inactivity Session Timeout**: Auto-logout cerdas setelah 10 menit tidak ada aktivitas pengguna demi menjaga keamanan workstation.
-* **Auto-Hide Icon Sidebar**: Navigasi samping ringkas (*icon-only mode*) yang otomatis melebar saat di-*hover* dan dapat dikunci (*pin*).
 
-### 5. 📨 Notifikasi Telegram Otomatis
+### 6. 📨 Notifikasi Telegram Otomatis
 * **Notifikasi Perubahan Real-Time**: Setiap pembuatan tugas, perubahan judul/prioritas/tenggat/assignee, pergantian status, dan komentar baru langsung diteruskan ke grup Telegram sebagai pesan ringkas.
 * **Rekap Harian Terjadwal**: Tiap pagi Senin–Jumat pukul **08:00 WIB**, bot mengirim rekap kondisi pekerjaan ke grup tanpa perlu membuka aplikasi.
 * **Isi Rekap** (diurutkan dari yang paling mendesak):
@@ -86,7 +95,7 @@
    Dilengkapi *Inactivity Session Timeout (10 menit)*, proteksi approval akun baru oleh Super Admin, enkripsi sesi berbasis *local persistence*, serta autentikasi penuh berbasis Firebase Auth. Setiap akses Firestore diverifikasi ulang oleh *Security Rules* di sisi server, bukan hanya disembunyikan di antarmuka.
 
 4. **Desain Modern, Responsif, & Ringan (Corporate Green)**  
-   Antarmuka berstandar enterprise dengan tema hijau profesional, dukungan Dark/Light mode, transisi halus, serta *Auto-Hide Sidebar* yang memaksimalkan area kerja Kanban dan Gantt Chart.
+   Antarmuka berstandar enterprise dengan tema hijau profesional, dukungan Dark/Light mode, transisi halus, serta tata letak adaptif mobile dan desktop.
 
 5. **Mitigasi Risiko Proaktif (Predictive Risk Analysis)**  
    Sistem secara otomatis menghitung potensi keterlambatan (*delay prediction*) dan mendeteksi anggota tim yang mengalami *overload* jam kerja sebelum proyek mengalami hambatan nyata.
@@ -118,8 +127,8 @@
 ### Langkah Instalasi
 1. **Clone repository**:
    ```bash
-   git clone https://github.com/username/proman.git
-   cd proman
+   git clone https://github.com/Radikdwiyoga/PromanAI.git
+   cd PromanAI
    ```
 
 2. **Install dependensi**:
@@ -169,28 +178,20 @@
    npx firebase deploy --only hosting
    ```
 
-7. **Deploy otomatis lewat GitHub Actions** (opsional, sudah aktif di repo ini):
-   Setiap `git push` ke branch `main` akan otomatis build dan deploy ke
-   Firebase Hosting. Tidak perlu menjalankan perintah pada langkah 6 lagi.
+7. **Deploy otomatis lewat GitHub Actions** (sudah aktif di repo ini):
+   Setiap `git push` ke branch `main` akan otomatis build dan deploy ke Firebase Hosting.
 
-   > ⚠️ **Build di CI membaca konfigurasi dari GitHub Secrets, bukan dari
-   > `.env` lokal.** Mengubah `.env` di laptop tidak berpengaruh ke situs
-   > sampai secret-nya diisi ulang:
+   > ⚠️ **Build di CI membaca konfigurasi dari GitHub Secrets, bukan dari `.env` lokal.** Mengubah `.env` di laptop tidak berpengaruh ke situs sampai secret-nya diisi ulang:
    > ```powershell
    > powershell -NoProfile -ExecutionPolicy Bypass -File scripts/set-github-secrets.ps1
    > ```
-   > Setelah itu baru `git push` untuk memicu deploy. Push ke branch selain
-   > `main` tidak mengubah situs sampai di-merge ke `main`.
-
-   Kalau build gagal, situs lama tetap hidup — deploy baru jalan setelah
-   step build sukses.
+   > Setelah itu baru `git push` untuk memicu deploy. Push ke branch selain `main` tidak mengubah situs sampai di-merge ke `main`.
 
 ---
 
 ## ⚙️ Pipeline Otomasi (GitHub Actions)
 
-Repo ini memakai tiga workflow terpisah di `.github/workflows/`. Semuanya
-berjalan di runner GitHub, jadi tidak ada server yang perlu selalu menyala.
+Repo ini memakai tiga workflow terpisah di `.github/workflows/`. Semuanya berjalan di runner GitHub, jadi tidak ada server yang perlu selalu menyala.
 
 | Workflow | Kapan Jalan | Fungsi |
 |---|---|---|
@@ -200,11 +201,7 @@ berjalan di runner GitHub, jadi tidak ada server yang perlu selalu menyala.
 
 ### Kenapa health check ada?
 
-`FIREBASE_TOKEN` adalah *refresh token* yang secara resmi tidak punya tanggal
-kedaluwarsa — jadi tidak ada yang bisa dipantau. Satu-satunya cara untuk tahu
-masih valid adalah mencobanya. Health check melakukannya setiap minggu lewat
-panggilan *read-only*, sehingga hosting tidak pernah tersentuh dan masalahnya
-ketahuan lebih awal, bukan saat deploy penting sedang menunggu.
+`FIREBASE_TOKEN` adalah *refresh token* yang secara resmi tidak punya tanggal kedaluwarsa. Satu-satunya cara untuk tahu masih valid adalah mencobanya. Health check melakukannya setiap minggu lewat panggilan *read-only*, sehingga hosting tidak pernah tersentuh dan masalahnya ketahuan lebih awal, bukan saat deploy penting sedang menunggu.
 
 ### Rekap harian Telegram
 
@@ -220,17 +217,7 @@ Divalidasi dengan mode *dry-run* yang tidak mengirim apa pun:
   --repo Radikdwiyoga/PromanAI
 ```
 
-Rekap yang lebih panjang dari batas 4096 karakter Telegram akan dipecah
-otomatis pada batas baris (tidak pernah di tengah tag HTML) dan ditandai
-*"(lanjutan)"*.
-
-> ⚠️ **GitHub Actions tidak menjamin jadwal tepat pada menitnya.** Run bisa
-> terlambat beberapa menit, dan kadang lebih lama saat server GitHub sedang
-> ramai. Untuk jadwal yang harus presisi, opsi ini perlu digantikan *Cloud
-> Scheduler* — yang menuntut upgrade billing ke plan Blaze.
->
-> Selain itu, GitHub menonaktifkan jadwal otomatis pada repo yang tidak ada
-> aktivitas selama 60 hari.
+Rekap yang lebih panjang dari batas 4096 karakter Telegram akan dipecah otomatis pada batas baris (tidak pernah di tengah tag HTML) dan ditandai *"(lanjutan)"*.
 
 ### Script Utilitas
 
@@ -293,9 +280,7 @@ firestore.rules              # Security Rules (deny-by-default)
 
 ## 🔑 Akun Pengguna & Peran
 
-ProMan tidak lagi menyediakan akun demo dengan password bawaan yang tertulis
-di dokumen. Password hanya tersimpan di Firebase Authentication dalam bentuk
-hash, dan tidak pernah disimpan di Firestore maupun di repository.
+ProMan tidak lagi menyediakan akun demo dengan password bawaan yang tertulis di dokumen. Password hanya tersimpan di Firebase Authentication dalam bentuk hash, dan tidak pernah disimpan di Firestore maupun di repository.
 
 | Peran | Email Login | Akses Utama |
 |---|---|---|
@@ -306,22 +291,18 @@ hash, dan tidak pernah disimpan di Firestore maupun di repository.
 
 1. Buka halaman Register di aplikasi, lalu daftar memakai email korporat.
 2. Akun berstatus *pending* sampai disetujui Super Admin di panel pengaturan.
-3. Setelah disetujui, akun otomatis dibuat di Firebase Auth dan langsung
-   bisa login.
-
-> 💡 Email demo yang pernah ada di README versi sebelumnya
-> (`*@perusahaan.id`) sudah dihapus dari Firestore. Password-nya tidak dapat
-> dipulihkan — akun lama dibuat dengan password yang sudah dibuang, dan
-> Akun Auth-nya sudah dinonaktifkan. Jika butuh akun demo untuk uji coba,
-> daftarkan lewat halaman Register.
+3. Setelah disetujui, akun otomatis dibuat di Firebase Auth dan langsung bisa login.
 
 ### Menghapus pengguna
 
-Penghapusan pengguna bersifat *soft delete*: dokumen `/users` ditandai
-`status: 'rejected'` dan akun Auth-nya dinonaktifkan. Ini disengaja —
-klien tidak bisa menonaktifkan akun Firebase Auth secara langsung, sehingga
-penghapusan permanen selalu meninggalkan akun yang masih bisa login. Data
-historis (komentar, activity log) tetap referensial ke dokumen asli.
+Penghapusan pengguna bersifat *soft delete*: dokumen `/users` ditandai `status: 'rejected'` dan akun Auth-nya dinonaktifkan. Ini disengaja — klien tidak bisa menonaktifkan akun Firebase Auth secara langsung, sehingga penghapusan permanen selalu meninggalkan akun yang masih bisa login. Data historis (komentar, activity log) tetap referensial ke dokumen asli.
+
+---
+
+## 👨‍💻 Pengembang / Author
+
+* **Radik Dwiyoga** — Creator & Lead Developer  
+  GitHub: [@Radikdwiyoga](https://github.com/Radikdwiyoga)
 
 ---
 

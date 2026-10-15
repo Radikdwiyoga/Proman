@@ -32,7 +32,7 @@ export const RiskAnalysisDashboard: React.FC = () => {
               <span>Predictive Risk &amp; Delay Analysis Dashboard</span>
             </h2>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30 font-semibold">
-              PRD AI USP #2
+              Predictive Risk Engine
             </span>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -118,7 +118,7 @@ export const RiskAnalysisDashboard: React.FC = () => {
             92.4% <span className="text-xs text-slate-500 font-normal">(Margin &lt;15%)</span>
           </div>
           <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
-            Memenuhi target Success Metrics PRD
+            Akurasi model stabil &amp; presisi
           </div>
         </div>
       </div>

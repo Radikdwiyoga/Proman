@@ -16,7 +16,7 @@ export const ResourceAllocationView: React.FC = () => {
               <span>Smart Resource Allocation &amp; Workload Planner</span>
             </h2>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 font-semibold">
-              PRD AI USP #3
+              Workload Intelligence
             </span>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">

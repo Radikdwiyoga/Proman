@@ -287,56 +287,56 @@ export const AdminSettingsView: React.FC = () => {
   ];
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-auto bg-slate-100/50 dark:bg-slate-950/70 text-slate-800 dark:text-slate-100 transition-colors touch-scroll-y">
+    <div className="flex-1 flex flex-col h-full overflow-auto bg-slate-100/50 dark:bg-slate-950/70 text-slate-800 dark:text-slate-100 transition-colors touch-scroll-y w-full max-w-full overflow-x-hidden">
       {/* Sticky Top Header & Tabs Section */}
-      <div className="shrink-0 p-4 sm:p-6 pb-2 space-y-4 border-b border-slate-200 dark:border-slate-800/80 bg-slate-100/90 dark:bg-slate-950/95 backdrop-blur-md z-10">
+      <div className="shrink-0 p-3.5 sm:p-6 pb-2 space-y-3 sm:space-y-4 border-b border-slate-200 dark:border-slate-800/80 bg-slate-100/90 dark:bg-slate-950/95 backdrop-blur-md z-10 w-full max-w-full overflow-x-hidden">
         {/* Top Title Banner */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Settings className="w-5 h-5 text-emerald-600" />
-                <span>Admin &amp; System Settings Control Center</span>
+        <div className="flex items-start sm:items-center justify-between gap-2.5">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <h2 className="text-xs sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-1.5 truncate">
+                <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 shrink-0" />
+                <span>Pengaturan Sistem Admin</span>
               </h2>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold border border-amber-300 dark:border-amber-500/30 flex items-center gap-1">
-                <Crown className="w-3 h-3 text-amber-500" />
+              <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold border border-amber-300 dark:border-amber-500/30 flex items-center gap-1 shrink-0">
+                <Crown className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-500" />
                 <span>SUPER ADMIN</span>
               </span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Pusat konfigurasi tata kelola enterprise: profil perusahaan, persetujuan pendaftaran akun, model AI, dan audit log.
+            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1 sm:line-clamp-none">
+              Pusat tata kelola: profil perusahaan, persetujuan user, AI, dan audit log.
             </p>
           </div>
 
           {/* Close / Return to Board Button */}
           <button
             onClick={() => setActiveView('kanban')}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold transition shadow-xs active:scale-95"
-            title="Tutup Pengaturan & Kembali ke Papan Proyek"
+            className="flex items-center gap-1 px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold transition shadow-xs active:scale-95 shrink-0"
+            title="Tutup Pengaturan"
           >
-            <X className="w-4 h-4 text-slate-400" />
-            <span>Tutup</span>
+            <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" />
+            <span className="hidden xs:inline">Tutup</span>
           </button>
         </div>
 
         {/* Mobile Dropdown Navigation */}
         <div className="md:hidden">
-          <label className="text-[11px] font-bold text-slate-500 dark:text-muted mb-1 block">
+          <label className="text-[10px] font-bold text-slate-500 dark:text-muted mb-1 block">
             Pilih Kategori Pengaturan:
           </label>
-          <div className="relative">
+          <div className="relative w-full max-w-full">
             <select
               value={activeTab}
               onChange={(e) => setActiveTab(e.target.value as any)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-emerald-500 shadow-sm appearance-none pr-9 cursor-pointer"
+              className="w-full max-w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-emerald-500 shadow-sm appearance-none pr-8 cursor-pointer truncate"
             >
               {tabs.map(t => (
                 <option key={t.id} value={t.id}>
-                  {t.label} {t.badge !== undefined ? `(${t.badge} Verifikasi Baru)` : ''}
+                  {t.label} {t.badge !== undefined ? `(${t.badge} Baru)` : ''}
                 </option>
               ))}
             </select>
-            <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
         </div>
 
@@ -553,8 +553,9 @@ export const AdminSettingsView: React.FC = () => {
               </div>
 
               <div className="rounded-3xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
+                <div className="overflow-x-auto w-full touch-scroll-x">
+                  <table className="w-full min-w-[650px] text-left border-collapse text-xs">
+                    <thead>
                     <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/90 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
                       <th className="p-3.5">Nama &amp; Profil</th>
                       <th className="p-3.5">Status Akun</th>
@@ -654,6 +655,7 @@ export const AdminSettingsView: React.FC = () => {
                     })}
                   </tbody>
                 </table>
+                </div>
               </div>
             </div>
           </div>
