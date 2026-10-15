@@ -4,25 +4,23 @@ import { useTheme } from '../../context/ThemeContext';
 import { 
   Lock, 
   Mail, 
-  ShieldCheck, 
   Sun, 
   Moon, 
   Eye, 
   EyeOff, 
   AlertCircle, 
   ArrowRight, 
-  Terminal, 
   Sparkles,
-  UserPlus,
-  LogIn,
   User as UserIcon,
   CheckCircle2,
   Clock,
-  Key
+  Key,
+  Globe2,
+  ShieldCheck,
+  Check
 } from 'lucide-react';
 import { loginWithFirebase, registerWithFirebase, sendPasswordResetLink } from '../../services/authService';
-import { TechLogo } from '../common/TechLogo';
-import { SentinelBot } from '../common/SentinelBot';
+import { AuthIllustration3D } from './AuthIllustration3D';
 import { User } from '../../types';
 
 export const LoginPage: React.FC = () => {
@@ -35,6 +33,7 @@ export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
 
   // Forgot Password State
   const [forgotEmail, setForgotEmail] = useState('');
@@ -48,26 +47,13 @@ export const LoginPage: React.FC = () => {
   const [regPassword, setRegPassword] = useState('');
   const [regConfirmPassword, setRegConfirmPassword] = useState('');
   const [showRegPassword, setShowRegPassword] = useState(false);
+  const [agreeTerms, setAgreeTerms] = useState(true);
 
   const [errorMessage, setErrorMessage] = useState('');
   const [infoMessage, setInfoMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const isDark = theme === 'dark';
-
-  /* Derived bot mood — reacts to live form state */
-  const botMode = isLoading
-    ? 'loading'
-    : errorMessage
-      ? 'error'
-      : infoMessage
-        ? 'info'
-        : (mode === 'signin' && (email.length > 2 || password.length > 0)) ||
-          (mode === 'signup' && (regEmail.length > 2 || regPassword.length > 0))
-          ? 'typing'
-          : mode === 'pending_notice'
-            ? 'success'
-            : 'idle';
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,9 +75,6 @@ export const LoginPage: React.FC = () => {
       } else if (error.code === 'auth/account-removed') {
         setErrorMessage('Akun ini telah dinonaktifkan. Silakan hubungi Super Admin.');
       } else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-        // Firebase v9+ memakai 'invalid-credential' untuk email salah maupun
-        // password salah (demang mencegah enumerasi user), dan 'user-not-found'
-        // tidak pernah dikembalikan. Jadi keduanya digabung di sini.
         setErrorMessage('Email atau password salah. Silakan periksa kembali.');
       } else if (error.code === 'auth/user-not-found') {
         setErrorMessage('Email belum terdaftar. Silakan klik "Daftar Akun Baru".');
@@ -111,6 +94,11 @@ export const LoginPage: React.FC = () => {
     e.preventDefault();
     setErrorMessage('');
     setInfoMessage('');
+
+    if (!agreeTerms) {
+      setErrorMessage('Anda harus menyetujui ketentuan layanan untuk mendaftar.');
+      return;
+    }
 
     if (regPassword.length < 6) {
       setErrorMessage('Password minimal 6 karakter!');
@@ -161,8 +149,6 @@ export const LoginPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Password tidak pernah disimpan di aplikasi ini, jadi satu-satunya cara
-      // reset yang sah adalah tautan yang dikirim Firebase ke email pemilik akun.
       await sendPasswordResetLink(forgotEmail.trim());
       setForgotSuccessMessage(
         `Jika ${forgotEmail.trim()} terdaftar, tautan reset password sudah dikirim. ` +
@@ -171,10 +157,6 @@ export const LoginPage: React.FC = () => {
       showToast('Tautan reset password terkirim!', 'success');
     } catch (fbErr: any) {
       console.warn('[Reset] Firebase reset email gagal:', fbErr);
-
-      // Firebase sengaja tidak memberi tahu apakah email terdaftar atau tidak.
-      // Balasan yang sama dipakai untuk keduanya supaya email terdaftar tidak
-      // bisa ditebak dari sini.
       if (fbErr?.code === 'auth/too-many-requests') {
         setErrorMessage('Terlalu banyak permintaan reset. Silakan coba beberapa saat lagi.');
       } else if (fbErr?.code === 'auth/missing-android-pkg-name' || fbErr?.code === 'auth/operation-not-allowed') {
@@ -191,544 +173,550 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className={`fixed inset-0 w-full h-full min-h-dvh overflow-y-auto flex items-start sm:items-center justify-center p-4 sm:p-6 select-none transition-colors duration-500 ${
+    <div className={`fixed inset-0 w-full h-full min-h-dvh overflow-y-auto flex items-center justify-center p-3 sm:p-6 md:p-8 select-none transition-colors duration-300 ${
       isDark 
-        ? 'login-bg-dark text-readable' 
-        : 'login-bg-light text-slate-900'
+        ? 'bg-[#0B1120] text-slate-100' 
+        : 'bg-[#DDEBFC] text-slate-900'
     }`} style={{ 
       WebkitOverflowScrolling: 'touch',
       overscrollBehavior: 'contain'
     }}>
-      {/* Ambient Emerald Aura + Structural Grid */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute inset-0 bg-[size:3.5rem_3.5rem] ${
-          isDark
-            ? 'bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_at_center,black_25%,transparent_75%)]'
-            : 'bg-[linear-gradient(to_right,#090d1608_1px,transparent_1px),linear-gradient(to_bottom,#090d1608_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_at_center,black_25%,transparent_75%)]'
-        }`} />
-      </div>
 
-      {/* Floating Telemetry & Theme Status Bar */}
-      <div className="absolute top-4 sm:top-6 right-4 sm:right-6 z-20 flex items-center gap-2">
-        <div className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-sm border backdrop-blur-md ${
-          isDark 
-            ? 'bg-surface/80 border-white/10' 
-            : 'bg-white/80 border-slate-200 shadow-sm'
-        }`}>
-          <span className="status-dot status-dot--live" />
-          <span className={`text-[11px] font-mono font-semibold ${isDark ? 'text-signal-active' : 'text-emerald-700'}`}>
-            FIREBASE::FIRESTORE // SECURE
-          </span>
-        </div>
+      {/* Main Split-Card Container */}
+      <div className={`w-full max-w-[980px] rounded-[32px] overflow-hidden shadow-2xl transition-all duration-300 flex flex-col md:flex-row my-auto ${
+        isDark
+          ? 'bg-slate-900/95 border border-slate-800 shadow-blue-950/40'
+          : 'bg-white border border-white/80 shadow-[0_25px_50px_-12px_rgba(59,130,246,0.18)]'
+      }`}>
 
-        <button
-          onClick={toggleTheme}
-          className={`p-2.5 rounded-sm border text-xs font-semibold flex items-center gap-2 transition backdrop-blur-md ${
-            isDark
-              ? 'bg-surface/80 hover:bg-elevated border-white/10 text-slate-300 hover:text-readable'
-              : 'bg-white/90 hover:bg-white border-slate-200 text-slate-700'
-          }`}
-          title="Ubah Tema"
-        >
-          {isDark ? <Sun className="w-4 h-4 text-warning" /> : <Moon className="w-4 h-4 text-slate-800" />}
-          <span className="text-[11px] font-bold">{isDark ? 'Light' : 'Dark'}</span>
-        </button>
-      </div>
+        {/* ── LEFT COLUMN: Blue 3D Branding & Illustration Panel ── */}
+        <div className="w-full md:w-[42%] lg:w-[40%] bg-gradient-to-br from-[#4D96FF] via-[#3B82F6] to-[#2563EB] p-7 sm:p-9 flex flex-col justify-between text-white relative overflow-hidden shrink-0">
+          
+          {/* Subtle Ambient Shapes behind left panel */}
+          <div className="absolute -top-12 -left-12 w-44 h-44 bg-white/10 rounded-full blur-xl pointer-events-none" />
+          <div className="absolute -bottom-16 -right-16 w-56 h-56 bg-cyan-300/20 rounded-full blur-2xl pointer-events-none" />
 
-      {/* Main Container */}
-      <div className="w-full max-w-[460px] z-10 space-y-4 sm:space-y-5 animate-fade-in my-4 sm:my-auto pb-16 sm:pb-6">
-        {/* Brand Header */}
-        <div className="text-center space-y-2">
-          <div className="flex justify-center">
-            <TechLogo size="lg" showSubtitle={false} />
-          </div>
-
-          {/* SentinelBot Robot Mascot */}
-          <div className="flex justify-center">
-            <SentinelBot
-              mode={botMode}
-              className="mt-1 mb-4 sm:mb-10 scale-90 sm:scale-100 origin-center"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <div className={`inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase ${
-              isDark 
-                ? 'bg-signal/10 border border-signal/30 text-signal-active' 
-                : 'bg-emerald-50 border border-emerald-200 text-emerald-700'
-            }`}>
-              <Terminal className="w-3 h-3" />
-              <span>Divisi IT Infrastructure Operations (DIO)</span>
-            </div>
-          </div>
-        </div>
-
-        {/* SSO Authentication Card */}
-        <div className={`p-6 sm:p-8 rounded-lg border backdrop-blur-2xl space-y-5 relative overflow-hidden transition-all duration-300 ${
-          isDark
-            ? 'glass-panel z3-overlay'
-            : 'bg-white/95 border-slate-200/90 shadow-xl shadow-emerald-500/5 ring-1 ring-black/5'
-        }`}>
-          {/* Top Structural Signal Line */}
-          <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-signal to-transparent opacity-80" />
-
-          {/* Mode Switcher Tabs (Segmented Control) */}
-          {(mode === 'signin' || mode === 'signup') && (
-            <div className={`grid grid-cols-2 gap-1.5 p-1.5 rounded-sm border ${
-              isDark ? 'bg-canvas border-white/6' : 'bg-slate-100 border-slate-200'
-            }`}>
-              <button
-                type="button"
-                onClick={() => { setMode('signin'); setErrorMessage(''); setInfoMessage(''); }}
-                className={`relative py-2 text-xs font-bold rounded-sm transition flex items-center justify-center gap-1.5 border ${
-                  mode === 'signin'
-                    ? isDark
-                      ? 'bg-elevated text-readable border-white/15 shadow-md elevated-tray'
-                      : 'bg-white text-slate-900 border-slate-300 shadow-sm'
-                    : isDark
-                      ? 'text-muted hover:text-readable border-transparent'
-                      : 'text-slate-500 hover:text-slate-800 border-transparent'
-                }`}
-              >
-                {mode === 'signin' && <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-[2px] rounded-full bg-signal" />}
-                <LogIn className="w-3.5 h-3.5" />
-                <span>Masuk (Sign In)</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => { setMode('signup'); setErrorMessage(''); setInfoMessage(''); }}
-                className={`relative py-2 text-xs font-bold rounded-sm transition flex items-center justify-center gap-1.5 border ${
-                  mode === 'signup'
-                    ? isDark
-                      ? 'bg-elevated text-readable border-white/15 shadow-md elevated-tray'
-                      : 'bg-white text-slate-900 border-slate-300 shadow-sm'
-                    : isDark
-                      ? 'text-muted hover:text-readable border-transparent'
-                      : 'text-slate-500 hover:text-slate-800 border-transparent'
-                }`}
-              >
-                {mode === 'signup' && <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-[2px] rounded-full bg-signal" />}
-                <UserPlus className="w-3.5 h-3.5" />
-                <span>Daftar (Sign Up)</span>
-              </button>
-            </div>
-          )}
-
-          {/* Error Banner (Critical) */}
-          {errorMessage && (
-            <div className={`p-3.5 rounded-sm border text-xs flex items-start gap-2.5 animate-fade-in ${
-              isDark ? 'bg-critical/10 border-critical/40 text-rose-400' : 'bg-rose-50 border-rose-200 text-rose-700'
-            }`}>
-              <AlertCircle className="w-4 h-4 text-critical shrink-0 mt-0.5" />
-              <span className="leading-relaxed">{errorMessage}</span>
-            </div>
-          )}
-
-          {/* Info / Pending Banner (Warning) */}
-          {infoMessage && (
-            <div className={`p-3.5 rounded-sm border text-xs flex items-start gap-2.5 animate-fade-in ${
-              isDark ? 'bg-warning/10 border-warning/40 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-700'
-            }`}>
-              <Clock className="w-4 h-4 text-warning shrink-0 mt-0.5" />
-              <span className="leading-relaxed">{infoMessage}</span>
-            </div>
-          )}
-
-          {/* 1. SIGN IN FORM */}
-          {mode === 'signin' && (
-            <form onSubmit={handleLogin} className="space-y-4 animate-fade-in">
-              <div className="space-y-1.5 text-left">
-                <label className={`text-xs font-bold ${isDark ? 'text-muted' : 'text-slate-700'}`}>
-                  Email Perusahaan
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="nama@bitcorp.id"
-                    className={`w-full pl-10 pr-4 py-2.5 rounded-sm border text-xs placeholder:font-mono placeholder-slate-400 transition input-sentinel ${
-                      isDark 
-                        ? 'bg-canvas border-white/10 text-readable' 
-                        : 'bg-slate-50 border-slate-300 text-slate-900'
-                    }`}
-                    required
-                  />
-                </div>
+          {/* Top Brand Header */}
+          <div className="relative z-10 space-y-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-white p-1.5 shadow-md flex items-center justify-center shrink-0">
+                <img 
+                  src="/proman-icon.png" 
+                  alt="ProMan" 
+                  className="w-full h-full object-contain"
+                />
               </div>
-
-              <div className="space-y-1.5 text-left">
-                <label className={`text-xs font-bold ${isDark ? 'text-muted' : 'text-slate-700'}`}>
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className={`w-full pl-10 pr-10 py-2.5 rounded-sm border text-xs placeholder-slate-400 transition input-sentinel ${
-                      isDark 
-                        ? 'bg-canvas border-white/10 text-readable' 
-                        : 'bg-slate-50 border-slate-300 text-slate-900'
-                    }`}
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className={`absolute right-3 top-1/2 -translate-y-1/2 transition ${
-                      isDark ? 'text-muted hover:text-readable' : 'text-slate-400 hover:text-slate-700'
-                    }`}
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-xl tracking-tight text-white leading-none">
+                  ProMan
+                </span>
+                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-white/20 text-white border border-white/30 tracking-wider">
+                  DIO
+                </span>
               </div>
+            </div>
 
-              {/* Forgot Password Link */}
-              <div className="flex items-center justify-between text-[11px] pt-0.5">
-                <span className="text-muted">Lupa kata sandi akun?</span>
+            <p className="text-xs text-blue-50/90 leading-relaxed font-normal max-w-xs">
+              Interface assets &amp; workspace cerdas untuk manajemen proyek dan tata kelola operasional enterprise.
+            </p>
+          </div>
+
+          {/* Middle 3D Illustration Graphic */}
+          <div className="relative z-10 my-4 md:my-0 flex items-center justify-center">
+            <AuthIllustration3D />
+          </div>
+
+          {/* Bottom Switcher Navigation */}
+          <div className="relative z-10 pt-4 border-t border-white/15 text-xs text-blue-50/90 flex items-center justify-between">
+            {mode === 'signin' ? (
+              <p>
+                Belum punya akun?{' '}
                 <button
                   type="button"
-                  onClick={() => { 
-                    setMode('forgot_password'); 
-                    setErrorMessage(''); 
-                    setInfoMessage(''); 
-                    setForgotSuccessMessage('');
-                    if (email) setForgotEmail(email);
-                  }}
-                  className={`font-bold hover:underline flex items-center gap-1 cursor-pointer ${isDark ? 'text-signal hover:text-signal-active' : 'text-emerald-700'}`}
+                  onClick={() => { setMode('signup'); setErrorMessage(''); setInfoMessage(''); }}
+                  className="font-bold text-white hover:underline transition ml-1 cursor-pointer"
                 >
-                  <Key className="w-3 h-3" />
-                  <span>Reset Password</span>
+                  Daftar di sini
                 </button>
+              </p>
+            ) : mode === 'signup' ? (
+              <p>
+                Sudah punya akun?{' '}
+                <button
+                  type="button"
+                  onClick={() => { setMode('signin'); setErrorMessage(''); setInfoMessage(''); }}
+                  className="font-bold text-white hover:underline transition ml-1 cursor-pointer"
+                >
+                  Masuk di sini
+                </button>
+              </p>
+            ) : (
+              <p>
+                Kembali ke login?{' '}
+                <button
+                  type="button"
+                  onClick={() => { setMode('signin'); setErrorMessage(''); setInfoMessage(''); setForgotSuccessMessage(''); }}
+                  className="font-bold text-white hover:underline transition ml-1 cursor-pointer"
+                >
+                  Klik di sini
+                </button>
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* ── RIGHT COLUMN: Clean White Form Panel ── */}
+        <div className="flex-1 p-6 sm:p-9 md:p-11 flex flex-col justify-between overflow-y-auto">
+
+          {/* Top Bar: Language & Dark Mode Switcher */}
+          <div className="flex items-center justify-between pb-4">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <Globe2 className="w-3.5 h-3.5 text-[#3B82F6]" />
+              <span>Indonesia (WIB)</span>
+            </div>
+
+            <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition ${
+                isDark
+                  ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700'
+                  : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+              }`}
+              title="Ubah Tema (Dark / Light)"
+            >
+              {isDark ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-slate-700" />}
+              <span className="text-[11px] font-bold">{isDark ? 'Light' : 'Dark'}</span>
+            </button>
+          </div>
+
+          {/* Form Content Body */}
+          <div className="space-y-6 my-auto py-2">
+
+            {/* Header Titles */}
+            <div className="space-y-1">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                {mode === 'signin' && 'Sign In'}
+                {mode === 'signup' && 'Sign Up'}
+                {mode === 'forgot_password' && 'Reset Password'}
+                {mode === 'pending_notice' && 'Verifikasi Akun'}
+              </h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {mode === 'signin' && 'Selamat datang kembali! Silakan masukkan kredensial akun Anda.'}
+                {mode === 'signup' && 'Daftarkan akun perusahaan baru untuk mulai berkolaborasi di ProMan.'}
+                {mode === 'forgot_password' && 'Masukkan email terdaftar untuk menerima tautan pembaruan kata sandi.'}
+                {mode === 'pending_notice' && 'Pendaftaran akun Anda telah berhasil diterima oleh sistem.'}
+              </p>
+            </div>
+
+            {/* Error Banner */}
+            {errorMessage && (
+              <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-700 dark:text-rose-400 text-xs flex items-start gap-2.5 animate-fade-in">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
+                <span className="leading-relaxed font-medium">{errorMessage}</span>
               </div>
+            )}
 
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full py-3 px-4 rounded-sm bg-signal hover:bg-signal-active text-canvas text-xs font-bold transition flex items-center justify-center gap-2 shadow-md glow-signal active:scale-[0.98] disabled:opacity-50 cursor-pointer elevated-tray"
-              >
-                {isLoading ? (
-                  <>
-                    <Sparkles className="w-4 h-4 animate-spin" />
-                    <span>Memverifikasi Akun...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Masuk ke Dashboard</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
-            </form>
-          )}
-
-          {/* 2. SIGN UP FORM */}
-          {mode === 'signup' && (
-            <form onSubmit={handleSignUp} className="space-y-3.5 animate-fade-in text-left">
-              <div className="space-y-1">
-                <label className={`text-xs font-bold ${isDark ? 'text-muted' : 'text-slate-700'}`}>
-                  Nama Lengkap
-                </label>
-                <div className="relative">
-                  <UserIcon className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={regName}
-                    onChange={(e) => setRegName(e.target.value)}
-                    placeholder="Contoh: Budi Santoso"
-                    className={`w-full pl-10 pr-4 py-2 rounded-sm border text-xs placeholder:font-mono placeholder-slate-400 transition input-sentinel ${
-                      isDark ? 'bg-canvas border-white/10 text-readable' : 'bg-slate-50 border-slate-300 text-slate-900'
-                    }`}
-                    required
-                  />
-                </div>
+            {/* Info / Pending Banner */}
+            {infoMessage && (
+              <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-700 dark:text-amber-400 text-xs flex items-start gap-2.5 animate-fade-in">
+                <Clock className="w-4 h-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+                <span className="leading-relaxed font-medium">{infoMessage}</span>
               </div>
+            )}
 
-              <div className="space-y-1">
-                <label className={`text-xs font-bold ${isDark ? 'text-muted' : 'text-slate-700'}`}>
-                  Email Perusahaan
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="email"
-                    value={regEmail}
-                    onChange={(e) => setRegEmail(e.target.value)}
-                    placeholder="nama@perusahaan.id"
-                    className={`w-full pl-10 pr-4 py-2 rounded-sm border text-xs placeholder:font-mono placeholder-slate-400 transition input-sentinel ${
-                      isDark ? 'bg-canvas border-white/10 text-readable' : 'bg-slate-50 border-slate-300 text-slate-900'
-                    }`}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className={`text-xs font-bold ${isDark ? 'text-muted' : 'text-slate-700'}`}>
-                    Departemen
-                  </label>
-                  <select
-                    value={regDepartment}
-                    onChange={(e) => setRegDepartment(e.target.value as any)}
-                    className={`w-full px-3 py-2 rounded-sm border text-xs transition input-sentinel ${
-                      isDark ? 'bg-canvas border-white/10 text-readable' : 'bg-slate-50 border-slate-300 text-slate-900'
-                    }`}
-                  >
-                    <option value="Technology">Technology</option>
-                    <option value="Operations">Operations</option>
-                    <option value="Marketing">Marketing</option>
-                    <option value="Human Resources">Human Resources</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Management">Management</option>
-                    <option value="Executive">Executive</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className={`text-xs font-bold ${isDark ? 'text-muted' : 'text-slate-700'}`}>
-                    Jabatan / Posisi
-                  </label>
-                  <input
-                    type="text"
-                    value={regRole}
-                    onChange={(e) => setRegRole(e.target.value)}
-                    placeholder="Contoh: IT Engineer"
-                    className={`w-full px-3 py-2 rounded-sm border text-xs placeholder:font-mono placeholder-slate-400 transition input-sentinel ${
-                      isDark ? 'bg-canvas border-white/10 text-readable' : 'bg-slate-50 border-slate-300 text-slate-900'
-                    }`}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className={`text-xs font-bold ${isDark ? 'text-muted' : 'text-slate-700'}`}>
-                    Password
+            {/* 1. SIGN IN FORM */}
+            {mode === 'signin' && (
+              <form onSubmit={handleLogin} className="space-y-4 animate-fade-in text-left">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    Email address
                   </label>
                   <div className="relative">
                     <input
-                      type={showRegPassword ? 'text' : 'password'}
-                      value={regPassword}
-                      onChange={(e) => setRegPassword(e.target.value)}
-                      placeholder="Min. 6 digit"
-                      className={`w-full px-3 pr-8 py-2 rounded-sm border text-xs placeholder:font-mono placeholder-slate-400 transition input-sentinel ${
-                        isDark ? 'bg-canvas border-white/10 text-readable' : 'bg-slate-50 border-slate-300 text-slate-900'
-                      }`}
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="nama@bitcorp.id"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6] focus:ring-4 focus:ring-blue-500/10 transition"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                      Password
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => { 
+                        setMode('forgot_password'); 
+                        setErrorMessage(''); 
+                        setInfoMessage(''); 
+                        setForgotSuccessMessage('');
+                        if (email) setForgotEmail(email);
+                      }}
+                      className="text-xs font-semibold text-[#3B82F6] hover:underline"
+                    >
+                      Lupa password?
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full px-4 pr-11 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6] focus:ring-4 focus:ring-blue-500/10 transition"
                       required
                     />
                     <button
                       type="button"
-                      onClick={() => setShowRegPassword(!showRegPassword)}
-                      className={`absolute right-2.5 top-1/2 -translate-y-1/2 ${isDark ? 'text-muted' : 'text-slate-400'}`}
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
                     >
-                      {showRegPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
 
+                {/* Remember Me Checkbox */}
+                <div className="flex items-center gap-2 pt-0.5">
+                  <input
+                    type="checkbox"
+                    id="remember_me"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3B82F6] focus:ring-blue-500"
+                  />
+                  <label htmlFor="remember_me" className="text-xs text-slate-600 dark:text-slate-400 font-medium cursor-pointer">
+                    Ingat sesi saya di workstation ini
+                  </label>
+                </div>
+
+                {/* Submit Action Button */}
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#4D96FF] to-[#2563EB] hover:from-[#3B82F6] hover:to-[#1D4ED8] text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-500/25 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {isLoading ? (
+                    <>
+                      <Sparkles className="w-4 h-4 animate-spin" />
+                      <span>Memverifikasi Akun...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Sign In</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
+
+            {/* 2. SIGN UP FORM */}
+            {mode === 'signup' && (
+              <form onSubmit={handleSignUp} className="space-y-3.5 animate-fade-in text-left">
                 <div className="space-y-1">
-                  <label className={`text-xs font-bold ${isDark ? 'text-muted' : 'text-slate-700'}`}>
-                    Konfirmasi Password
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    Full name
                   </label>
                   <input
-                    type={showRegPassword ? 'text' : 'password'}
-                    value={regConfirmPassword}
-                    onChange={(e) => setRegConfirmPassword(e.target.value)}
-                    placeholder="Ulangi password"
-                    className={`w-full px-3 py-2 rounded-sm border text-xs placeholder:font-mono placeholder-slate-400 transition input-sentinel ${
-                      isDark ? 'bg-canvas border-white/10 text-readable' : 'bg-slate-50 border-slate-300 text-slate-900'
-                    }`}
+                    type="text"
+                    value={regName}
+                    onChange={(e) => setRegName(e.target.value)}
+                    placeholder="Contoh: Joey Willson"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6] focus:ring-4 focus:ring-blue-500/10 transition"
                     required
                   />
                 </div>
-              </div>
 
-              {/* Verification Notice Warning */}
-              <div className={`p-3 rounded-sm border text-[11px] flex items-start gap-2 ${
-                isDark ? 'bg-warning/10 border-warning/30 text-amber-200/90' : 'bg-orange-50 border-orange-200 text-orange-800'
-              }`}>
-                <Clock className="w-3.5 h-3.5 text-warning shrink-0 mt-0.5" />
-                <span>Akun yang baru didaftarkan akan berstatus <strong>Menunggu Persetujuan Admin</strong> sebelum dapat digunakan login.</span>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full py-3 px-4 rounded-sm bg-signal hover:bg-signal-active text-canvas text-xs font-bold transition flex items-center justify-center gap-2 shadow-md glow-signal active:scale-[0.98] disabled:opacity-50 cursor-pointer elevated-tray"
-              >
-                {isLoading ? (
-                  <>
-                    <Sparkles className="w-4 h-4 animate-spin" />
-                    <span>Mendaftarkan Akun...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Daftar Akun Baru</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
-            </form>
-          )}
-
-          {/* 3. FORGOT PASSWORD FORM */}
-          {mode === 'forgot_password' && (
-            <div className="space-y-4 animate-fade-in text-left">
-              <div className={`flex items-center justify-between pb-1 border-b ${isDark ? 'border-white/8' : 'border-slate-200'}`}>
-                <div className="flex items-center gap-2">
-                  <Key className="w-4 h-4 text-signal" />
-                  <h4 className={`text-xs font-extrabold ${isDark ? 'text-readable' : 'text-slate-900'}`}>
-                    Reset Kata Sandi Akun
-                  </h4>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    Email address
+                  </label>
+                  <input
+                    type="email"
+                    value={regEmail}
+                    onChange={(e) => setRegEmail(e.target.value)}
+                    placeholder="jowillson@gmail.com"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6] focus:ring-4 focus:ring-blue-500/10 transition"
+                    required
+                  />
                 </div>
-                <button
-                  type="button"
-                  onClick={() => { setMode('signin'); setErrorMessage(''); setInfoMessage(''); setForgotSuccessMessage(''); }}
-                  className={`text-[11px] font-bold transition ${isDark ? 'text-muted hover:text-signal' : 'text-slate-500 hover:text-emerald-600'}`}
-                >
-                  Batal
-                </button>
-              </div>
 
-              {forgotSuccessMessage ? (
-                <div className="space-y-4 text-center py-3">
-                  <div className={`w-12 h-12 rounded-lg flex items-center justify-center mx-auto border shadow-md glow-signal ${
-                    isDark ? 'bg-signal/10 text-signal border-signal/30' : 'bg-emerald-100 text-emerald-600 border-emerald-300 shadow-emerald-500/10'
-                  }`}>
-                    <CheckCircle2 className="w-6 h-6" />
-                  </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <h4 className={`text-sm font-bold ${isDark ? 'text-readable' : 'text-slate-900'}`}>
-                      Tautan Reset Dikirim
-                    </h4>
-                    <p className={`text-xs leading-relaxed ${isDark ? 'text-muted' : 'text-slate-600'}`}>
-                      {forgotSuccessMessage}
-                    </p>
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                      Departemen
+                    </label>
+                    <select
+                      value={regDepartment}
+                      onChange={(e) => setRegDepartment(e.target.value as any)}
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#3B82F6] transition"
+                    >
+                      <option value="Technology">Technology</option>
+                      <option value="Operations">Operations</option>
+                      <option value="Marketing">Marketing</option>
+                      <option value="Human Resources">Human Resources</option>
+                      <option value="Finance">Finance</option>
+                      <option value="Management">Management</option>
+                      <option value="Executive">Executive</option>
+                    </select>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => { 
-                      setMode('signin'); 
-                      setEmail(forgotEmail);
-                      setPassword('');
-                      setForgotSuccessMessage(''); 
-                      setErrorMessage(''); 
-                    }}
-                    className="w-full py-2.5 px-4 rounded-sm bg-signal hover:bg-signal-active text-canvas text-xs font-bold shadow-md glow-signal transition active:scale-95 cursor-pointer elevated-tray"
-                  >
-                    Kembali ke Halaman Masuk
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleForgotPassword} className="space-y-3.5">
-                  <p className={`text-xs ${isDark ? 'text-muted' : 'text-slate-600'}`}>
-                    Masukkan email terdaftar. Kami akan mengirimkan tautan untuk membuat password baru.
-                  </p>
 
                   <div className="space-y-1">
-                    <label className={`text-xs font-bold ${isDark ? 'text-muted' : 'text-slate-700'}`}>
-                      Email Perusahaan Terdaftar
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                      Jabatan / Posisi
+                    </label>
+                    <input
+                      type="text"
+                      value={regRole}
+                      onChange={(e) => setRegRole(e.target.value)}
+                      placeholder="Contoh: IT Engineer"
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6] transition"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                      Set password
                     </label>
                     <div className="relative">
-                      <Mail className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        type={showRegPassword ? 'text' : 'password'}
+                        value={regPassword}
+                        onChange={(e) => setRegPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="w-full px-3 pr-9 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6] transition"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowRegPassword(!showRegPassword)}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                      >
+                        {showRegPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                      Ulangi password
+                    </label>
+                    <input
+                      type={showRegPassword ? 'text' : 'password'}
+                      value={regConfirmPassword}
+                      onChange={(e) => setRegConfirmPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6] transition"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Terms Agreement Checkbox */}
+                <div className="flex items-start gap-2 pt-1 text-[11px] text-slate-500 dark:text-slate-400">
+                  <input
+                    type="checkbox"
+                    id="agree_terms"
+                    checked={agreeTerms}
+                    onChange={(e) => setAgreeTerms(e.target.checked)}
+                    className="w-4 h-4 mt-0.5 rounded border-slate-300 text-[#3B82F6] focus:ring-blue-500"
+                  />
+                  <label htmlFor="agree_terms" className="leading-tight cursor-pointer">
+                    By creating an account, you agree to the <span className="text-[#3B82F6] font-semibold hover:underline">Terms of Service</span> and <span className="text-[#3B82F6] font-semibold hover:underline">Privacy Policy</span>.
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#4D96FF] to-[#2563EB] hover:from-[#3B82F6] hover:to-[#1D4ED8] text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-500/25 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {isLoading ? (
+                    <>
+                      <Sparkles className="w-4 h-4 animate-spin" />
+                      <span>Mendaftarkan Akun...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Create Account</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
+
+            {/* 3. FORGOT PASSWORD FORM */}
+            {mode === 'forgot_password' && (
+              <div className="space-y-4 animate-fade-in text-left">
+                {forgotSuccessMessage ? (
+                  <div className="space-y-4 text-center py-4">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center mx-auto shadow-md">
+                      <CheckCircle2 className="w-6 h-6" />
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                        Tautan Reset Terkirim
+                      </h4>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                        {forgotSuccessMessage}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => { 
+                        setMode('signin'); 
+                        setEmail(forgotEmail);
+                        setPassword('');
+                        setForgotSuccessMessage(''); 
+                        setErrorMessage(''); 
+                      }}
+                      className="w-full py-3 px-4 rounded-xl bg-[#3B82F6] hover:bg-[#2563EB] text-white text-xs font-bold shadow-md transition active:scale-95"
+                    >
+                      Kembali ke Halaman Sign In
+                    </button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleForgotPassword} className="space-y-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                        Email Perusahaan Terdaftar
+                      </label>
                       <input
                         type="email"
                         value={forgotEmail}
                         onChange={(e) => setForgotEmail(e.target.value)}
                         placeholder="nama@bitcorp.id"
-                        className={`w-full pl-10 pr-4 py-2.5 rounded-sm border text-xs placeholder:font-mono placeholder-slate-400 transition input-sentinel ${
-                          isDark ? 'bg-canvas border-white/10 text-readable' : 'bg-slate-50 border-slate-300 text-slate-900'
-                        }`}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6] transition"
                         required
                       />
                     </div>
-                  </div>
 
-                  <div className="pt-2 flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => { setMode('signin'); setErrorMessage(''); }}
-                      className={`flex-1 py-2.5 px-4 rounded-sm border text-xs font-bold transition ${
-                        isDark ? 'border-white/12 hover:border-signal hover:bg-white/5 text-slate-300' : 'border-slate-300 hover:bg-slate-100 text-slate-700'
-                      }`}
-                    >
-                      Batal
-                    </button>
+                    <div className="flex items-center gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => { setMode('signin'); setErrorMessage(''); }}
+                        className="flex-1 py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 transition"
+                      >
+                        Batal
+                      </button>
 
-                    <button
-                      type="submit"
-                      disabled={isLoading}
-                      className="flex-1 py-2.5 px-4 rounded-sm bg-signal hover:bg-signal-active text-canvas text-xs font-bold shadow-md glow-signal transition active:scale-98 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer elevated-tray"
-                    >
-                      {isLoading ? (
-                        <>
-                          <Sparkles className="w-3.5 h-3.5 animate-spin" />
-                          <span>Memproses...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Reset Password Sekarang</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </form>
-              )}
-            </div>
-          )}
-
-          {/* 4. PENDING NOTICE SUCCESS SCREEN */}
-          {mode === 'pending_notice' && (
-            <div className="space-y-4 text-center animate-fade-in py-2">
-              <div className={`w-14 h-14 rounded-lg flex items-center justify-center mx-auto border shadow-md ${
-                isDark ? 'bg-warning/10 text-warning border-warning/30' : 'bg-amber-100 text-amber-600 border-amber-300 shadow-amber-500/10'
-              }`}>
-                <Clock className="w-7 h-7 animate-pulse" />
+                      <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="flex-1 py-3 px-4 rounded-xl bg-[#3B82F6] hover:bg-[#2563EB] text-white text-xs font-bold shadow-md transition active:scale-98 disabled:opacity-50 flex items-center justify-center gap-1.5"
+                      >
+                        {isLoading ? (
+                          <>
+                            <Sparkles className="w-3.5 h-3.5 animate-spin" />
+                            <span>Memproses...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Kirim Tautan</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
+            )}
 
-              <div className="space-y-1.5">
-                <h3 className={`text-base font-extrabold ${isDark ? 'text-readable' : 'text-slate-900'}`}>
-                  Pendaftaran Berhasil Dikirim!
-                </h3>
-                <p className={`text-xs leading-relaxed max-w-sm mx-auto ${isDark ? 'text-muted' : 'text-slate-600'}`}>
-                  Akun Anda telah berhasil terdaftar ke database ProMan. Demi keamanan perusahaan, akun Anda saat ini berstatus:
-                </p>
-                <span className="telemetry-badge telemetry-badge--warning my-1">
-                  <span className="status-dot status-dot--warn" />
-                  STATUS: MENUNGGU VERIFIKASI ADMIN
-                </span>
-                <p className={`text-[11px] ${isDark ? 'text-muted/80' : 'text-slate-500'}`}>
-                  Silakan konfirmasi ke Super Admin untuk mengaktifkan akun Anda agar dapat masuk ke dashboard.
-                </p>
+            {/* 4. PENDING NOTICE SUCCESS SCREEN */}
+            {mode === 'pending_notice' && (
+              <div className="space-y-4 text-center animate-fade-in py-2">
+                <div className="w-14 h-14 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 border border-amber-200 dark:border-amber-800 flex items-center justify-center mx-auto shadow-md">
+                  <Clock className="w-7 h-7 animate-pulse" />
+                </div>
+
+                <div className="space-y-1.5">
+                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
+                    Pendaftaran Berhasil Dikirim!
+                  </h3>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed max-w-sm mx-auto">
+                    Akun Anda telah berhasil terdaftar ke database ProMan. Demi keamanan perusahaan, akun Anda saat ini berstatus:
+                  </p>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-700 my-1">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                    STATUS: MENUNGGU VERIFIKASI ADMIN
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    Silakan konfirmasi ke Super Admin untuk mengaktifkan akun Anda agar dapat masuk ke dashboard.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => { setMode('signin'); setErrorMessage(''); }}
+                  className="px-6 py-2.5 rounded-xl bg-[#3B82F6] hover:bg-[#2563EB] text-white text-xs font-bold shadow-md transition active:scale-95"
+                >
+                  Kembali ke Halaman Sign In
+                </button>
               </div>
+            )}
 
-              <button
-                type="button"
-                onClick={() => { setMode('signin'); setErrorMessage(''); }}
-                className="px-6 py-2.5 rounded-sm bg-signal hover:bg-signal-active text-canvas text-xs font-bold shadow-md glow-signal transition active:scale-95 elevated-tray"
-              >
-                Kembali ke Halaman Login
-              </button>
-            </div>
-          )}
+            {/* Social / Quick Demo Divider (Matching reference "or" section) */}
+            {(mode === 'signin' || mode === 'signup') && (
+              <div className="space-y-3 pt-2">
+                <div className="relative flex items-center justify-center">
+                  <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
+                  <span className="bg-white dark:bg-slate-900 px-3 text-[11px] text-slate-400 font-medium absolute">
+                    or
+                  </span>
+                </div>
 
-          <div className={`pt-3 text-center text-[11px] border-t flex items-center justify-center gap-1.5 font-mono ${
-            isDark ? 'text-muted border-white/6' : 'text-slate-400 border-slate-200'
-          }`}>
-            <ShieldCheck className="w-3.5 h-3.5 text-signal" />
-            <span>Terenkripsi &amp; Terverifikasi Protokol Enterprise</span>
+                {/* Quick Account Test Chips */}
+                <div className="flex flex-col sm:flex-row items-center gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail('admin@bitcorp.id');
+                      setErrorMessage('');
+                    }}
+                    className="w-full flex-1 py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2 transition cursor-pointer"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-amber-500" />
+                    <span>Quick: <strong>Super Admin</strong></span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail('radik.dwiyoga@bitcorp.id');
+                      setErrorMessage('');
+                    }}
+                    className="w-full flex-1 py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2 transition cursor-pointer"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-blue-500" />
+                    <span>Quick: <strong>Team Member</strong></span>
+                  </button>
+                </div>
+              </div>
+            )}
+
           </div>
+
+          {/* Bottom Security Notice */}
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-center gap-1.5 text-[11px] text-slate-400 dark:text-slate-500">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+            <span>Terenkripsi &amp; Terlindungi Protokol Firebase Enterprise</span>
+          </div>
+
         </div>
+
       </div>
+
     </div>
   );
 };
