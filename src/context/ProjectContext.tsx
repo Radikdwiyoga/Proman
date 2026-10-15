@@ -132,6 +132,9 @@ interface ProjectContextType {
   // AI Triggers & Modals State
   isCreateModalOpen: boolean;
   setIsCreateModalOpen: (open: boolean) => void;
+  createModalInitialStatus: TaskStatus;
+  setCreateModalInitialStatus: (status: TaskStatus) => void;
+  openCreateTaskModal: (status?: TaskStatus) => void;
   isAIBreakdownModalOpen: boolean;
   setIsAIBreakdownModalOpen: (open: boolean) => void;
   isSummaryModalOpen: boolean;
@@ -175,6 +178,17 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+  const [createModalInitialStatus, setCreateModalInitialStatus] = useState<TaskStatus>('todo');
+
+  const openCreateTaskModal = (initialStatus?: TaskStatus) => {
+    if (initialStatus) {
+      setCreateModalInitialStatus(initialStatus);
+    } else {
+      setCreateModalInitialStatus('todo');
+    }
+    setIsCreateModalOpen(true);
+  };
+
   const [isAIBreakdownModalOpen, setIsAIBreakdownModalOpen] = useState<boolean>(false);
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState<boolean>(false);
   const [isCopilotOpen, setIsCopilotOpen] = useState<boolean>(false);
@@ -773,6 +787,9 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
         addComment,
         isCreateModalOpen,
         setIsCreateModalOpen,
+        createModalInitialStatus,
+        setCreateModalInitialStatus,
+        openCreateTaskModal,
         isAIBreakdownModalOpen,
         setIsAIBreakdownModalOpen,
         isSummaryModalOpen,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useProject } from '../../context/ProjectContext';
 import { X, Plus, Sparkles, FolderKanban, Clock, Calendar, CheckCircle2, AlertCircle } from 'lucide-react';
 import { TaskPriority, TaskStatus, TaskEffortEstimation } from '../../types';
@@ -8,6 +8,7 @@ export const CreateTaskModal: React.FC = () => {
   const {
     isCreateModalOpen,
     setIsCreateModalOpen,
+    createModalInitialStatus,
     createTask,
     projects,
     currentProject,
@@ -35,6 +36,15 @@ export const CreateTaskModal: React.FC = () => {
   // AI Task Estimator State
   const [isEstimating, setIsEstimating] = useState(false);
   const [estimation, setEstimation] = useState<TaskEffortEstimation | null>(null);
+
+  useEffect(() => {
+    if (isCreateModalOpen) {
+      if (createModalInitialStatus) {
+        setStatus(createModalInitialStatus);
+      }
+      setTargetProjectId(currentProject.id);
+    }
+  }, [isCreateModalOpen, createModalInitialStatus, currentProject.id]);
 
   if (!isCreateModalOpen) return null;
 
@@ -310,7 +320,7 @@ export const CreateTaskModal: React.FC = () => {
                 const isOverload = u.allocatedHours > u.capacityHours;
                 return (
                   <option key={u.id} value={u.id}>
-                    {u.name} ({u.role}) — {u.department} {isOverload ? '?? (Overload)' : '?'}
+                    {u.name} ({u.role}) ï¿½ {u.department} {isOverload ? '?? (Overload)' : '?'}
                   </option>
                 );
               })}

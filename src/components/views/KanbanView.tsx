@@ -21,6 +21,7 @@ export const KanbanView: React.FC = () => {
   const {
     filteredTasks,
     setIsCreateModalOpen,
+    openCreateTaskModal,
     setIsAIBreakdownModalOpen,
     users,
     projects,
@@ -165,7 +166,7 @@ export const KanbanView: React.FC = () => {
 
           {/* Create Task Button (Exact obantor reference button) */}
           <button
-            onClick={() => setIsCreateModalOpen(true)}
+            onClick={() => openCreateTaskModal('todo')}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 text-xs font-bold transition shadow-sm active:scale-95 cursor-pointer"
           >
             <PenSquare className="w-3.5 h-3.5" />
@@ -280,7 +281,7 @@ export const KanbanView: React.FC = () => {
               <div className={`${isCollapsed ? 'hidden md:block' : 'block'} pb-3 shrink-0`}>
                 <button
                   type="button"
-                  onClick={() => setIsCreateModalOpen(true)}
+                  onClick={() => openCreateTaskModal(col.id)}
                   className="w-full py-1.5 rounded-xl bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 shadow-2xs text-xs font-bold transition flex items-center justify-center cursor-pointer hover:border-slate-300"
                   title={`Tambah tugas ke ${col.label}`}
                 >
