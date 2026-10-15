@@ -34,7 +34,7 @@ export const INITIAL_USERS: User[] = [
     department: 'Management',
     capacityHours: 40,
     allocatedHours: 24,
-    personaType: 'Project Manager (PM)',
+    personaType: 'Member Standar',
   },
   {
     id: 'user-2',
@@ -45,7 +45,7 @@ export const INITIAL_USERS: User[] = [
     department: 'Technology',
     capacityHours: 40,
     allocatedHours: 44,
-    personaType: 'Team Member',
+    personaType: 'Member Standar',
   },
   {
     id: 'user-3',
@@ -56,7 +56,7 @@ export const INITIAL_USERS: User[] = [
     department: 'Executive',
     capacityHours: 20,
     allocatedHours: 4,
-    personaType: 'Stakeholder',
+    personaType: 'Member Standar',
   },
   {
     id: 'user-4',
@@ -67,7 +67,7 @@ export const INITIAL_USERS: User[] = [
     department: 'Operations',
     capacityHours: 40,
     allocatedHours: 30,
-    personaType: 'Operations Lead',
+    personaType: 'Member Standar',
   },
   {
     id: 'user-5',
@@ -78,7 +78,7 @@ export const INITIAL_USERS: User[] = [
     department: 'Marketing',
     capacityHours: 40,
     allocatedHours: 22,
-    personaType: 'Member',
+    personaType: 'Member Standar',
   },
   {
     id: 'user-6',
@@ -89,7 +89,7 @@ export const INITIAL_USERS: User[] = [
     department: 'Technology',
     capacityHours: 40,
     allocatedHours: 32,
-    personaType: 'Member',
+    personaType: 'Member Standar',
   },
 ];
 

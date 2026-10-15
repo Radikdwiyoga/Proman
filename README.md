@@ -110,8 +110,8 @@
 2. **Belum Ada Notifikasi Email (SMTP)**  
    Notifikasi real-time sudah berjalan ke Telegram (perubahan tugas, status, komentar, serta rekap harian terjadwal), namun belum tersedia kanal email maupun webhook Discord/Slack.
 
-3. **Kustomisasi Role (RBAC) Masih Berbasis Preset**  
-   Hak akses saat ini menggunakan 3 peran utama (*Super Admin, Project Manager, Member*). Fitur pembuatan hak akses kustom granular per-izin menu (*custom fine-grained RBAC*) dapat dikembangkan lebih lanjut.
+3. **Standarisasi Sistem Peran (RBAC 2-Tier)**  
+   Hak akses pengguna telah distandarkan menjadi 2 peran utama: **Super Admin** (tata kelola penuh sistem, approval akun, reset password, backup, & AI config) dan **Member Standar** (kolaborasi operasional, kanban, timeline gantt, kalender, dan manajemen tugas). Penambahan peran kustom berbasis izin menu granular per-divisi spesifik dapat diperluas sesuai kebutuhan enterprise.
 
 4. **Integrasi File Storage Eksternal**  
    Lampiran tiket saat ini masih berupa data terstruktur/URL. Integrasi langsung dengan *Firebase Cloud Storage* atau *S3 bucket* untuk upload file besar (PDF, DOCX, ZIP > 50MB) dapat ditambahkan pada iterasi berikutnya.

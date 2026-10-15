@@ -84,7 +84,7 @@ export const registerWithFirebase = async (data: {
     department: data.department,
     capacityHours: 40,
     allocatedHours: 0,
-    personaType: 'Member',
+    personaType: 'Member Standar',
     status: 'pending',
     registeredAt: new Date().toISOString(),
   };

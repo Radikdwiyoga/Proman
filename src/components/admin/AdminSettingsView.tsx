@@ -85,7 +85,7 @@ export const AdminSettingsView: React.FC = () => {
   const [userRole, setUserRole] = useState('IT Systems Engineer');
   const [userDepartment, setUserDepartment] = useState<User['department']>('Technology');
   const [userCapacity, setUserCapacity] = useState(40);
-  const [userPersona, setUserPersona] = useState<User['personaType']>('Member');
+  const [userPersona, setUserPersona] = useState<User['personaType']>('Member Standar');
   const [userStatus, setUserStatus] = useState<User['status']>('active');
   const [userAvatar, setUserAvatar] = useState(PRESET_AVATARS[0]);
 
@@ -134,7 +134,7 @@ export const AdminSettingsView: React.FC = () => {
     setUserRole('IT Systems Engineer');
     setUserDepartment('Technology');
     setUserCapacity(40);
-    setUserPersona('Member');
+    setUserPersona('Member Standar');
     setUserStatus('active');
     setUserAvatar(PRESET_AVATARS[Math.floor(Math.random() * PRESET_AVATARS.length)]);
     setShowPassword(false);
@@ -149,7 +149,7 @@ export const AdminSettingsView: React.FC = () => {
     setUserRole(u.role);
     setUserDepartment(u.department);
     setUserCapacity(u.capacityHours);
-    setUserPersona(u.personaType);
+    setUserPersona(u.personaType === 'Super Admin' ? 'Super Admin' : 'Member Standar');
     setUserStatus(u.status || 'active');
     setUserAvatar(u.avatar);
     setShowPassword(false);
@@ -618,8 +618,12 @@ export const AdminSettingsView: React.FC = () => {
                             {u.capacityHours} Jam/minggu
                           </td>
                           <td className="p-3.5">
-                            <span className="text-[10px] px-2 py-0.5 rounded font-semibold bg-emerald-50 dark:bg-orange-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
-                              {u.personaType}
+                            <span className={`text-[10px] px-2 py-0.5 rounded font-semibold border ${
+                              u.personaType === 'Super Admin'
+                                ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-500/30 font-bold'
+                                : 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30'
+                            }`}>
+                              {u.personaType === 'Super Admin' ? 'Super Admin' : 'Member Standar'}
                             </span>
                           </td>
                           <td className="p-3.5 text-center">
@@ -657,6 +661,57 @@ export const AdminSettingsView: React.FC = () => {
                 </table>
                 </div>
               </div>
+
+              {/* Matriks Kebijakan Akses Role (RBAC System Matrix) */}
+              <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 space-y-3.5 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+                  <div>
+                    <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                      <span>Matriks Kebijakan Hak Akses (Role-Based Access Control)</span>
+                    </h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                      Struktur peran telah distandarkan menjadi 2 tier utama: <strong>Super Admin</strong> dan <strong>Member Standar</strong>.
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold border border-emerald-300 dark:border-emerald-500/30 w-fit">
+                    RBAC AKTIF
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
+                  {/* Super Admin Permissions Box */}
+                  <div className="p-4 rounded-2xl border border-amber-200 dark:border-amber-500/30 bg-amber-50/50 dark:bg-amber-950/20 space-y-2.5">
+                    <div className="flex items-center gap-2 font-bold text-amber-900 dark:text-amber-200">
+                      <Crown className="w-4 h-4 text-amber-500" />
+                      <span>Super Admin (Full Governance Access)</span>
+                    </div>
+                    <ul className="space-y-2 text-[11px] text-slate-700 dark:text-slate-300">
+                      <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[2.5]" /> Akses penuh panel Admin Settings &amp; konfigurasi sistem</li>
+                      <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[2.5]" /> Persetujuan (*Approval*) &amp; penolakan pendaftaran akun baru</li>
+                      <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[2.5]" /> Manajemen reset kata sandi &amp; pengubahan role anggota</li>
+                      <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[2.5]" /> Konfigurasi AI Model Engine &amp; Integrasi Notifikasi Telegram</li>
+                      <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[2.5]" /> Backup snapshot sistem &amp; ekspor laporan spreadsheet</li>
+                    </ul>
+                  </div>
+
+                  {/* Member Standar Permissions Box */}
+                  <div className="p-4 rounded-2xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/20 space-y-2.5">
+                    <div className="flex items-center gap-2 font-bold text-emerald-900 dark:text-emerald-200">
+                      <Users className="w-4 h-4 text-emerald-600" />
+                      <span>Member Standar (Workspace Collaboration)</span>
+                    </div>
+                    <ul className="space-y-2 text-[11px] text-slate-700 dark:text-slate-300">
+                      <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[2.5]" /> Akses Papan Kanban, Timeline Gantt, &amp; Kalender Schedule</li>
+                      <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[2.5]" /> Pembuatan, pembaruan, dan pemindahan status tugas</li>
+                      <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[2.5]" /> Eksekusi AI Task Breakdown &amp; Copilot Assistant</li>
+                      <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[2.5]" /> Penambahan komentar, checklist sub-tugas, &amp; pelacakan jam</li>
+                      <li className="flex items-center gap-2 text-slate-400 dark:text-slate-500"><X className="w-3.5 h-3.5 text-slate-400 shrink-0" /> Terproteksi dari akses panel pengaturan sistem &amp; tata kelola admin</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         )}
@@ -1017,16 +1072,12 @@ export const AdminSettingsView: React.FC = () => {
                 <div className="space-y-1">
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Persona Role</label>
                   <select
-                    value={userPersona}
+                    value={userPersona === 'Super Admin' ? 'Super Admin' : 'Member Standar'}
                     onChange={(e) => setUserPersona(e.target.value as any)}
                     className="w-full p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none"
                   >
-                    <option value="Super Admin">Super Admin</option>
-                    <option value="Project Manager (PM)">Project Manager (PM)</option>
-                    <option value="Team Member">Team Member</option>
-                    <option value="Operations Lead">Operations Lead</option>
-                    <option value="Stakeholder">Stakeholder / Client</option>
-                    <option value="Member">Member Standar</option>
+                    <option value="Super Admin" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Super Admin</option>
+                    <option value="Member Standar" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Member Standar</option>
                   </select>
                 </div>
 

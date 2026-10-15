@@ -367,7 +367,7 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
   }, [users, currentUserId]);
 
   const isSuperAdmin = currentUser.personaType === 'Super Admin';
-  const isPM = currentUser.personaType === 'Alex (PM)';
+  const isPM = false;
 
   const selectedTask = useMemo(() => {
     if (!selectedTaskId) return null;

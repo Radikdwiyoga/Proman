@@ -476,7 +476,7 @@ export const CalendarView: React.FC = () => {
           {/* Create Event Button (Warm Yellow Pill Button matching Reference) */}
           <button
             onClick={() => openCreateTaskModal('todo')}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#FEE36E] hover:bg-[#FCD34D] text-[#163628] font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-forest-accent hover:bg-[#FCD34D] text-[#163628] font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>Create Event</span>
@@ -529,7 +529,7 @@ export const CalendarView: React.FC = () => {
             {/* Time Grid Body */}
             <div className="flex-1 divide-y divide-slate-100 dark:divide-slate-800/80">
               {timeSlots.map((slot, sIdx) => (
-                <div key={slot.hour} className="grid grid-cols-8 min-h-[95px] relative">
+                <div key={slot.hour} className="grid grid-cols-8 min-h-23.75 relative">
                   
                   {/* Left Hour Label */}
                   <div className="p-3 text-[11px] font-medium text-slate-400 dark:text-slate-500 border-r border-slate-200/60 dark:border-slate-800 flex items-start justify-center">
@@ -673,7 +673,7 @@ export const CalendarView: React.FC = () => {
             {/* Days Grid */}
             <div className="flex-1 grid grid-cols-7 grid-rows-5 divide-x divide-y divide-slate-100 dark:divide-slate-800/80 overflow-auto">
               {Array.from({ length: miniFirstDayIndex }).map((_, i) => (
-                <div key={`m-empty-${i}`} className="bg-slate-50/30 dark:bg-slate-950/20 p-2 min-h-[85px]" />
+                <div key={`m-empty-${i}`} className="bg-slate-50/30 dark:bg-slate-950/20 p-2 min-h-21.25" />
               ))}
 
               {Array.from({ length: miniDaysInMonth }).map((_, i) => {
@@ -697,7 +697,7 @@ export const CalendarView: React.FC = () => {
                         tasks: dayTasks
                       });
                     }}
-                    className={`p-2 min-h-[85px] flex flex-col justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer select-none ${
+                    className={`p-2 min-h-21.25 flex flex-col justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer select-none ${
                       isToday ? 'bg-emerald-50/50 dark:bg-emerald-500/10' : ''
                     }`}
                   >

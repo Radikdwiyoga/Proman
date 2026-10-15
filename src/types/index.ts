@@ -16,15 +16,7 @@ export type SubtaskCategory =
 
 export type PersonaType = 
   | 'Super Admin' 
-  | 'Project Manager (PM)' 
-  | 'Team Member' 
-  | 'Stakeholder' 
-  | 'Operations Lead' 
-  | 'Member'
-  | 'Alex (PM)' 
-  | 'Sarah (Team)' 
-  | 'Budi (Stakeholder)' 
-  | 'Rian (Operations)';
+  | 'Member Standar';
 
 export interface User {
   id: string;
