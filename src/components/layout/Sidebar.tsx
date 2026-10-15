@@ -170,7 +170,7 @@ export const Sidebar: React.FC = () => {
                 title={item.label}
                 className={`w-full flex items-center ${expanded ? 'justify-between px-3.5' : 'justify-center px-0'} py-2.5 rounded-xl text-xs font-semibold transition-all relative group cursor-pointer ${
                   isActive
-                    ? 'bg-[#FEE36E] text-[#163628] font-bold shadow-md'
+                    ? 'bg-forest-accent text-[#163628] font-bold shadow-md'
                     : 'text-emerald-100/75 hover:text-white hover:bg-white/10'
                 }`}
               >
@@ -192,7 +192,7 @@ export const Sidebar: React.FC = () => {
                 )}
 
                 {!expanded && item.badge !== undefined && typeof item.badge === 'number' && item.badge > 0 && (
-                  <span className="absolute top-1.5 right-2 w-2 h-2 rounded-full bg-[#FEE36E] ring-2 ring-[#224838]" />
+                  <span className="absolute top-1.5 right-2 w-2 h-2 rounded-full bg-forest-accent ring-2 ring-forest" />
                 )}
               </button>
             );
@@ -218,7 +218,7 @@ export const Sidebar: React.FC = () => {
                   title={item.label}
                   className={`w-full flex items-center ${expanded ? 'justify-between px-3.5' : 'justify-center px-0'} py-2.5 rounded-xl text-xs font-medium transition-all relative group cursor-pointer ${
                     isActive
-                      ? 'bg-[#FEE36E] text-[#163628] font-bold shadow-md'
+                      ? 'bg-forest-accent text-[#163628] font-bold shadow-md'
                       : 'text-emerald-100/75 hover:text-white hover:bg-white/10'
                   }`}
                 >
@@ -278,7 +278,7 @@ export const Sidebar: React.FC = () => {
               title="Admin Settings"
               className={`w-full flex items-center ${expanded ? 'justify-between px-3.5' : 'justify-center px-0'} py-2.5 rounded-xl text-xs font-medium transition group cursor-pointer ${
                 activeView === 'admin_settings'
-                  ? 'bg-[#FEE36E] text-[#163628] font-bold shadow-md'
+                  ? 'bg-forest-accent text-[#163628] font-bold shadow-md'
                   : 'text-emerald-100/75 hover:text-white hover:bg-white/10'
               }`}
             >
@@ -366,7 +366,7 @@ export const Sidebar: React.FC = () => {
 
             {/* Profile Dropdown Actions */}
             {isProfileMenuOpen && (
-              <div className="mt-1 p-1 rounded-xl bg-[#183628] border border-white/15 shadow-xl space-y-0.5 animate-in fade-in slide-in-from-bottom-2 duration-150">
+              <div className="mt-1 p-1 rounded-xl bg-forest-dark border border-white/15 shadow-xl space-y-0.5 animate-in fade-in slide-in-from-bottom-2 duration-150">
                 <button
                   onClick={() => {
                     setIsProfileMenuOpen(false);

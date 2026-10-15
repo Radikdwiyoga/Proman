@@ -1,204 +1,759 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useProject } from '../../context/ProjectContext';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, AlertTriangle, X } from 'lucide-react';
+import { 
+  ChevronLeft, 
+  ChevronRight, 
+  Calendar as CalendarIcon, 
+  Clock, 
+  AlertTriangle, 
+  X, 
+  Plus, 
+  Check, 
+  Users, 
+  Filter as FilterIcon, 
+  CheckSquare, 
+  FolderKanban,
+  Flag,
+  ChevronDown
+} from 'lucide-react';
 import { Task } from '../../types';
+import { UserAvatar } from '../common/UserAvatar';
+
+type CalendarMode = 'daily' | 'weekly' | 'monthly';
 
 export const CalendarView: React.FC = () => {
-  const { filteredTasks, setSelectedTaskId } = useProject();
+  const { 
+    filteredTasks, 
+    setSelectedTaskId, 
+    openCreateTaskModal,
+    moveTaskStatus,
+    users,
+    projects,
+    currentProjectId,
+    setCurrentProjectId
+  } = useProject();
 
+  const [mode, setMode] = useState<CalendarMode>('weekly');
+  const [selectedDate, setSelectedDate] = useState<Date>(() => new Date());
+  
+  // Filter states on the left panel
+  const [filterType, setFilterType] = useState({
+    all: true,
+    urgentOnly: false,
+    meetingsOnly: true,
+    completed: false
+  });
+
+  // Selected date detail modal for month view
   const [selectedDateDetail, setSelectedDateDetail] = useState<{
     dateStr: string;
     formattedDateDisplay: string;
     tasks: Task[];
   } | null>(null);
 
-  const today = new Date();
-  const todayDay   = today.getDate();
-  const todayMonth = today.getMonth(); // 0-indexed
-  const todayYear  = today.getFullYear();
-
-  const [currentMonth, setCurrentMonth] = useState<number>(todayMonth);
-  const [currentYear, setCurrentYear]   = useState<number>(todayYear);
+  // Mini calendar month navigation state
+  const [miniCalMonth, setMiniCalMonth] = useState<number>(() => selectedDate.getMonth());
+  const [miniCalYear, setMiniCalYear] = useState<number>(() => selectedDate.getFullYear());
 
   const monthNames = [
     'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
   ];
 
-  const daysOfWeek = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+  const monthNamesEn = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
 
-  // Days in current month
-  const daysInMonth   = new Date(currentYear, currentMonth + 1, 0).getDate();
-  const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
+  const daysOfWeekShort = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  const dayLabels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const dayLabelsId = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
-  const prevMonth = () => {
-    if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(y => y - 1); }
-    else setCurrentMonth(m => m - 1);
+  // Calculate days for mini calendar
+  const miniDaysInMonth = new Date(miniCalYear, miniCalMonth + 1, 0).getDate();
+  const miniFirstDayIndex = new Date(miniCalYear, miniCalMonth, 1).getDay();
+
+  const handleMiniPrev = () => {
+    if (miniCalMonth === 0) {
+      setMiniCalMonth(11);
+      setMiniCalYear(y => y - 1);
+    } else {
+      setMiniCalMonth(m => m - 1);
+    }
   };
 
-  const nextMonth = () => {
-    if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(y => y + 1); }
-    else setCurrentMonth(m => m + 1);
+  const handleMiniNext = () => {
+    if (miniCalMonth === 11) {
+      setMiniCalMonth(0);
+      setMiniCalYear(y => y + 1);
+    } else {
+      setMiniCalMonth(m => m + 1);
+    }
   };
 
-  const goToToday = () => {
-    setCurrentMonth(todayMonth);
-    setCurrentYear(todayYear);
+  // Helper to get week days starting Monday (Matching reference: Monday 16, Tuesday 17, etc.)
+  const weekDays = useMemo(() => {
+    const current = new Date(selectedDate);
+    const day = current.getDay();
+    // Monday is index 1, Sunday is 0
+    const diff = current.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(current);
+    monday.setDate(diff);
+
+    const days: Date[] = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      days.push(d);
+    }
+    return days;
+  }, [selectedDate]);
+
+  // Navigate Week / Day
+  const handlePrevPeriod = () => {
+    const d = new Date(selectedDate);
+    if (mode === 'weekly') {
+      d.setDate(d.getDate() - 7);
+    } else if (mode === 'daily') {
+      d.setDate(d.getDate() - 1);
+    } else {
+      d.setMonth(d.getMonth() - 1);
+    }
+    setSelectedDate(d);
+    setMiniCalMonth(d.getMonth());
+    setMiniCalYear(d.getFullYear());
   };
 
-  const priorityColors = {
-    low: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700',
-    medium: 'bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-500/30',
-    high: 'bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-500/30',
-    urgent: 'bg-rose-50 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-500/30 font-bold',
+  const handleNextPeriod = () => {
+    const d = new Date(selectedDate);
+    if (mode === 'weekly') {
+      d.setDate(d.getDate() + 7);
+    } else if (mode === 'daily') {
+      d.setDate(d.getDate() + 1);
+    } else {
+      d.setMonth(d.getMonth() + 1);
+    }
+    setSelectedDate(d);
+    setMiniCalMonth(d.getMonth());
+    setMiniCalYear(d.getFullYear());
+  };
+
+  // Format date helper: YYYY-MM-DD
+  const toDateString = (date: Date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  };
+
+  // Tasks filtered by left panel checkboxes
+  const displayedTasks = useMemo(() => {
+    return filteredTasks.filter(t => {
+      if (filterType.urgentOnly && t.priority !== 'urgent') return false;
+      if (!filterType.completed && t.status === 'done') return false;
+      return true;
+    });
+  }, [filteredTasks, filterType]);
+
+  // Nearest reminder task for the dark teal widget card
+  const upcomingTask = useMemo(() => {
+    const active = displayedTasks.filter(t => t.status !== 'done');
+    if (active.length === 0) return null;
+    return active.sort((a, b) => (a.dueDate || '').localeCompare(b.dueDate || ''))[0];
+  }, [displayedTasks]);
+
+  // Time grid rows: 09 AM to 05 PM
+  const timeSlots = [
+    { label: '09 AM', hour: 9 },
+    { label: '10 AM', hour: 10 },
+    { label: '11 AM', hour: 11 },
+    { label: '12 PM', hour: 12 },
+    { label: '01 PM', hour: 13 },
+    { label: '02 PM', hour: 14 },
+    { label: '03 PM', hour: 15 },
+    { label: '04 PM', hour: 16 },
+    { label: '05 PM', hour: 17 },
+  ];
+
+  // Palette generator for event cards matching reference pastel look
+  const getEventCardStyle = (index: number) => {
+    const styles = [
+      {
+        bg: 'bg-[#FCE7F3] dark:bg-pink-950/40 border-l-[4px] border-[#EC4899]',
+        text: 'text-[#9D174D] dark:text-pink-200',
+        subtext: 'text-[#BE185D] dark:text-pink-300',
+      },
+      {
+        bg: 'bg-[#F3E8FF] dark:bg-purple-950/40 border-l-[4px] border-[#A855F7]',
+        text: 'text-[#6B21A8] dark:text-purple-200',
+        subtext: 'text-[#7E22CE] dark:text-purple-300',
+      },
+      {
+        bg: 'bg-[#FEF3C7] dark:bg-amber-950/40 border-l-[4px] border-[#F59E0B]',
+        text: 'text-[#92400E] dark:text-amber-200',
+        subtext: 'text-[#B45309] dark:text-amber-300',
+      },
+      {
+        bg: 'bg-[#E0F2FE] dark:bg-sky-950/40 border-l-[4px] border-[#0284C7]',
+        text: 'text-[#075985] dark:text-sky-200',
+        subtext: 'text-[#0369A1] dark:text-sky-300',
+      },
+      {
+        bg: 'bg-[#E6F4EA] dark:bg-emerald-950/40 border-l-[4px] border-[#10B981]',
+        text: 'text-[#065F46] dark:text-emerald-200',
+        subtext: 'text-[#047857] dark:text-emerald-300',
+      },
+    ];
+    return styles[index % styles.length];
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden p-4 sm:p-6 space-y-4 text-slate-800 dark:text-readable transition-colors">
-      {/* Calendar Header Nav */}
-      <div className="flex items-center justify-between gap-3 shrink-0 pb-1">
-        <div className="flex items-center gap-3">
-          <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <CalendarIcon className="w-4 h-4 text-emerald-600" />
-            <span>{monthNames[currentMonth]} {currentYear}</span>
-          </h2>
-          <span className="text-xs text-slate-500 dark:text-muted hidden sm:inline">
-            Jadwal Tenggat Tugas &amp; Milestone
-          </span>
-        </div>
-
-        <div className="flex items-center gap-1 bg-white dark:bg-canvas border border-slate-200 dark:border-white/10 rounded-lg p-1 shadow-sm">
-          <button
-            onClick={prevMonth}
-            className="p-1.5 rounded-md text-slate-500 hover:text-slate-900 dark:text-muted dark:hover:text-readable hover:bg-slate-100 dark:hover:bg-white/6 transition"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            onClick={goToToday}
-            className="px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-signal hover:underline font-mono"
-          >
-            Bulan Ini
-          </button>
-          <button
-            onClick={nextMonth}
-            className="p-1.5 rounded-md text-slate-500 hover:text-slate-900 dark:text-muted dark:hover:text-readable hover:bg-slate-100 dark:hover:bg-white/6 transition"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-
-      {/* Calendar Grid Container */}
-      <div className="flex-1 min-h-0 bg-white dark:bg-surface/70 backdrop-blur border border-slate-200 dark:border-white/8 rounded-lg overflow-hidden flex flex-col shadow-sm elevated-tray">
-        {/* Days of Week Header */}
-        <div className="grid grid-cols-7 border-b border-slate-200 dark:border-white/8 bg-slate-50 dark:bg-canvas/60 text-center text-xs font-bold text-slate-500 dark:text-muted py-2.5 font-mono uppercase tracking-wider">
-          {daysOfWeek.map((day, idx) => (
-            <div key={idx}>{day}</div>
-          ))}
-        </div>
-
-        {/* Days Grid */}
-        <div className="flex-1 min-h-0 grid grid-cols-7 grid-rows-5 divide-x divide-y divide-slate-100 dark:divide-white/6 overflow-auto" style={{ 
-          WebkitOverflowScrolling: 'touch',
-          overscrollBehavior: 'contain',
-          touchAction: 'pan-y'
-        }}>
-          {/* Empty cells before month start */}
-          {Array.from({ length: firstDayIndex }).map((_, i) => (
-            <div key={`empty-${i}`} className="bg-slate-50/50 dark:bg-white/2 p-2 min-h-[90px]" />
-          ))}
-
-          {/* Month Days */}
-          {Array.from({ length: daysInMonth }).map((_, i) => {
-            const dayNumber = i + 1;
-            const formattedDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(dayNumber).padStart(2, '0')}`;
-            // Tampilkan task pada seluruh hari dalam rentang durasinya (format YYYY-MM-DD bisa dibandingkan leksikografis)
-            const dayTasks = filteredTasks.filter(t =>
-              formattedDate >= t.startDate && formattedDate <= t.dueDate
-            );
-            const isToday = dayNumber === todayDay && currentMonth === todayMonth && currentYear === todayYear;
-
-            return (
-              <div 
-                key={dayNumber} 
-                onClick={() => {
-                  setSelectedDateDetail({
-                    dateStr: formattedDate,
-                    formattedDateDisplay: new Date(currentYear, currentMonth, dayNumber).toLocaleDateString('id-ID', {
-                      weekday: 'long',
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric'
-                    }),
-                    tasks: dayTasks
-                  });
-                }}
-                className={`p-1.5 sm:p-2 min-h-[65px] sm:min-h-[90px] flex flex-col justify-between transition cursor-pointer hover:bg-slate-50 dark:hover:bg-white/4 active:scale-[0.99] select-none ${
-                  isToday ? 'bg-emerald-50/50 dark:bg-emerald-500/10' : ''
-                }`}
-                title="Klik untuk melihat tugas pada tanggal ini"
+    <div className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden p-3.5 sm:p-5 gap-5 text-slate-800 dark:text-readable">
+      
+      {/* ========================================================
+          LEFT COLUMN: Mini Calendar, Meeting Reminder, Filters
+          ======================================================== */}
+      <div className="w-full lg:w-80 shrink-0 flex flex-col gap-4 overflow-y-auto">
+        
+        {/* 1. Mini Month Calendar Card */}
+        <div className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xs">
+          {/* Month & Nav Chevrons */}
+          <div className="flex items-center justify-between pb-3">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+              {monthNames[miniCalMonth]} {miniCalYear}
+            </h3>
+            <div className="flex items-center gap-1 text-slate-400">
+              <button
+                onClick={handleMiniPrev}
+                className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 transition"
+                title="Bulan sebelumnya"
               >
-                <div className="flex items-center justify-between">
-                  <span className={`text-[11px] sm:text-xs font-bold w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center ${
-                    isToday ? 'bg-emerald-600 text-white font-extrabold shadow-sm' : 'text-slate-600 dark:text-slate-400'
-                  }`}>
-                    {dayNumber}
-                  </span>
-                  {dayTasks.length > 0 && (
-                    <span className="text-[9px] sm:text-[10px] text-slate-400 font-mono hidden sm:inline">
-                      {dayTasks.length} tugas
-                    </span>
-                  )}
-                </div>
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={handleMiniNext}
+                className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 transition"
+                title="Bulan berikutnya"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
 
-                {/* Mobile Task Counter Indicator */}
-                <div className="sm:hidden flex items-center justify-center my-auto">
-                  {dayTasks.length > 0 && (
-                    <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-signal border border-emerald-300 dark:border-emerald-500/30 font-mono">
-                      {dayTasks.length}
-                    </span>
-                  )}
-                </div>
+          {/* Days Initials (S M T W T F S) */}
+          <div className="grid grid-cols-7 text-center text-[11px] font-semibold text-slate-400 pb-2">
+            {daysOfWeekShort.map((day, i) => (
+              <span key={i}>{day}</span>
+            ))}
+          </div>
 
-                {/* Desktop Day Tasks Snippets */}
-                <div className="space-y-1 my-1 overflow-y-auto max-h-16 touch-scroll-y hidden sm:block">
-                  {dayTasks.map(t => (
-                    <button
-                      key={t.id}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedTaskId(t.id);
-                      }}
-                      className={`w-full text-left p-1 rounded-lg text-[10px] truncate border transition shadow-xs flex items-center gap-1 ${priorityColors[t.priority]}`}
-                    >
-                      {t.aiRisk && t.aiRisk.riskLevel === 'high' && (
-                        <AlertTriangle className="w-2.5 h-2.5 text-rose-500 shrink-0" />
-                      )}
-                      <span className="truncate">{t.title}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
+          {/* Dates Grid */}
+          <div className="grid grid-cols-7 text-center text-xs gap-y-1">
+            {Array.from({ length: miniFirstDayIndex }).map((_, i) => (
+              <span key={`empty-${i}`} className="p-1 text-slate-300 dark:text-slate-700" />
+            ))}
+
+            {Array.from({ length: miniDaysInMonth }).map((_, i) => {
+              const dNum = i + 1;
+              const isSelected = 
+                dNum === selectedDate.getDate() &&
+                miniCalMonth === selectedDate.getMonth() &&
+                miniCalYear === selectedDate.getFullYear();
+
+              const isToday = 
+                dNum === new Date().getDate() &&
+                miniCalMonth === new Date().getMonth() &&
+                miniCalYear === new Date().getFullYear();
+
+              return (
+                <button
+                  key={dNum}
+                  onClick={() => {
+                    const newD = new Date(miniCalYear, miniCalMonth, dNum);
+                    setSelectedDate(newD);
+                  }}
+                  className={`w-7 h-7 mx-auto rounded-full flex items-center justify-center text-xs font-semibold transition cursor-pointer ${
+                    isSelected
+                      ? 'bg-[#18534C] text-white font-bold shadow-xs'
+                      : isToday
+                      ? 'border border-emerald-500 text-emerald-600 font-bold'
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  {dNum}
+                </button>
+              );
+            })}
+          </div>
         </div>
+
+        {/* 2. Meeting Reminder Card (Dark Teal Card matching Reference) */}
+        {upcomingTask ? (
+          <div 
+            onClick={() => setSelectedTaskId(upcomingTask.id)}
+            className="p-4 rounded-3xl bg-[#18534C] text-white shadow-md relative overflow-hidden transition hover:shadow-lg cursor-pointer space-y-2.5"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-medium text-emerald-200/90 tracking-wide">
+                Meeting reminder
+              </span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-bold uppercase tracking-wider text-white">
+                {upcomingTask.priority}
+              </span>
+            </div>
+
+            <div className="space-y-1">
+              <h4 className="text-sm font-bold text-white leading-snug line-clamp-2">
+                {upcomingTask.title}
+              </h4>
+              <div className="flex items-center gap-1.5 text-xs text-emerald-100/90">
+                <Clock className="w-3.5 h-3.5 text-emerald-300" />
+                <span>09:00 - 10:30 WIB • {upcomingTask.dueDate}</span>
+              </div>
+            </div>
+
+            {/* Attendees Avatar Cluster & Actions */}
+            <div className="flex items-center justify-between pt-1">
+              <div className="flex items-center -space-x-1.5">
+                {users.slice(0, 4).map((u) => (
+                  <div key={u.id} className="ring-2 ring-[#18534C] rounded-full">
+                    <UserAvatar src={u.avatar} name={u.name} size="xs" />
+                  </div>
+                ))}
+                {users.length > 4 && (
+                  <span className="text-[10px] font-bold text-white pl-2">
+                    +{users.length - 4}
+                  </span>
+                )}
+              </div>
+
+              {/* Quick Action Checkmark Button */}
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    moveTaskStatus(upcomingTask.id, 'done');
+                  }}
+                  className="w-7 h-7 rounded-full bg-[#133F3A] hover:bg-emerald-600 flex items-center justify-center text-white transition cursor-pointer"
+                  title="Tandai Selesai"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="p-4 rounded-3xl bg-[#18534C] text-white shadow-md space-y-2">
+            <span className="text-[11px] text-emerald-200/90">Meeting reminder</span>
+            <p className="text-xs text-emerald-100">Semua tugas dan jadwal terdekat telah selesai dikerjakan.</p>
+          </div>
+        )}
+
+        {/* 3. Filters Checkbox Card */}
+        <div className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-3">
+          <div className="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-800">
+            <span className="text-xs font-bold text-slate-900 dark:text-white">Filters</span>
+            <FilterIcon className="w-3.5 h-3.5 text-slate-400" />
+          </div>
+
+          <div className="space-y-2 text-xs text-slate-700 dark:text-slate-300">
+            <label className="flex items-center gap-2.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={filterType.meetingsOnly}
+                onChange={(e) => setFilterType(prev => ({ ...prev, meetingsOnly: e.target.checked }))}
+                className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-[#18534C]"
+              />
+              <span className="font-medium">Meetings &amp; Sesi Tim</span>
+            </label>
+
+            <label className="flex items-center gap-2.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={filterType.urgentOnly}
+                onChange={(e) => setFilterType(prev => ({ ...prev, urgentOnly: e.target.checked }))}
+                className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-[#18534C]"
+              />
+              <span className="font-medium">Prioritas Urgent Saja</span>
+            </label>
+
+            <label className="flex items-center gap-2.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={filterType.completed}
+                onChange={(e) => setFilterType(prev => ({ ...prev, completed: e.target.checked }))}
+                className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-[#18534C]"
+              />
+              <span className="font-medium">Tampilkan Tugas Selesai</span>
+            </label>
+          </div>
+        </div>
+
+        {/* 4. Project Selector Dropdown */}
+        <div className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-2">
+          <span className="text-xs font-bold text-slate-900 dark:text-white">Scope Project</span>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs">
+            <FolderKanban className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <select
+              value={currentProjectId}
+              onChange={(e) => setCurrentProjectId(e.target.value)}
+              className="w-full bg-transparent border-none text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none cursor-pointer"
+            >
+              <option value="all" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Semua Project (Global)</option>
+              {projects.map(p => (
+                <option key={p.id} value={p.id} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">{p.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
       </div>
 
-      {/* Date Tasks Detail Modal (Pop-up per Tanggal) */}
+      {/* ========================================================
+          RIGHT COLUMN: Main Schedule View (Weekly Time Grid)
+          ======================================================== */}
+      <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl shadow-2xs overflow-hidden">
+        
+        {/* Top Schedule Toolbar */}
+        <div className="p-4 sm:p-5 border-b border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
+          
+          {/* Navigation Date Header: "< June, 18 2025 >" */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handlePrevPeriod}
+              className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition cursor-pointer"
+              title="Sebelumnya"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
+              {monthNames[selectedDate.getMonth()]}, {selectedDate.getDate()} {selectedDate.getFullYear()}
+            </h2>
+            <button
+              onClick={handleNextPeriod}
+              className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition cursor-pointer"
+              title="Berikutnya"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Mode View Switcher Pills (Daily, Weekly, Monthly) */}
+          <div className="flex items-center gap-1 p-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 text-xs">
+            <button
+              onClick={() => setMode('daily')}
+              className={`px-3 py-1 rounded-full font-semibold transition cursor-pointer ${
+                mode === 'daily'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-2xs'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800'
+              }`}
+            >
+              Daily
+            </button>
+            <button
+              onClick={() => setMode('weekly')}
+              className={`px-3 py-1 rounded-full font-semibold transition cursor-pointer ${
+                mode === 'weekly'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-2xs'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800'
+              }`}
+            >
+              Weekly
+            </button>
+            <button
+              onClick={() => setMode('monthly')}
+              className={`px-3 py-1 rounded-full font-semibold transition cursor-pointer ${
+                mode === 'monthly'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-2xs'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800'
+              }`}
+            >
+              Monthly
+            </button>
+          </div>
+
+          {/* Create Event Button (Warm Yellow Pill Button matching Reference) */}
+          <button
+            onClick={() => openCreateTaskModal('todo')}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#FEE36E] hover:bg-[#FCD34D] text-[#163628] font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>Create Event</span>
+          </button>
+        </div>
+
+        {/* Mode = Weekly (Matching Reference Layout) */}
+        {mode === 'weekly' && (
+          <div className="flex-1 flex flex-col min-h-0 overflow-auto">
+            {/* Days Header Row */}
+            <div className="grid grid-cols-8 border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 sticky top-0 z-10 shrink-0">
+              {/* Top Left Timezone Cell */}
+              <div className="p-3 text-center flex flex-col items-center justify-center border-r border-slate-200/60 dark:border-slate-800">
+                <span className="text-[10px] font-bold font-mono text-slate-400">GMT+07</span>
+                <span className="text-[9px] text-emerald-600 font-bold">WIB</span>
+              </div>
+
+              {/* 7 Days Columns */}
+              {weekDays.map((d, idx) => {
+                const isSelected = toDateString(d) === toDateString(selectedDate);
+                const isToday = toDateString(d) === toDateString(new Date());
+
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => setSelectedDate(d)}
+                    className={`p-2.5 text-center transition cursor-pointer flex flex-col items-center justify-center border-r border-slate-200/60 dark:border-slate-800 ${
+                      isSelected 
+                        ? 'bg-emerald-500/10 dark:bg-emerald-500/20' 
+                        : 'hover:bg-slate-100/60 dark:hover:bg-slate-800/40'
+                    }`}
+                  >
+                    <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                      {dayLabels[d.getDay()]}
+                    </span>
+                    <span className={`text-base font-extrabold ${
+                      isSelected 
+                        ? 'text-[#18534C] dark:text-emerald-400' 
+                        : isToday 
+                        ? 'text-emerald-600' 
+                        : 'text-slate-800 dark:text-slate-200'
+                    }`}>
+                      {d.getDate()}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Time Grid Body */}
+            <div className="flex-1 divide-y divide-slate-100 dark:divide-slate-800/80">
+              {timeSlots.map((slot, sIdx) => (
+                <div key={slot.hour} className="grid grid-cols-8 min-h-[95px] relative">
+                  
+                  {/* Left Hour Label */}
+                  <div className="p-3 text-[11px] font-medium text-slate-400 dark:text-slate-500 border-r border-slate-200/60 dark:border-slate-800 flex items-start justify-center">
+                    {slot.label}
+                  </div>
+
+                  {/* 7 Day Slot Cells */}
+                  {weekDays.map((d, dIdx) => {
+                    const dateStr = toDateString(d);
+                    
+                    // Filter tasks scheduled on this day
+                    const dayTasks = displayedTasks.filter(t => 
+                      dateStr >= t.startDate && dateStr <= t.dueDate
+                    );
+
+                    // Distribute tasks across hours deterministically
+                    const hourTasks = dayTasks.filter((t, tIdx) => {
+                      const hashHour = 9 + (t.title.length + tIdx * 2) % 8;
+                      return hashHour === slot.hour;
+                    });
+
+                    return (
+                      <div
+                        key={dIdx}
+                        className="p-1.5 border-r border-slate-100 dark:border-slate-800/60 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition flex flex-col gap-1.5 overflow-hidden"
+                      >
+                        {hourTasks.map((t, tIdx) => {
+                          const style = getEventCardStyle(t.id.charCodeAt(t.id.length - 1) + tIdx);
+                          const primaryAssignee = users.find(u => u.id === t.assigneeIds[0]);
+
+                          return (
+                            <div
+                              key={t.id}
+                              onClick={() => setSelectedTaskId(t.id)}
+                              className={`p-2.5 rounded-2xl ${style.bg} transition-all hover:scale-[1.02] shadow-2xs hover:shadow-xs cursor-pointer flex flex-col justify-between space-y-1.5`}
+                            >
+                              <div className="space-y-0.5">
+                                <h5 className={`text-[11.5px] font-bold ${style.text} leading-tight line-clamp-2`}>
+                                  {t.title}
+                                </h5>
+                                <div className={`flex items-center gap-1 text-[10px] ${style.subtext}`}>
+                                  <Clock className="w-3 h-3" />
+                                  <span>{slot.label} - {slot.hour + 1}:00</span>
+                                </div>
+                              </div>
+
+                              {/* Assignee Avatar Stack */}
+                              <div className="flex items-center justify-between pt-0.5">
+                                <div className="flex items-center -space-x-1">
+                                  {primaryAssignee && (
+                                    <UserAvatar src={primaryAssignee.avatar} name={primaryAssignee.name} size="xs" />
+                                  )}
+                                  {t.assigneeIds.length > 1 && (
+                                    <span className={`text-[9px] font-bold ${style.subtext} pl-1`}>
+                                      +{t.assigneeIds.length - 1}
+                                    </span>
+                                  )}
+                                </div>
+
+                                {t.aiRisk && t.aiRisk.riskLevel === 'high' && (
+                                  <span title={t.aiRisk.reason}>
+                                    <AlertTriangle className="w-3 h-3 text-rose-500 animate-pulse" />
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Mode = Daily View */}
+        {mode === 'daily' && (
+          <div className="flex-1 flex flex-col min-h-0 overflow-auto p-4 space-y-4">
+            <div className="p-4 rounded-2xl bg-[#18534C]/10 dark:bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                  Jadwal Harian: {dayLabelsId[selectedDate.getDay()]}, {selectedDate.getDate()} {monthNames[selectedDate.getMonth()]} {selectedDate.getFullYear()}
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {displayedTasks.filter(t => toDateString(selectedDate) >= t.startDate && toDateString(selectedDate) <= t.dueDate).length} Tugas &amp; Pertemuan terjadwal
+                </p>
+              </div>
+              <button
+                onClick={() => openCreateTaskModal('todo')}
+                className="px-3.5 py-1.5 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold"
+              >
+                + Tambah Jadwal Hari Ini
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {displayedTasks.filter(t => toDateString(selectedDate) >= t.startDate && toDateString(selectedDate) <= t.dueDate).map((t, idx) => {
+                const style = getEventCardStyle(idx);
+                return (
+                  <div
+                    key={t.id}
+                    onClick={() => setSelectedTaskId(t.id)}
+                    className={`p-4 rounded-2xl ${style.bg} border border-slate-200 dark:border-slate-800 flex items-center justify-between cursor-pointer transition hover:shadow-md`}
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${style.text} bg-white/60 dark:bg-slate-900/60`}>
+                          {t.priority}
+                        </span>
+                        <span className={`text-xs ${style.subtext}`}>
+                          {t.startDate} → {t.dueDate}
+                        </span>
+                      </div>
+                      <h4 className={`text-sm font-bold ${style.text}`}>{t.title}</h4>
+                      {t.description && <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-1">{t.description}</p>}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {users.slice(0, 3).map(u => (
+                        <UserAvatar key={u.id} src={u.avatar} name={u.name} size="sm" />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Mode = Monthly View (Preserving Full Month Grid with Date Click Pop-up) */}
+        {mode === 'monthly' && (
+          <div className="flex-1 flex flex-col min-h-0 overflow-auto">
+            {/* Days Header */}
+            <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 text-center text-xs font-bold text-slate-500 py-2.5">
+              {['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].map((d, i) => (
+                <div key={i}>{d}</div>
+              ))}
+            </div>
+
+            {/* Days Grid */}
+            <div className="flex-1 grid grid-cols-7 grid-rows-5 divide-x divide-y divide-slate-100 dark:divide-slate-800/80 overflow-auto">
+              {Array.from({ length: miniFirstDayIndex }).map((_, i) => (
+                <div key={`m-empty-${i}`} className="bg-slate-50/30 dark:bg-slate-950/20 p-2 min-h-[85px]" />
+              ))}
+
+              {Array.from({ length: miniDaysInMonth }).map((_, i) => {
+                const dayNum = i + 1;
+                const formattedDate = `${miniCalYear}-${String(miniCalMonth + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+                const dayTasks = displayedTasks.filter(t => formattedDate >= t.startDate && formattedDate <= t.dueDate);
+                const isToday = dayNum === new Date().getDate() && miniCalMonth === new Date().getMonth() && miniCalYear === new Date().getFullYear();
+
+                return (
+                  <div
+                    key={dayNum}
+                    onClick={() => {
+                      setSelectedDateDetail({
+                        dateStr: formattedDate,
+                        formattedDateDisplay: new Date(miniCalYear, miniCalMonth, dayNum).toLocaleDateString('id-ID', {
+                          weekday: 'long',
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric'
+                        }),
+                        tasks: dayTasks
+                      });
+                    }}
+                    className={`p-2 min-h-[85px] flex flex-col justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer select-none ${
+                      isToday ? 'bg-emerald-50/50 dark:bg-emerald-500/10' : ''
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center ${
+                        isToday ? 'bg-emerald-600 text-white' : 'text-slate-700 dark:text-slate-300'
+                      }`}>
+                        {dayNum}
+                      </span>
+                      {dayTasks.length > 0 && (
+                        <span className="text-[10px] text-slate-400 font-mono">
+                          {dayTasks.length} tugas
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="space-y-1 my-1 overflow-y-auto max-h-14">
+                      {dayTasks.slice(0, 2).map((t, idx) => {
+                        const style = getEventCardStyle(idx);
+                        return (
+                          <div
+                            key={t.id}
+                            className={`p-1 rounded-md text-[9.5px] truncate font-semibold ${style.bg} ${style.text}`}
+                          >
+                            {t.title}
+                          </div>
+                        );
+                      })}
+                      {dayTasks.length > 2 && (
+                        <span className="text-[9px] text-slate-400 font-bold block">
+                          +{dayTasks.length - 2} lainnya
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+      </div>
+
+      {/* Date Detail Pop-up Modal (When clicked in Monthly mode) */}
       {selectedDateDetail && (
         <div 
-          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in text-slate-800 dark:text-slate-100"
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in text-slate-800 dark:text-slate-100"
           onClick={() => setSelectedDateDetail(null)}
         >
           <div 
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-md max-h-[85vh] flex flex-col shadow-2xl overflow-hidden"
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-md max-h-[85vh] flex flex-col shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Header */}
             <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/60">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                <div className="w-8 h-8 rounded-xl bg-[#18534C] text-white flex items-center justify-center shadow-xs">
                   <CalendarIcon className="w-4 h-4" />
                 </div>
                 <div>
@@ -212,14 +767,12 @@ export const CalendarView: React.FC = () => {
               </div>
               <button
                 onClick={() => setSelectedDateDetail(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-                title="Tutup"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Modal Body / Task List */}
             <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
               {selectedDateDetail.tasks.length === 0 ? (
                 <div className="py-10 text-center text-slate-400 text-xs">
@@ -233,24 +786,19 @@ export const CalendarView: React.FC = () => {
                       setSelectedDateDetail(null);
                       setSelectedTaskId(task.id);
                     }}
-                    className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/50 hover:border-emerald-500/50 dark:hover:border-signal/40 transition cursor-pointer space-y-2 shadow-xs group"
+                    className="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/50 hover:border-emerald-500/50 transition cursor-pointer space-y-2 shadow-xs group"
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <span className={`text-[10px] px-2 py-0.5 rounded-md font-bold uppercase ${priorityColors[task.priority]}`}>
+                      <span className="text-[10px] px-2 py-0.5 rounded-md font-bold uppercase bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                         {task.priority}
                       </span>
-                      <span className="text-[10px] text-slate-500 dark:text-muted font-mono">
+                      <span className="text-[10px] text-slate-500 font-mono">
                         {task.startDate} → {task.dueDate}
                       </span>
                     </div>
-                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 dark:group-hover:text-signal transition">
+                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 transition">
                       {task.title}
                     </h4>
-                    {task.description && (
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2">
-                        {task.description}
-                      </p>
-                    )}
                   </div>
                 ))
               )}
@@ -258,6 +806,7 @@ export const CalendarView: React.FC = () => {
           </div>
         </div>
       )}
+
     </div>
   );
 };

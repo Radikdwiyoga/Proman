@@ -183,14 +183,14 @@ export const LoginPage: React.FC = () => {
     }}>
 
       {/* Main Split-Card Container */}
-      <div className={`w-full max-w-[980px] rounded-[32px] overflow-hidden shadow-2xl transition-all duration-300 flex flex-col md:flex-row my-auto ${
+      <div className={`w-full max-w-245 rounded-4xl overflow-hidden shadow-2xl transition-all duration-300 flex flex-col md:flex-row my-auto ${
         isDark
           ? 'bg-slate-900/95 border border-slate-800 shadow-blue-950/40'
           : 'bg-white border border-white/80 shadow-[0_25px_50px_-12px_rgba(59,130,246,0.18)]'
       }`}>
 
         {/* ── LEFT COLUMN: Blue 3D Branding & Illustration Panel ── */}
-        <div className="w-full md:w-[42%] lg:w-[40%] bg-gradient-to-br from-[#4D96FF] via-[#3B82F6] to-[#2563EB] p-7 sm:p-9 flex flex-col justify-between text-white relative overflow-hidden shrink-0">
+        <div className="w-full md:w-[42%] lg:w-[40%] bg-linear-to-br from-[#4D96FF] via-[#3B82F6] to-[#2563EB] p-7 sm:p-9 flex flex-col justify-between text-white relative overflow-hidden shrink-0">
           
           {/* Subtle Ambient Shapes behind left panel */}
           <div className="absolute -top-12 -left-12 w-44 h-44 bg-white/10 rounded-full blur-xl pointer-events-none" />
@@ -396,7 +396,7 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#4D96FF] to-[#2563EB] hover:from-[#3B82F6] hover:to-[#1D4ED8] text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-500/25 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 px-6 rounded-xl bg-linear-to-r from-[#4D96FF] to-[#2563EB] hover:from-[#3B82F6] hover:to-[#1D4ED8] text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-500/25 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {isLoading ? (
                     <>
@@ -535,7 +535,7 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#4D96FF] to-[#2563EB] hover:from-[#3B82F6] hover:to-[#1D4ED8] text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-500/25 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 px-6 rounded-xl bg-linear-to-r from-[#4D96FF] to-[#2563EB] hover:from-[#3B82F6] hover:to-[#1D4ED8] text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-500/25 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {isLoading ? (
                     <>
