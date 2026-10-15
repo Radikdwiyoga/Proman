@@ -138,7 +138,7 @@ ${summaryData.recommendationsForAlex.map((r, i) => `${i + 1}. ${r}`).join('\n')}
         <title>Laporan Eksekutif ProMan - ${currentScopeTitle}</title>
         <style>
           body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             color: #0f172a;
             line-height: 1.6;
             margin: 40px;
