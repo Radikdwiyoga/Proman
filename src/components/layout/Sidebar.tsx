@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useProject, ActiveView } from '../../context/ProjectContext';
 import { 
   Kanban, 
@@ -12,6 +12,7 @@ import {
   CheckCircle2, 
   Flame, 
   ChevronRight, 
+  ChevronDown,
   Settings, 
   Activity, 
   Crown, 
@@ -21,11 +22,10 @@ import {
   Key,
   Pin,
   PinOff,
-  PanelLeftClose,
-  PanelLeftOpen
+  LayoutDashboard,
+  ShieldCheck
 } from 'lucide-react';
 import { analyzeProjectRisks } from '../../utils/aiSimulator';
-import { TechLogo } from '../common/TechLogo';
 import { UserAvatar } from '../common/UserAvatar';
 
 export const Sidebar: React.FC = () => {
@@ -51,8 +51,9 @@ export const Sidebar: React.FC = () => {
   // Auto-hide / Compact Icon Mode State
   const [isHovered, setIsHovered] = useState(false);
   const [isPinned, setIsPinned] = useState(() => {
-    return localStorage.getItem('proman_sidebar_pinned') === 'true';
+    return localStorage.getItem('proman_sidebar_pinned') !== 'false'; // default pinned for modern desktop view
   });
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   const isExpanded = isPinned || isHovered;
 
@@ -85,390 +86,325 @@ export const Sidebar: React.FC = () => {
     t.status !== 'done'
   ).length;
 
-  const viewItems: { id: ActiveView; label: string; icon: React.ReactNode; badge?: string | number }[] = [
-    { id: 'kanban', label: 'Papan Kanban', icon: <Kanban className="w-4 h-4 shrink-0" />, badge: totalActiveTasks },
-    { id: 'timeline', label: 'Timeline & Gantt', icon: <GanttChartSquare className="w-4 h-4 shrink-0" /> },
-    { id: 'calendar', label: 'Kalender Proyek', icon: <CalendarIcon className="w-4 h-4 shrink-0" /> },
-    { id: 'list', label: 'Daftar & Tabel', icon: <ListOrdered className="w-4 h-4 shrink-0" /> },
+  // Primary Navigation matching reference (Tasks, Activities, Dashboard, Schedule, List)
+  const primaryNavItems: { id: ActiveView; label: string; icon: React.ReactNode; badge?: string | number }[] = [
+    { id: 'kanban', label: 'Tasks', icon: <Kanban className="w-4 h-4 shrink-0" />, badge: totalActiveTasks },
+    { id: 'timeline', label: 'Activities', icon: <GanttChartSquare className="w-4 h-4 shrink-0" /> },
+    { id: 'project_management', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4 shrink-0" /> },
+    { id: 'calendar', label: 'Schedule', icon: <CalendarIcon className="w-4 h-4 shrink-0" /> },
+    { id: 'list', label: 'Products & List', icon: <ListOrdered className="w-4 h-4 shrink-0" /> },
   ];
 
-  const aiViews: { id: ActiveView; label: string; icon: React.ReactNode; badge?: string; badgeColor?: string }[] = [
+  const aiIntelligenceItems: { id: ActiveView; label: string; icon: React.ReactNode; badge?: string; badgeColor?: string }[] = [
     { 
       id: 'risk_dashboard', 
-      label: 'Predictive Risk & Delay', 
-      icon: <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />,
+      label: 'Predictive Risk', 
+      icon: <AlertTriangle className="w-4 h-4 text-amber-300 shrink-0" />,
       badge: riskAnalysis.atRiskTasksCount > 0 ? `${riskAnalysis.atRiskTasksCount} Risiko` : undefined,
-      badgeColor: 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-500/30'
+      badgeColor: 'bg-amber-400/20 text-amber-200 border-amber-400/30'
     },
     { 
       id: 'resource_allocation', 
-      label: 'Smart Resource / Beban', 
-      icon: <Users2 className="w-4 h-4 text-blue-500 shrink-0" />,
+      label: 'Smart Resource', 
+      icon: <Users2 className="w-4 h-4 text-sky-300 shrink-0" />,
       badge: riskAnalysis.overloadedMembersCount > 0 ? `${riskAnalysis.overloadedMembersCount} Overload` : undefined,
-      badgeColor: 'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-500/30'
+      badgeColor: 'bg-rose-400/20 text-rose-200 border-rose-400/30'
     },
   ];
 
   const renderNavContent = (expanded: boolean) => (
-    <div className="flex flex-col h-full justify-between select-none">
-      {/* Top Header Toggle (Desktop Pin Button) */}
-      <div className={`p-2.5 border-b border-slate-200 dark:border-slate-800/80 flex items-center ${expanded ? 'justify-between' : 'justify-center'} bg-canvas-light/50 dark:bg-canvas/50`}>
-        {expanded ? (
-          <>
-            <div className="flex items-center gap-2 pl-1.5 overflow-hidden">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[11px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider truncate">
-                Navigasi Utama
-              </span>
+    <div className="flex flex-col h-full justify-between select-none p-3.5">
+      {/* Top Header with Brand Logo & Collapse Pin Button */}
+      <div className="space-y-4">
+        <div className={`flex items-center ${expanded ? 'justify-between' : 'justify-center'} pb-3 border-b border-white/10`}>
+          {expanded ? (
+            <div className="flex items-center gap-2.5 pl-1">
+              <div className="w-8 h-8 rounded-xl bg-white p-1.5 shadow-sm flex items-center justify-center shrink-0">
+                <img 
+                  src="/proman-icon.png" 
+                  alt="ProMan" 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-extrabold text-base tracking-tight text-white leading-tight">
+                  ProMan
+                </span>
+                <span className="text-[9px] font-medium text-emerald-200/70 tracking-wide uppercase">
+                  Enterprise Workspace
+                </span>
+              </div>
             </div>
-            <button
-              onClick={togglePin}
-              className={`p-1.5 rounded-md transition ${
-                isPinned 
-                  ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300' 
-                  : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
-              }`}
-              title={isPinned ? 'Lepas Pin (Auto-Hide Aktif)' : 'Kunci Navigasi (Pin Sidebar)'}
-            >
-              {isPinned ? <Pin className="w-3.5 h-3.5" /> : <PinOff className="w-3.5 h-3.5" />}
-            </button>
-          </>
-        ) : (
+          ) : (
+            <div className="w-8 h-8 rounded-xl bg-white p-1.5 shadow-sm flex items-center justify-center shrink-0">
+              <img 
+                src="/proman-icon.png" 
+                alt="ProMan" 
+                className="w-full h-full object-contain"
+              />
+            </div>
+          )}
+
+          {/* Pin / Unpin Desktop Toggle */}
           <button
             onClick={togglePin}
-            className="p-1.5 rounded-md text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-100 dark:hover:bg-elevated/60 transition"
-            title="Kunci / Buka Navigasi (Klik untuk Pin)"
+            className={`p-1.5 rounded-lg transition hidden md:flex items-center justify-center ${
+              isPinned 
+                ? 'text-emerald-200 hover:text-white hover:bg-white/10' 
+                : 'text-emerald-300/60 hover:text-white hover:bg-white/10'
+            }`}
+            title={isPinned ? 'Lepas Pin (Auto-Hide Aktif)' : 'Kunci Navigasi (Pin Sidebar)'}
           >
-            <PanelLeftOpen className="w-4 h-4" />
+            {isPinned ? <Pin className="w-3.5 h-3.5" /> : <PinOff className="w-3.5 h-3.5" />}
           </button>
-        )}
-      </div>
+        </div>
 
-      {/* Navigation Body */}
-      <div className="p-2 space-y-4 overflow-y-auto flex-1 touch-scroll-y">
-        {/* Core Views */}
-        <div>
+        {/* Primary Views Section (Tasks, Activities, Dashboard, Schedule) */}
+        <div className="space-y-1">
+          {primaryNavItems.map((item) => {
+            const isActive = activeView === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleNavClick(item.id)}
+                title={item.label}
+                className={`w-full flex items-center ${expanded ? 'justify-between px-3.5' : 'justify-center px-0'} py-2.5 rounded-xl text-xs font-semibold transition-all relative group cursor-pointer ${
+                  isActive
+                    ? 'bg-[#FEE36E] text-[#163628] font-bold shadow-md'
+                    : 'text-emerald-100/75 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className={isActive ? 'text-[#163628]' : 'text-emerald-200/80 group-hover:text-white transition'}>
+                    {item.icon}
+                  </span>
+                  {expanded && <span className="truncate text-[13px]">{item.label}</span>}
+                </div>
+
+                {expanded && item.badge !== undefined && (
+                  <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold shrink-0 ${
+                    isActive 
+                      ? 'bg-[#163628]/15 text-[#163628] font-mono' 
+                      : 'bg-white/10 text-emerald-100 font-mono'
+                  }`}>
+                    {item.badge}
+                  </span>
+                )}
+
+                {!expanded && item.badge !== undefined && typeof item.badge === 'number' && item.badge > 0 && (
+                  <span className="absolute top-1.5 right-2 w-2 h-2 rounded-full bg-[#FEE36E] ring-2 ring-[#224838]" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* AI & Analytics Suite */}
+        <div className="pt-2">
           {expanded && (
-            <div className="px-2.5 pb-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center justify-between">
-              <span>Tampilan Project</span>
-              <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold truncate max-w-22.5">
-                {currentProject.name}
-              </span>
+            <div className="px-3 pb-1.5 text-[10px] font-bold text-emerald-200/60 uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 text-emerald-300" />
+              <span>AI Intelligence</span>
             </div>
           )}
-          <nav className="space-y-1">
-            {viewItems.map((item) => {
+
+          <div className="space-y-1">
+            {aiIntelligenceItems.map((item) => {
               const isActive = activeView === item.id;
               return (
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
                   title={item.label}
-                  className={`w-full flex items-center ${expanded ? 'justify-between px-3' : 'justify-center px-0'} py-2 rounded-md text-xs font-medium transition relative group ${
+                  className={`w-full flex items-center ${expanded ? 'justify-between px-3.5' : 'justify-center px-0'} py-2.5 rounded-xl text-xs font-medium transition-all relative group cursor-pointer ${
                     isActive
-                      ? 'bg-emerald-500/10 text-emerald-900 dark:text-readable font-bold ring-1 ring-inset ring-emerald-500/40'
-                      : 'text-slate-600 dark:text-muted hover:text-slate-900 dark:hover:text-readable hover:bg-slate-100 dark:hover:bg-elevated/60'
+                      ? 'bg-[#FEE36E] text-[#163628] font-bold shadow-md'
+                      : 'text-emerald-100/75 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span className={isActive ? 'text-emerald-900 dark:text-white' : 'text-slate-500 dark:text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition'}>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className={isActive ? 'text-[#163628]' : ''}>
                       {item.icon}
                     </span>
-                    {expanded && <span className="truncate">{item.label}</span>}
+                    {expanded && <span className="truncate text-[12.5px]">{item.label}</span>}
                   </div>
-                  {expanded && item.badge !== undefined && (
-                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold shrink-0 ${isActive ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-200 font-mono' : 'bg-slate-200 dark:bg-elevated/60 text-slate-600 dark:text-muted font-mono'}`}>
-                      {item.badge}
-                    </span>
-                  )}
-                  {!expanded && item.badge !== undefined && typeof item.badge === 'number' && item.badge > 0 && (
-                    <span className="absolute top-1.5 right-2 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-950" />
-                  )}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
 
-        {/* Divider in compact mode */}
-        {!expanded && <div className="h-px bg-slate-200 dark:bg-slate-800 mx-2" />}
-
-        {/* Project Management Section */}
-        <div>
-          {expanded && (
-            <div className="px-2.5 pb-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-              <FolderKanban className="w-3 h-3 text-emerald-600" />
-              <span>Manajemen Project</span>
-            </div>
-          )}
-          <nav className="space-y-1">
-            <button
-              onClick={() => handleNavClick('project_management')}
-              title="Daftar & Hub Project"
-              className={`w-full flex items-center ${expanded ? 'justify-between px-3' : 'justify-center px-0'} py-2 rounded-md text-xs font-medium transition group ${
-                activeView === 'project_management'
-                  ? 'bg-emerald-500/10 text-emerald-900 dark:text-readable font-bold ring-1 ring-inset ring-emerald-500/40'
-                  : 'text-slate-600 dark:text-muted hover:text-slate-900 dark:hover:text-readable hover:bg-slate-100 dark:hover:bg-elevated/60'
-              }`}
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <FolderKanban className={`w-4 h-4 shrink-0 ${activeView === 'project_management' ? 'text-emerald-900 dark:text-white' : 'text-slate-500 group-hover:text-emerald-600'}`} />
-                {expanded && <span className="truncate">Daftar &amp; Hub Project</span>}
-              </div>
-              {expanded && <ChevronRight className="w-3.5 h-3.5 shrink-0" />}
-            </button>
-          </nav>
-        </div>
-
-        {/* Divider in compact mode */}
-        {!expanded && <div className="h-px bg-slate-200 dark:border-slate-800 mx-2" />}
-
-        {/* AI-Powered Intelligence Suite */}
-        <div>
-          {expanded && (
-            <div className="px-2.5 pb-1.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-500 uppercase tracking-wider flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 text-emerald-600" />
-              <span>Fitur Berbasis AI</span>
-            </div>
-          )}
-          <nav className="space-y-1">
-            {aiViews.map((item) => {
-              const isActive = activeView === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleNavClick(item.id)}
-                  title={item.label}
-                  className={`w-full flex items-center ${expanded ? 'justify-between px-3' : 'justify-center px-0'} py-2 rounded-md text-xs font-medium transition relative group ${
-                    isActive
-                      ? 'bg-emerald-500/10 text-emerald-900 dark:text-readable font-bold ring-1 ring-inset ring-emerald-500/40'
-                      : 'text-slate-600 dark:text-muted hover:text-slate-900 dark:hover:text-readable hover:bg-slate-100 dark:hover:bg-elevated/60'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span>{item.icon}</span>
-                    {expanded && <span className="truncate">{item.label}</span>}
-                  </div>
                   {expanded && item.badge && (
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold border shrink-0 ${isActive ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-200 font-mono border-emerald-700' : item.badgeColor}`}>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border shrink-0 ${
+                      isActive 
+                        ? 'bg-[#163628]/15 text-[#163628] border-transparent font-mono' 
+                        : item.badgeColor
+                    }`}>
                       {item.badge}
                     </span>
-                  )}
-                  {!expanded && item.badge && (
-                    <span className="absolute top-1.5 right-2 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-slate-950" />
                   )}
                 </button>
               );
             })}
 
-            {/* Direct Trigger: Auto-Status Modal */}
+            {/* Direct Auto-Status Summary Trigger */}
             <button
               onClick={() => {
                 setIsSummaryModalOpen(true);
                 setIsMobileSidebarOpen(false);
               }}
-              title="Auto-Status Summary (Laporan AI)"
-              className={`w-full flex items-center ${expanded ? 'justify-between px-3' : 'justify-center px-0'} py-2 rounded-md text-xs font-medium text-slate-600 dark:text-muted hover:text-slate-900 dark:hover:text-readable hover:bg-slate-100 dark:hover:bg-elevated/60 transition group`}
+              title="Laporan AI (Auto-Status Summary)"
+              className={`w-full flex items-center ${expanded ? 'justify-between px-3.5' : 'justify-center px-0'} py-2 rounded-xl text-xs font-medium text-emerald-100/75 hover:text-white hover:bg-white/10 transition group cursor-pointer`}
             >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <FileText className="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0" />
-                {expanded && <span>Auto-Status Summary</span>}
+              <div className="flex items-center gap-3 min-w-0">
+                <FileText className="w-4 h-4 text-emerald-300 shrink-0" />
+                {expanded && <span className="text-[12.5px]">Auto Summary</span>}
               </div>
               {expanded && (
-                <span className="text-[9px] px-1.5 py-0.2 rounded bg-teal-100 dark:bg-teal-500/20 text-teal-700 dark:text-teal-300 font-bold border border-teal-200 dark:border-teal-500/30 shrink-0">
-                  Laporan
+                <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-white/10 text-emerald-100 font-bold border border-white/15 shrink-0">
+                  AI Doc
                 </span>
               )}
             </button>
-          </nav>
+          </div>
         </div>
 
-        {/* Super Admin Control Section */}
+        {/* Administration (Super Admin only) */}
         {isSuperAdmin && (
-          <div>
+          <div className="pt-2">
             {expanded && (
-              <div className="px-2.5 pb-1.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-500 uppercase tracking-wider flex items-center gap-1">
-                <Crown className="w-3 h-3 text-amber-500" />
-                <span>Tata Kelola Enterprise</span>
+              <div className="px-3 pb-1.5 text-[10px] font-bold text-emerald-200/60 uppercase tracking-wider flex items-center gap-1">
+                <Crown className="w-3 h-3 text-amber-400" />
+                <span>Pengaturan</span>
               </div>
             )}
-            <nav className="space-y-1">
-              <button
-                onClick={() => handleNavClick('admin_settings')}
-                title="Admin Settings"
-                className={`w-full flex items-center ${expanded ? 'justify-between px-3' : 'justify-center px-0'} py-2 rounded-md text-xs font-medium transition group ${
-                  activeView === 'admin_settings'
-                    ? 'bg-emerald-500/10 text-emerald-900 dark:text-readable font-bold ring-1 ring-inset ring-emerald-500/40'
-                    : 'text-slate-600 dark:text-muted hover:text-slate-900 dark:hover:text-readable hover:bg-slate-100 dark:hover:bg-elevated/60'
-                }`}
-              >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <Settings className="w-4 h-4 text-amber-500 shrink-0" />
-                  {expanded && <span>Admin Settings</span>}
-                </div>
-                {expanded && (
-                  <span className="telemetry-badge telemetry-badge--muted shrink-0">
-                    ADMIN
-                  </span>
-                )}
-              </button>
-            </nav>
+            <button
+              onClick={() => handleNavClick('admin_settings')}
+              title="Admin Settings"
+              className={`w-full flex items-center ${expanded ? 'justify-between px-3.5' : 'justify-center px-0'} py-2.5 rounded-xl text-xs font-medium transition group cursor-pointer ${
+                activeView === 'admin_settings'
+                  ? 'bg-[#FEE36E] text-[#163628] font-bold shadow-md'
+                  : 'text-emerald-100/75 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <Settings className={`w-4 h-4 shrink-0 ${activeView === 'admin_settings' ? 'text-[#163628]' : 'text-amber-300'}`} />
+                {expanded && <span className="text-[12.5px]">Settings</span>}
+              </div>
+              {expanded && (
+                <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-200 border border-amber-400/30">
+                  ADMIN
+                </span>
+              )}
+            </button>
           </div>
         )}
 
-        {/* Quick Filters */}
-        <div>
-          {expanded && (
-            <div className="px-2.5 pb-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+        {/* Quick Filter Shortcuts */}
+        {expanded && (
+          <div className="pt-2 border-t border-white/10">
+            <div className="px-3 pb-1.5 text-[10px] font-bold text-emerald-200/60 uppercase tracking-wider">
               Filter Cepat
             </div>
-          )}
-          <div className="space-y-1">
-            <button
-              onClick={() => {
-                setFilters(prev => ({ ...prev, assigneeId: prev.assigneeId === currentUser.id ? null : currentUser.id }));
-                setIsMobileSidebarOpen(false);
-              }}
-              title={`Tugas Saya (${myTasksCount})`}
-              className={`w-full flex items-center ${expanded ? 'justify-between px-3' : 'justify-center px-0'} py-1.5 rounded-md text-xs transition relative group ${
-                filters.assigneeId === currentUser.id ? 'bg-emerald-500/10 text-emerald-900 dark:text-readable font-bold ring-1 ring-inset ring-emerald-500/40' : 'text-slate-600 dark:text-muted hover:bg-slate-100 dark:hover:bg-elevated/60'
-              }`}
-            >
-              <div className="flex items-center gap-2 min-w-0">
-                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                {expanded && <span>Tugas Saya</span>}
-              </div>
-              {expanded && <span className="text-[10px]">{myTasksCount}</span>}
-              {!expanded && myTasksCount > 0 && (
-                <span className="absolute top-1 right-2 w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              )}
-            </button>
+            <div className="space-y-1">
+              <button
+                onClick={() => {
+                  setFilters(prev => ({ ...prev, assigneeId: prev.assigneeId === currentUser.id ? null : currentUser.id }));
+                  setIsMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs transition ${
+                  filters.assigneeId === currentUser.id 
+                    ? 'bg-white/20 text-white font-bold' 
+                    : 'text-emerald-100/70 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
+                  <span>Tugas Saya</span>
+                </div>
+                <span className="text-[10px] font-mono">{myTasksCount}</span>
+              </button>
 
-            <button
-              onClick={() => {
-                setFilters(prev => ({ ...prev, priority: prev.priority === 'urgent' ? null : 'urgent' }));
-                setIsMobileSidebarOpen(false);
-              }}
-              title={`Prioritas Urgent (${urgentTasksCount})`}
-              className={`w-full flex items-center ${expanded ? 'justify-between px-3' : 'justify-center px-0'} py-1.5 rounded-md text-xs transition relative group ${
-                filters.priority === 'urgent' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-300 font-bold ring-1 ring-inset ring-rose-500/40' : 'text-slate-600 dark:text-muted hover:bg-slate-100 dark:hover:bg-elevated/60'
-              }`}
-            >
-              <div className="flex items-center gap-2 min-w-0">
-                <Flame className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                {expanded && <span>Prioritas Urgent</span>}
-              </div>
-              {expanded && <span className="text-[10px]">{urgentTasksCount}</span>}
-              {!expanded && urgentTasksCount > 0 && (
-                <span className="absolute top-1 right-2 w-1.5 h-1.5 rounded-full bg-rose-500" />
-              )}
-            </button>
+              <button
+                onClick={() => {
+                  setFilters(prev => ({ ...prev, priority: prev.priority === 'urgent' ? null : 'urgent' }));
+                  setIsMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs transition ${
+                  filters.priority === 'urgent' 
+                    ? 'bg-rose-500/30 text-white font-bold border border-rose-400/40' 
+                    : 'text-emerald-100/70 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <Flame className="w-3.5 h-3.5 text-rose-400" />
+                  <span>Prioritas Urgent</span>
+                </div>
+                <span className="text-[10px] font-mono">{urgentTasksCount}</span>
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
-      {/* Footer: User Profile & Quick Actions */}
-      <div className="p-2 border-t border-slate-200 dark:border-slate-800/80 bg-canvas-light/70 dark:bg-surface/70 space-y-2 shrink-0">
+      {/* User Profile Card at Bottom (Exact obantor style in reference) */}
+      <div className="pt-3 border-t border-white/10 space-y-2">
         {expanded ? (
-          <>
-            {/* User Card */}
-            <div className="flex items-center justify-between p-2 rounded-lg bg-white dark:bg-elevated/60 border border-slate-200 dark:border-white/10 elevated-tray">
-              <div className="flex items-center gap-2.5 truncate">
+          <div className="relative">
+            <div 
+              onClick={() => setIsProfileMenuOpen(prev => !prev)}
+              className="p-2.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 flex items-center justify-between transition cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5 min-w-0 truncate">
                 <UserAvatar src={currentUser.avatar} name={currentUser.name} size="sm" />
-                <div className="truncate text-left">
-                  <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                <div className="min-w-0 text-left">
+                  <div className="text-xs font-bold text-white truncate leading-tight">
                     {currentUser.name}
                   </div>
-                  <div className="text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold truncate">
-                    {currentUser.personaType}
+                  <div className="text-[10.5px] text-emerald-200/80 truncate font-normal">
+                    {currentUser.email || `${currentUser.personaType}`}
                   </div>
                 </div>
               </div>
+              <ChevronRight className={`w-4 h-4 text-emerald-200 shrink-0 transition-transform ${isProfileMenuOpen ? 'rotate-90' : ''}`} />
+            </div>
 
-              <div className="flex items-center gap-1 shrink-0">
+            {/* Profile Dropdown Actions */}
+            {isProfileMenuOpen && (
+              <div className="mt-1 p-1 rounded-xl bg-[#183628] border border-white/15 shadow-xl space-y-0.5 animate-in fade-in slide-in-from-bottom-2 duration-150">
                 <button
                   onClick={() => {
+                    setIsProfileMenuOpen(false);
                     setIsMobileSidebarOpen(false);
                     setIsChangePasswordModalOpen(true);
                   }}
-                  className="p-1.5 rounded-md bg-slate-100 dark:bg-elevated hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 transition active:scale-95 cursor-pointer"
-                  title="Ganti Kata Sandi (Password)"
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-emerald-100 hover:text-white hover:bg-white/10 transition"
                 >
-                  <Key className="w-3.5 h-3.5 text-emerald-600" />
+                  <Key className="w-3.5 h-3.5 text-emerald-300" />
+                  <span>Ganti Password</span>
                 </button>
-
                 <button
                   onClick={() => {
+                    setIsProfileMenuOpen(false);
                     setIsMobileSidebarOpen(false);
                     logout();
                   }}
-                  className="p-1.5 rounded-md bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-950/70 border border-rose-200 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 transition active:scale-95 cursor-pointer"
-                  title="Keluar dari Akun (Logout)"
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-rose-300 hover:text-rose-200 hover:bg-rose-500/20 transition"
                 >
                   <LogOut className="w-3.5 h-3.5" />
+                  <span>Keluar (Logout)</span>
                 </button>
               </div>
-            </div>
-
-            {/* Health Card */}
-            {(() => {
-              const isGlobalBoard = currentProjectId === 'all';
-              const globalHealthScore = projects.length > 0
-                ? Math.round(projects.reduce((acc, p) => acc + (p.healthScore || 85), 0) / projects.length)
-                : 85;
-
-              const displayHealthScore = isGlobalBoard ? globalHealthScore : (currentProject.healthScore || 85);
-              const displayTitle = isGlobalBoard ? 'Global Health' : 'Project Health';
-              const displayStatus = isGlobalBoard ? 'GLOBAL' : currentProject.status.toUpperCase();
-              const displaySubtext = isGlobalBoard 
-                ? `${tasks.length} Total Tugas` 
-                : `${tasks.filter(t => t.projectId === currentProject.id).length} Tugas`;
-
-              return (
-                <div className="p-2.5 rounded-lg bg-white dark:bg-elevated/60 border border-slate-200 dark:border-white/10 elevated-tray">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
-                      <Activity className="w-3.5 h-3.5 text-emerald-500" />
-                      <span className="truncate text-[11px]">{displayTitle}</span>
-                    </div>
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                      displayHealthScore >= 75 ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300' : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300'
-                    }`}>
-                      {displayHealthScore}%
-                    </span>
-                  </div>
-                  <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                    <div 
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        displayHealthScore >= 75 ? 'bg-linear-to-r from-emerald-500 to-teal-400' : 'bg-linear-to-r from-amber-500 to-rose-400'
-                      }`}
-                      style={{ width: `${displayHealthScore}%` }}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between mt-1.5 text-[9.5px] text-slate-500 dark:text-slate-400">
-                    <span className="truncate">{displaySubtext}</span>
-                    <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">{displayStatus}</span>
-                  </div>
-                </div>
-              );
-            })()}
-          </>
+            )}
+          </div>
         ) : (
-          /* Compact Footer Icon View */
           <div className="flex flex-col items-center gap-2">
             <UserAvatar src={currentUser.avatar} name={currentUser.name} size="sm" />
             <button
-              onClick={() => {
-                setIsChangePasswordModalOpen(true);
-              }}
-              className="p-2 rounded-md text-slate-500 hover:text-emerald-600 hover:bg-slate-100 dark:hover:bg-elevated transition"
+              onClick={() => setIsChangePasswordModalOpen(true)}
+              className="p-1.5 rounded-lg text-emerald-200 hover:text-white hover:bg-white/10 transition"
               title="Ganti Password"
             >
               <Key className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={logout}
-              className="p-2 rounded-md text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition"
+              className="p-1.5 rounded-lg text-rose-300 hover:bg-rose-500/20 transition"
               title="Logout"
             >
               <LogOut className="w-3.5 h-3.5" />
@@ -481,40 +417,37 @@ export const Sidebar: React.FC = () => {
 
   return (
     <>
-      {/* Desktop Aside (Auto-Hide / Icon-Only by Default with Smooth Hover & Pin) */}
+      {/* Desktop Aside in Deep Forest Theme */}
       <aside 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`hidden md:flex flex-col justify-between shrink-0 h-full select-none text-slate-800 dark:text-readable bg-white dark:bg-canvas border-r border-slate-200 dark:border-white/10 transition-all duration-300 ease-in-out z-20 ${
-          isExpanded ? 'w-64 shadow-xl' : 'w-16'
+        className={`hidden md:flex flex-col justify-between shrink-0 h-full select-none bg-[#244A3A] dark:bg-[#18362A] text-white border-r border-[#1D3E30] dark:border-[#132A21] transition-all duration-300 ease-in-out z-20 ${
+          isExpanded ? 'w-64 shadow-xl' : 'w-18'
         }`}
       >
         {renderNavContent(isExpanded)}
       </aside>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Off-Canvas Drawer */}
       {isMobileSidebarOpen && (
         <div className="fixed inset-0 z-50 md:hidden flex animate-fade-in">
-          {/* Dark Backdrop Overlay */}
           <div 
             onClick={() => setIsMobileSidebarOpen(false)}
-            className="fixed inset-0 bg-black/65 backdrop-blur-xs transition-opacity" 
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity" 
           />
-
-          {/* Off-Canvas Slide Drawer Panel */}
-          <div className="relative w-72 max-w-[85vw] bg-white dark:bg-canvas border-r border-slate-200 dark:border-white/10 flex flex-col justify-between h-full shadow-2xl z-10 animate-slide-right text-slate-800 dark:text-slate-200">
-            {/* Mobile Drawer Header */}
-            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-canvas-light dark:bg-canvas/80">
-              <TechLogo size="sm" />
+          <div className="relative w-72 max-w-[85vw] bg-[#244A3A] dark:bg-[#18362A] text-white flex flex-col justify-between h-full shadow-2xl z-10 animate-slide-right">
+            <div className="p-3.5 border-b border-white/10 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <img src="/proman-icon.png" alt="ProMan" className="w-7 h-7 object-contain bg-white rounded-lg p-1" />
+                <span className="font-extrabold text-sm text-white">ProMan</span>
+              </div>
               <button
                 onClick={() => setIsMobileSidebarOpen(false)}
-                className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-elevated transition"
+                className="p-1.5 rounded-lg text-emerald-200 hover:text-white hover:bg-white/10 transition"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-
-            {/* Nav Body (Always Full on Mobile) */}
             {renderNavContent(true)}
           </div>
         </div>
@@ -522,4 +455,3 @@ export const Sidebar: React.FC = () => {
     </>
   );
 };
-

@@ -29,11 +29,17 @@
   --font-sans: Arial, Helvetica, sans-serif;
   --font-mono: Arial, Helvetica, sans-serif;
 
-  /* --- Geometry: max 8px radius --- */
-  --radius-xl: 0.5rem;
-  --radius-2xl: 0.5rem;
-  --radius-3xl: 0.5rem;
-  --radius-4xl: 0.5rem;
+  /* --- Geometry: modern organic rounded curves --- */
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
+
+  /* --- Forest Theme Tokens (Matching Reference) --- */
+  --color-forest: #224838;
+  --color-forest-dark: #183628;
+  --color-forest-light: #2b5946;
+  --color-forest-accent: #fee36e;
 
   /* --- Shadows --- */
   --shadow-glow-signal: 0 0 16px -2px rgba(16, 185, 129, 0.45);
@@ -84,13 +90,11 @@
   --font-sans: Arial, Helvetica, sans-serif;
   --font-mono: Arial, Helvetica, sans-serif;
 
-  /* --- Geometry: apathetic discipline, max 8px containers ---
-     Remap legacy rounded-xl/2xl/3xl to 8px so the entire app
-     converges on the spec without touching every file. */
-  --radius-xl: 0.5rem;   /* 8px */
-  --radius-2xl: 0.5rem;  /* 8px */
-  --radius-3xl: 0.5rem;  /* 8px */
-  --radius-4xl: 0.5rem;  /* 8px */
+  /* --- Geometry: modern organic rounded curves --- */
+  --radius-xl: 0.75rem;   /* 12px */
+  --radius-2xl: 1rem;     /* 16px */
+  --radius-3xl: 1.5rem;   /* 24px */
+  --radius-4xl: 2rem;     /* 32px */
 
   /* --- Shadows --- */
   --shadow-glow-signal: 0 0 16px -2px rgba(16, 185, 129, 0.45);
