@@ -1,270 +1,146 @@
 ---
-name: Obsidian Sentinel
+name: Proman AI - Modern Forest & Cyber-Precision
 colors:
-  surface: '#0f131c'
-  surface-dim: '#0f131c'
-  surface-bright: '#353943'
-  surface-container-lowest: '#0a0e17'
-  surface-container-low: '#181b25'
-  surface-container: '#1c1f29'
-  surface-container-high: '#262a34'
-  surface-container-highest: '#31353f'
-  on-surface: '#dfe2ef'
-  on-surface-variant: '#bbcabf'
-  inverse-surface: '#dfe2ef'
-  inverse-on-surface: '#2c303a'
-  outline: '#86948a'
-  outline-variant: '#3c4a42'
-  surface-tint: '#4edea3'
-  primary: '#4edea3'
-  on-primary: '#003824'
-  primary-container: '#10b981'
-  on-primary-container: '#00422b'
-  inverse-primary: '#006c49'
-  secondary: '#45dfa4'
-  on-secondary: '#003825'
-  secondary-container: '#00bd85'
-  on-secondary-container: '#00452e'
-  tertiary: '#68dba9'
-  on-tertiary: '#003825'
-  tertiary-container: '#3eb686'
-  on-tertiary-container: '#00422c'
-  error: '#ffb4ab'
-  on-error: '#690005'
-  error-container: '#93000a'
-  on-error-container: '#ffdad6'
-  primary-fixed: '#6ffbbe'
-  primary-fixed-dim: '#4edea3'
-  on-primary-fixed: '#002113'
-  on-primary-fixed-variant: '#005236'
-  secondary-fixed: '#68fcbf'
-  secondary-fixed-dim: '#45dfa4'
-  on-secondary-fixed: '#002114'
-  on-secondary-fixed-variant: '#005137'
-  tertiary-fixed: '#85f8c4'
-  tertiary-fixed-dim: '#68dba9'
-  on-tertiary-fixed: '#002114'
-  on-tertiary-fixed-variant: '#005137'
-  background: '#0f131c'
-  on-background: '#dfe2ef'
-  surface-variant: '#31353f'
+  # Primary Brand Palette (Deep Forest Green & Emerald Accents)
+  forest-deep: '#0F261C'
+  forest-main: '#163628'
+  forest-light: '#1B4332'
+  forest-subtle: '#245640'
+  forest-accent: '#FEE36E'
+  forest-accent-hover: '#FCD34D'
+  
+  # Light Mode Surfaces (Clean Warm Neutral)
+  light-canvas: '#F4F6F4'
+  light-surface: '#FFFFFF'
+  light-surface-subtle: '#F8FAF8'
+  light-border: '#E2E8F0'
+  light-border-subtle: '#EEF2F6'
+  light-text-primary: '#0F172A'
+  light-text-secondary: '#475569'
+  light-text-muted: '#94A3B8'
+  
+  # Dark Mode Surfaces (Deep Carbon & Slate)
+  dark-canvas: '#0D1117'
+  dark-surface: '#161B22'
+  dark-surface-elevated: '#1F242C'
+  dark-border: '#30363D'
+  dark-border-subtle: 'rgba(255, 255, 255, 0.08)'
+  dark-text-primary: '#F0F6FC'
+  dark-text-secondary: '#8B949E'
+  dark-text-muted: '#6E7681'
+  
+  # Signals & Statuses
+  primary-emerald: '#10B981'
+  primary-emerald-hover: '#34D399'
+  primary-emerald-glow: 'rgba(16, 185, 129, 0.3)'
+  warning-amber: '#F59E0B'
+  danger-crimson: '#EF4444'
+  info-sky: '#0EA5E9'
+  purple-accent: '#8B5CF6'
+
 typography:
-  headline-xl:
-    fontFamily: Inter
-    fontSize: 40px
-    fontWeight: '700'
-    lineHeight: 48px
-    letterSpacing: -0.02em
-  headline-xl-mobile:
-    fontFamily: Inter
-    fontSize: 30px
-    fontWeight: '700'
-    lineHeight: 38px
-    letterSpacing: -0.015em
-  headline-lg:
-    fontFamily: Inter
-    fontSize: 32px
-    fontWeight: '600'
-    lineHeight: 40px
-    letterSpacing: -0.02em
-  headline-lg-mobile:
-    fontFamily: Inter
-    fontSize: 24px
-    fontWeight: '600'
-    lineHeight: 32px
-    letterSpacing: -0.01em
-  headline-md:
-    fontFamily: Inter
-    fontSize: 24px
-    fontWeight: '600'
-    lineHeight: 32px
-    letterSpacing: -0.015em
-  headline-sm:
-    fontFamily: Inter
-    fontSize: 20px
-    fontWeight: '600'
-    lineHeight: 28px
-    letterSpacing: -0.01em
-  body-lg:
-    fontFamily: Inter
-    fontSize: 16px
-    fontWeight: '400'
-    lineHeight: 24px
-    letterSpacing: -0.005em
-  body-md:
-    fontFamily: Inter
-    fontSize: 14px
-    fontWeight: '400'
-    lineHeight: 20px
-    letterSpacing: 0em
-  body-sm:
-    fontFamily: Inter
-    fontSize: 12px
-    fontWeight: '400'
-    lineHeight: 18px
-    letterSpacing: 0.005em
-  code-lg:
-    fontFamily: JetBrains Mono
-    fontSize: 14px
-    fontWeight: '500'
-    lineHeight: 20px
-    letterSpacing: 0em
-  code-md:
-    fontFamily: JetBrains Mono
-    fontSize: 12px
-    fontWeight: '500'
-    lineHeight: 16px
-    letterSpacing: 0.01em
-  code-sm:
-    fontFamily: JetBrains Mono
-    fontSize: 10px
-    fontWeight: '600'
-    lineHeight: 14px
-    letterSpacing: 0.02em
-  label-md:
-    fontFamily: Inter
-    fontSize: 12px
-    fontWeight: '600'
-    lineHeight: 16px
-    letterSpacing: 0.02em
-  label-sm:
-    fontFamily: JetBrains Mono
-    fontSize: 11px
-    fontWeight: '600'
-    lineHeight: 14px
-    letterSpacing: 0.04em
-rounded:
-  sm: 0.125rem
-  DEFAULT: 0.25rem
-  md: 0.375rem
-  lg: 0.5rem
-  xl: 0.75rem
-  full: 9999px
-spacing:
-  gutter: 1rem
-  gutter-desktop: 1.5rem
-  margin: 1rem
-  margin-desktop: 2rem
-  space-xs: 0.25rem
-  space-sm: 0.5rem
-  space-md: 1rem
-  space-lg: 1.5rem
-  space-xl: 2.5rem
+  primaryFontFamily: "Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+  codeFontFamily: "'JetBrains Mono', Consolas, Monaco, monospace"
 ---
 
-## Brand & Style
+# Proman AI — Design System & UI Specifications
 
-This design system establishes a high-precision, mission-critical operations environment tailored for enterprise SecOps, SREs, and cloud infrastructure engineers. The interface pairs industrial-grade telemetry with an authoritative cyber-command presence. It bridges high-density data visualization with executive clarity, communicating absolute uptime, deterministic latency, and impenetrable defense.
+> **Status:** Aktif & Terverifikasi dengan Implementasi Terkini  
+> **Versi:** 2.2.0 (Post-Redesign)  
+> **Target Audiens:** Enterprise Project Managers, Engineering Leads, Super Admin & Member Standar  
 
-### Visual Movement: Cyber-Tactical Precision
-The aesthetic blends technical brutalism's rigid functionalism with refined dark-mode glassmorphism and targeted tactical luminescence. Key characteristics:
-- **Foundational Darkness:** Deep void slate backgrounds eliminate visual fatigue across extended shifts in low-light Network Operations Centers (NOCs) and Security Operations Centers (SOCs).
-- **Sub-surface Radiance:** Targeted neon emerald glows highlight primary execution points, healthy telemetry states, and anomalous system behavior without washing out surrounding context.
-- **Micro-Structured Layering:** Translucent frosted boundaries and razor-thin metallic strokes replace heavy drop shadows, producing a lightweight, cockpit-grade layout.
-- **Engineered Legibility:** Strict distinction between natural language directives and raw telemetry/hex logs ensures zero cognitive ambiguity during incident response.
+---
 
-## Colors
+## 1. Brand Identity & Visual Philosophy
 
-The palette leverages a calibrated dark-spectrum gradient with precise, signal-driven emerald interventions. Every color tier satisfies WCAG 2.1 AAA or AA requirements against slate canvases.
+**Proman AI** memadukan estetika **Modern Corporate Productivity** dengan sentuhan **Deep Forest Green** dan **Signal Emerald Precision**. Filosofi visual ini dirancang untuk menghadirkan kenyamanan visual maksimal bagi pengguna yang bekerja intensif seharian, sekaligus mempertahankan ketegasan data manajerial tingkat enterprise.
 
-### Palette Architecture
-- **Base Canvas (`#090D16`):** The primary view-layer background; grounds telemetry without pure-black clipping.
-- **Surface Elevation (`#0F172A`):** Standard container surface for monitoring panels, tabular grids, and node matrices.
-- **Elevated Overlay (`#1E293B`):** Modal surfaces, popovers, segmented control trays, and floating command palettes.
-- **Signal Primary (`#10B981`):** System normal, verified enterprise identities, active deployment pipelines, and primary operational triggers.
-- **Signal Active/Highlight (`#34D399`):** Hover states, glow sources, active switch thumbs, and telemetry peaks.
-- **Signal Deep Anchor (`#059669`):** Selected segmented tabs, active pill fills, and pressed interactions.
-- **Structural Framing (`rgba(255, 255, 255, 0.08)` / `#1E293B`):** Ghost borders and frosted container perimeters providing crisp division under multi-window density.
+### Prinsip Desain Utama:
+1. **Zero Clutter & Universal Utility:** Antarmuka bersih, bebas dari terminologi yang terikat pada niche tertentu. Aplikasi dirancang serbaguna (*general-purpose*) untuk bidang teknologi, manufaktur, operasional, korporasi, hingga tim kreatif.
+2. **Deep Forest & Warm Accent:** Warna identitas utama menggunakan kombinasi hijau hutan mendalam (*Deep Forest Green* `#163628`) berpadu dengan aksen emas/kuning hangat (*Warm Accent* `#FEE36E`) untuk elemen pemicu tindakan primer (*Call-to-Action*), serta *Signal Emerald* (`#10B981`) untuk status sehat dan kecerdasan AI.
+3. **Dual Theme Harmony:** Dukungan penuh untuk **Light Mode** (segar, hangat, bersih) dan **Dark Mode** (kontras tinggi, tidak membuat mata lelah, tidak ada teks redup atau terpotong pada dropdown).
+4. **Full-Width Workspace Canvas:** Menghilangkan margin dan sudut melengkung berlebihan di pinggiran layout utama sehingga tabel, kalender, dan board memanfaatkan 100% ruang pandang layar.
 
-### Operational State Tokens
-- **Critical / Threat Alert:** `#F43F5E` (High-visibility crimson; strictly reserved for security breaches, hardware failures, and destructive operations).
-- **Warning / Degraded:** `#F59E0B` (Amber alert; node throttling, impending certificate expirations).
-- **Informational / Discovery:** `#38BDF8` (Cyan/sky blue; cluster reassignment, cloud-native auto-scaling events).
-- **Muted Structural Text:** `#94A3B8` (Secondary metadata, inactive tabs, port indices).
-- **High-Readability Text:** `#F8FAFC` (Primary titles, core telemetry metrics, high-priority system alerts).
+---
 
-## Typography
+## 2. Palet Warna & Token Visual
 
-The type system splits functional workloads between **Inter** for operational interfaces, executive summaries, and navigational commands, and **JetBrains Mono** for all immutable infrastructure artifacts: IP addresses, cryptographic hashes, cluster UUIDs, raw metrics, and terminal streams.
+### 2.1 Brand & Accent
+* **Deep Forest Green (`#163628` / `#0F261C`):** Digunakan untuk sidebar brand, kartu selamat datang, banner login, dan aksen navigasi utama.
+* **Warm Yellow / Accent Gold (`#FEE36E`, hover `#FCD34D`):** Digunakan untuk tombol utama seperti `+ Create Event` pada Kalender, pill status khusus, dan highlight interaktif. Teks di atas warna ini selalu menggunakan warna gelap kontras (`#163628`).
+* **Signal Emerald (`#10B981` / `#059669`):** Merepresentasikan kesehatan proyek optimal, eksekusi AI yang sukses, indikator sinkronisasi real-time, dan status *Done*.
 
-### Scaling & Legibility Guidelines
-- **Tabular Figures:** Configure all instances of Inter within telemetry and metric displays to enforce `font-feature-settings: "tnum" 1` to prevent jitter during live data re-renders.
-- **Monospaced Enforcement:** JetBrains Mono is mandatory for all system badges, micro telemetry badges, port indicators, and code snippets. Never substitute body typography into command traces.
-- **Visual Weight Distribution:** Avoid weights below `400` in dark themes to prevent optical thinning caused by light text halation on dark canvas backdrops.
+### 2.2 Tema Terang (Light Mode)
+* **Background Utama:** `#F4F6F4` / `#F8FAF8` (nuansa hangat lembut, menghindari warna putih murni yang menyilaukan mata).
+* **Container & Card:** `#FFFFFF` dengan garis tepi halus (`#E2E8F0`).
+* **Teks Primer:** `#0F172A` (Slate 900) untuk keterbacaan optimal.
+* **Teks Sekunder:** `#475569` (Slate 600) untuk label dan metadata.
 
-## Layout & Spacing
+### 2.3 Tema Gelap (Dark Mode)
+* **Background Utama:** `#0D1117` (Deep Slate Carbon).
+* **Surface Panel & Kartu:** `#161B22` / `#1F242C`.
+* **Border & Separator:** `#30363D` dan `rgba(255, 255, 255, 0.08)`.
+* **Teks Primer:** `#F0F6FC` (High-readability bright slate).
+* **Dropdowns & Form Controls:** Menggunakan background terdefinisi tegas (`#161B22` / `#1E293B`) dengan warna teks `#F0F6FC` dan option hover states untuk mencegah isu teks tidak terbaca (dark-on-dark).
 
-The layout model is anchored to an ultra-dense, responsive 12-column fluid workbench grid backed by an 8px base rhythm (with 4px micro-steps for compact data rows).
+---
 
-### Screen Breakpoints & Viewport Adaptations
-- **Desktop / Operations Console (1440px and above):** 12-column grid. Dynamic multi-pane layout featuring an expandable tactical rail (64px collapsed, 240px expanded), persistent real-time topology panel, and split data inspection view.
-- **Tablet / Field Terminal (768px - 1439px):** 8-column layout. Navigational rails collapse into floating utility drawers. Dual-column telemetry feeds stack into singular chronological streams.
-- **Mobile Handheld (<768px):** 4-column layout. Focuses purely on incident containment: single-column alerts, critical actions, and hardware heartbeat indicators. Non-essential graphs collapse into raw numeric status metrics.
+## 3. Tipografi
 
-### Grid Constraints
-Canvas margins adjust from `1rem` on mobile field setups to `2rem` across continuous command-center display setups, maximizing information density without visual crowding.
+Sistem tipografi aplikasi menggunakan font standar **Arial** sebagai font utama keluarga antarmuka (dengan fallback ke `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`), dipadukan dengan **JetBrains Mono** untuk data teknis, estimasi numerik, dan status badge.
 
-## Elevation & Depth
+| Elemen | Font Family | Ukuran / Bobot | Kegunaan |
+| :--- | :--- | :--- | :--- |
+| **Headline XL** | Arial | 32px – 40px / Bold (700) | Judul halaman landing, welcome header |
+| **Headline LG** | Arial | 24px – 28px / SemiBold (600) | Judul modal besar, view header |
+| **Headline MD** | Arial | 18px – 20px / SemiBold (600) | Header kolom board, judul kartu KPI |
+| **Body LG / MD** | Arial | 14px – 16px / Regular (400) | Teks deskripsi tugas, komentar, formulir |
+| **Body SM / XS** | Arial | 12px – 13px / Regular & Medium | Sub-tugas checklist, label input, metadata |
+| **Code / Metrics** | JetBrains Mono | 11px – 13px / Medium (500) | Jam estimasi, ID tugas, timestamp, badge |
 
-This design system repudiates traditional blurry black drop shadows in favor of **structural light boundaries** and **focused emerald glow fields**. Depth is communicated through luminosity levels and surface transience.
+---
 
-### Elevation Hierarchy
-1. **Base Floor (Z0 - `#090D16`):** The primary chassis. Receives no borders or reflections.
-2. **Standard Surface (Z1 - `#0F172A`):** Telemetry cards and infrastructure tiles. Framed by a crisp `1px solid rgba(255, 255, 255, 0.08)` border. Backdrop filters are configured with `backdrop-filter: blur(12px)`.
-3. **Elevated Tray / Popover (Z2 - `#1E293B`):** Dropdowns, context menus, and active segmented controls. Enhanced with a razor-thin internal edge highlight: `box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1)`.
-4. **Focused / Critical Overlays (Z3):** Modals, credential verification, SSO authentication panels, and root-access dialogues. Framed by a subtle emerald luminescence: `box-shadow: 0 0 24px rgba(16, 185, 129, 0.12), 0 12px 32px rgba(0, 0, 0, 0.6)`.
+## 4. Arsitektur Komponen Antarmuka Utama
 
-### Ambient Glow Implementation
-Apply ambient illumination exclusively to actionable signals and healthy execution states:
-- Active nodes and primary execution levers feature a focused emerald perimeter emission: `box-shadow: 0 0 16px -2px rgba(16, 185, 129, 0.4)`.
-- Never use unconstrained glow radii larger than 32px to avoid interface haze and maintain precise target boundaries.
+### 4.1 Halaman Autentikasi (Split Login & Auth Hub)
+* **Layout:** Dua kolom (Split Screen).
+  * **Kolom Kiri (Brand Showcase):** Berlatar belakang *Forest Green* mendalam dengan pola geometri halus, logo resmi Proman AI, statistik enterprise, kutipan testimoni, dan kartu ringkasan efisiensi tim.
+  * **Kolom Kanan (Interactive Card):** Panel autentikasi modern dengan tab navigasi cepat: **Masuk (Sign In)**, **Daftar Akun Baru (Register)**, dan **Lupa Password**.
+* **Quick Demo Credentials:** Tombol pill 1-klik untuk login cepat sebagai **Super Admin** atau **Member Standar** untuk memudahkan demonstrasi dan pengujian sistem.
+* **Keamanan Input:** Indikator kekuatan kata sandi (*Password Strength Meter*), toggle visibilitas kata sandi, dan penanganan status akun (*Active*, *Pending*, *Rejected*).
 
-## Shapes
+### 4.2 Papan Kanban & Quick Add Task
+* **Full-Canvas Layout:** Papan Kanban membentang penuh (*edge-to-edge*) tanpa pembatasan sudut melengkung berlebih di sisi luar layar, memaksimalkan visibilitas 5 kolom (`Backlog`, `To Do`, `In Progress`, `Review`, `Done`).
+* **Context-Aware Quick Add:** Tombol "+ Tambah Cepat" pada setiap kolom secara otomatis menginisiasi pembuatan tugas dengan status awal yang sesuai dengan kolom yang diklik (misalnya: klik di *In Progress* langsung membuka modal dengan status *In Progress*).
+* **Kartu Tugas:** Menampilkan chip prioritas (Urgent, High, Medium, Low), avatar assignee ganda, indikator deadline/overdue, progress sub-tugas checklist, dan badge AI Risk bila terdeteksi keterlambatan.
 
-The interface employs a disciplined, micro-radiused shape profile (`roundedness: 1` / `0.25rem` base, with maximum card curvatures capping at `0.5rem`). This geometric discipline reflects the industrial, rack-mounted nature of enterprise hardware and network routing logic.
+### 4.3 Schedule & Calendar View (Modern Dual-Panel Architecture)
+* **Top Bar Controls:**
+  * Navigasi bulan (Previous, Next, Today).
+  * Tampilan toggle mode (**Bulan / Month** dan **Minggu / Week**).
+  * Filter status interaktif (Semua, To Do, In Progress, Review, Done).
+  * Tombol CTA Menonjol: **`+ Create Event`** dalam format pill kuning hangat (`#FEE36E`).
+* **Split View Layout:**
+  * **Panel Kiri (Side Widget):** Mini kalender bulan interaktif untuk navigasi tanggal cepat, kartu agenda tugas hari ini (*Today's Tasks*), dan kartu ringkasan metrik jadwal.
+  * **Panel Kanan (Main Work Area):**
+    * **Weekly Time Grid:** Grid waktu 8 kolom (label jam 08:00 – 18:00 di sebelah kiri dan 7 kolom hari kerja di sebelah kanan). Tugas ditampilkan sebagai blok waktu berwarna interaktif dengan badge prioritas dan avatar.
+    * **Monthly Grid:** Tampilan kalender penuh 35/42 slot dengan kartu tugas di setiap tanggal dan indikator "Hari Ini".
 
-### Geometry Rules
-- **Base Components (Inputs, Segmented Controls, Badges, Buttons):** `0.25rem` (4px). Delivers crisp, compact boundaries that maximize vertical screen real estate.
-- **Structural Containers (Panels, Diagnostic Cards, SSO Containers):** `0.5rem` (8px). Softens panel groupings while retaining architectural structure.
-- **Micro-Indicators & Badges:** `2px` border-radius or pure pill formats where status continuity must be immediately parsed.
+### 4.4 AI Task Breakdown & Asisten Cerdas (Universal Engine)
+* **Universal Prompt Input:** Area masukan prompt tanpa batasan bidang (misal: "Pengembangan arsitektur backend", "Peluncuran inisiatif regional", "Pembaruan infrastruktur cloud").
+* **Saran Contoh Dinamis:** Contoh prompt yang universal, relevan, dan terbebas dari contoh kaku.
+* **1-Click Generation & Assignment:** AI membagi inisiatif menjadi sub-tugas dengan estimasi jam, tingkat prioritas, dan rekomendasi assignee berdasarkan beban kerja riil tim saat ini.
 
-## Components
+### 4.5 Manajemen Pengguna & Matriks Hak Akses (RBAC)
+* **Struktur Peran 2-Tier:**
+  * 👑 **Super Admin:** Akses penuh konfigurasi sistem, manajemen pengguna, persetujuan akun pendaftar baru, pengaturan API key AI, dan log audit.
+  * 👤 **Member Standar:** Pengguna operasional untuk membuat/mengelola tugas, berkolaborasi di board, kalender, dan menggunakan AI Copilot.
+* **Tabel Matriks Kebijakan:** Kartu panduan visual di Admin Settings yang merinci izin akses Super Admin vs Member Standar secara transparan.
 
-### Buttons & Trigger Levers
-- **Primary Operational Button:** Solid emerald background (`#10B981`) with rich slate text (`#090D16`, bold 600). Top edge features a subtle `1px` translucent white highlight. Hover triggers a shift to `#34D399` coupled with an emerald ambient glow (`0 0 16px rgba(16, 185, 129, 0.35)`).
-- **Secondary Ghost Trigger:** Background transparent, stroke `1px solid rgba(255, 255, 255, 0.12)`, text `#F8FAFC`. On hover: surface transitions to `rgba(255, 255, 255, 0.05)` and border transitions to `#10B981`.
-- **Destructive/Containment Button:** Background `rgba(244, 63, 94, 0.1)`, border `1px solid #F43F5E`, text `#F43F5E`. On hover: solid `#F43F5E` fill with `#FFFFFF` text and crimson glow.
+---
 
-### Segmented Control Tabs
-- **Tray:** Enclosed capsule in `#090D16` with a `1px solid rgba(255, 255, 255, 0.06)` border and `4px` internal padding.
-- **Tab Target:** Sleek low-profile toggle using `label-md`. Inactive: text `#94A3B8`, no background.
-- **Active Segment:** Elevated slate background (`#1E293B`), text `#F8FAFC`, framed by an ultra-thin `1px solid rgba(255, 255, 255, 0.15)` border and an inner hairline emerald indicator (`#10B981`) at the base or active edge.
+## 5. Responsivitas & Aksesibilitas (a11y)
 
-### System Telemetry Badges & Chips
-- Set in **JetBrains Mono** (`code-sm`, uppercase).
-- Constructed using low-opacity status fills:
-  - **Healthy:** Fill `rgba(16, 185, 129, 0.1)`, border `1px solid rgba(16, 185, 129, 0.4)`, text `#34D399`. Accompanied by a pulsing 6px neon dot.
-  - **Warning:** Fill `rgba(245, 158, 11, 0.1)`, border `1px solid rgba(245, 158, 11, 0.4)`, text `#FBBF24`.
-  - **Severed/Down:** Fill `rgba(244, 63, 94, 0.1)`, border `1px solid rgba(244, 63, 94, 0.4)`, text `#FB7185`.
-
-### Enterprise SSO Authentication Hub
-- Contained in an elevated card (`#0F172A`) backed by `backdrop-filter: blur(16px)` and an ambient emerald aura.
-- **SSO Provider Selectors (Okta, Azure AD, Ping Identity, SAML 2.0):** Dark matte buttons (`#1E293B`) with `1px solid rgba(255, 255, 255, 0.08)` borders, containing high-contrast vector badges and mono-spaced domain confirmations (`user@organization.corp`).
-- Focus and authentication lock states transition borders directly to `#10B981` with an interior verified checkmark.
-
-### Input Fields & Search Bars
-- Background: `#090D16` with inset framing.
-- Border: `1px solid rgba(255, 255, 255, 0.1)`.
-- Typography: Body Inter (`body-md`), with system arguments and query syntax highlighted in JetBrains Mono.
-- Active Focus: Zero default browser ring; replaced by `border-color: #10B981` and `box-shadow: 0 0 0 1px #10B981, 0 0 12px rgba(16, 185, 129, 0.2)`.
-
-### Checkboxes & Binary Radios
-- Size: 16px × 16px square (2px border radius) or 16px circular radio.
-- Inactive: Background `#090D16`, stroke `1px solid #475569`.
-- Checked: Background `#10B981`, stroke `#10B981`, containing an SVG sharp micro-check in `#090D16`. Includes a localized neon glow tick.
-
-### Cards & Diagnostic Panels
-- Background: Translucent slate (`#0F172A` with 90% opacity).
-- Framing: Frosted glass stroke `1px solid rgba(255, 255, 255, 0.08)`.
-- Header: Separated by a `1px solid rgba(255, 255, 255, 0.04)` baseline, featuring an Inter title on the left and a JetBrains Mono node metric on the right.
-- Visual Hover: Border shifts from neutral glass to `rgba(16, 185, 129, 0.3)` across a 150ms ease-out transition.
+1. **Mobile Drawer Navigation:** Sidebar dapat disembunyikan (*auto-hide*) dan beralih ke drawer geser saat dibuka di perangkat mobile (< 768px).
+2. **Kontras Warna WCAG 2.1 AA:** Seluruh kombinasi warna teks dan latar belakang (termasuk tombol kuning berteks gelap `#163628`) memenuhi standar kontras minimal 4.5:1.
+3. **Form Focus & State Feedback:** Semua input teks, select dropdown, dan checkbox memiliki *ring focus* warna emerald yang jelas (`#10B981`) dan animasi transisi halus (150ms).

@@ -1,210 +1,208 @@
 # Product Requirement Document (PRD): ProMan-AI
 
-> **Status Dokumen:** Aktif — diselaraskan dengan implementasi aplikasi saat ini (iterasi MVP).
-> **Tanggal Pembaruan:** 23 September 2026
+> **Status Dokumen:** Aktif — Diselaraskan dengan implementasi dan pembaruan sistem terkini.  
+> **Versi Dokumen:** 2.2.0  
+> **Tanggal Pembaruan:** 15 Oktober 2026  
 
 ---
 
 ## 1. Ringkasan Eksekutif
 
-**ProMan-AI** adalah aplikasi manajemen proyek enterprise berbasis web yang berjalan *real-time* di atas **Firebase (Firestore + Auth + Hosting)** dengan mesin kecerdasan buatan (AI) yang sudah terintegrasi langsung di dalam alur kerja. Aplikasi ini mengotomatisasi pekerjaan administratif berulang (estimasi tugas, pemecahan inisiatif, ringkasan status eksekutif), memprediksi risiko keterlambatan proyek, dan memberikan rekomendasi cerdas untuk alokasi beban kerja tim.
+**ProMan-AI** adalah platform manajemen proyek modern enterprise berbasis web yang beroperasi secara *real-time* di atas ekosistem **Firebase (Firestore, Authentication, Hosting, dan Cloud Functions)** dengan integrasi kecerdasan buatan (*AI-native*) langsung pada alur kerja tim. Aplikasi ini mengotomatisasi pekerjaan administratif rutin (pemecahan inisiatif kerja, estimasi jam kerja, perumusan ringkasan status berkala), mendeteksi potensi risiko keterlambatan proyek secara prediktif, serta memberikan rekomendasi alokasi beban kerja yang seimbang bagi seluruh anggota tim.
 
-Saat ini ProMan-AI telah diimplementasikan sebagai **MVP fungsional penuh** dengan papan Kanban, Timeline/Gantt, Kalender, Daftar & Tabel, dashboard risiko prediktif, alokasi sumber daya cerdas, ringkasan eksekutif otomatis, serta asisten chat AI (**Project Copilot**). Seluruh fitur AI bekerja melalui arsitektur **multi-LLM provider** (Groq + OpenRouter) dengan *fallback* ke simulator heuristik lokal sehingga aplikasi tetap berfungsi meskipun tidak ada API key. Notifikasi terintegrasi dengan **Telegram Bot** dan **Email (via Cloud Functions)**.
-
-**Status layanan:** Aplikasi telah di-deploy ke Firebase Hosting (`https://proman-83c57.web.app`) dengan CI/CD otomatis melalui GitHub Actions.
+Saat ini ProMan-AI telah beroperasi penuh dengan fitur utama mencakup:
+*   **Multi-View Project Workspace:** Papan Kanban interaktif dengan drag & drop dan *context-aware quick add*, Timeline/Gantt Chart dengan indikator risiko AI, Kalender Kerja Modern dengan *Weekly Time Grid* dan *Mini-Calendar*, serta Daftar & Tabel tugas yang dapat disortir.
+*   **Universal AI Engine:** Didukung oleh arsitektur *multi-LLM provider* berantai (**Groq** → **OpenRouter** → **ProMan Local Heuristic Simulator**) yang menjamin fitur AI selalu aktif, cepat, dan mandiri tanpa ketergantungan mutlak pada API key eksternal.
+*   **2-Tier Role-Based Access Control (RBAC):** Sistem otorisasi sederhana, terstruktur, dan tegas yang membagi pengguna ke dalam peran **Super Admin** dan **Member Standar**.
+*   **Modern Executive Design & Dual Theme:** Mengusung identitas visual *Deep Forest Green & Signal Emerald*, tipografi universal Arial, kontras tinggi di tema gelap (*dark mode*), serta halaman login *split-screen* modern.
+*   **Notifikasi Multi-Saluran:** Integrasi otomatis ke **Telegram Bot** (client-side) dan **Email via Cloud Functions** (Nodemailer/SMTP) lengkap dengan pengingat tenggat harian.
 
 ---
 
 ## 2. Visi & Tujuan Produk
 
-*   **Visi:** Menjadi asisten manajerial paling cerdas yang memberdayakan tim untuk berkolaborasi tanpa hambatan dan menyelesaikan proyek secara presisi.
+*   **Visi:** Menjadi asisten manajerial proyek paling adaptif, presisi, dan mudah digunakan yang membebaskan tim profesional dari friksi administratif.
 *   **Tujuan Bisnis:**
-    *   Mengakuisisi 50.000 Pengguna Aktif Bulanan (MAU) dalam 12 bulan pertama.
-    *   Mengurangi waktu perencanaan proyek dan pembuatan laporan pengguna hingga 40% melalui otomasi AI.
-*   **Tujuan Pengguna:** Membantu pengguna menghindari *burnout* (melalui pemantauan beban kerja), mendeteksi *bottleneck* (hambatan) sejak dini (melalui dashboard risiko), dan mempermudah pendelegasian tugas secara adil (melalui rekomendasi assignee cerdas).
+    *   Mencapai efisiensi waktu hingga 45% dalam proses perencanaan inisiatif dan pembuatan laporan eksekutif melalui bantuan AI.
+    *   Menghadirkan platform manajemen proyek universal yang relevan untuk tim teknologi, operasional bisnis, manufaktur, korporasi, hingga agensi kreatif.
+    *   Mempertahankan tingkat kepuasan pengguna (*user satisfaction*) di atas 90% dengan antarmuka yang bersih, intuitif, dan bebas gangguan.
+*   **Tujuan Pengguna:**
+    *   Mencegah kelelahan kerja (*burnout*) melalui pemantauan kapasitas dan pemerataan beban kerja tim.
+    *   Mendeteksi *bottleneck* lebih awal dengan dashboard risiko prediktif sebelum proyek mengalami keterlambatan nyata.
+    *   Menjaga fokus kerja harian dengan jadwal kerja berbasis blok waktu (*Weekly Time Grid*).
 
 ---
 
-## 3. Persona Pengguna
+## 3. Sistem Peran & Aksesibilitas (2-Tier RBAC)
 
-Aplikasi mengimplementasikan model persona berikut (tersedia sebagai profil demo di dalam sistem):
+Sistem menyederhanakan pengelolaan hak akses pengguna ke dalam **2 tingkatan peran resmi**:
 
-| Persona | Peran & Kebutuhan | Titik Nyeri (Pain Points) |
-| :--- | :--- | :--- |
-| **Super Admin** | Mengelola seluruh sistem: verifikasi pendaftaran akun, manajemen pengguna & password, konfigurasi perusahaan, pengaturan AI & privasi, dan meninjau audit log. | Menghabiskan waktu untuk pekerjaan administrasi akun dan konfigurasi yang berulang. |
-| **Alex — Project Manager (PM)** | Membutuhkan visibilitas menyeluruh terhadap *timeline*, anggaran, risiko, dan beban kerja tim; membuat proyek baru. | Kehabisan waktu untuk membuat laporan rutin; sering terkejut oleh penundaan tugas yang tidak terdeteksi. |
-| **Sarah — Team Member** | Menginginkan kejelasan tugas, prioritas yang terarah, estimasi beban kerja, dan bantuan solusi teknis dari AI. | Sering menerima tugas besar yang kurang spesifik; beban kerja kadang tidak merata (overload). |
-| **Budi — Stakeholder/Klien** | Membutuhkan *update* tingkat tinggi (ringkasan eksekutif) tentang status proyek yang siap dibagikan. | Tidak punya waktu untuk membaca ratusan tiket teknis di papan Kanban. |
-| **Rian — Operations Lead** | Memantau operasional lapangan/logistik, kapasitas tim, dan tenggat proyek operasional. | Kesulitan melacak progres operasional multi-lokasi dan mendeteksi keterlambatan dini. |
+```
+                  ┌─────────────────────────────────────────┐
+                  │          PROMAN AI RBAC MODEL           │
+                  └────────────────────┬────────────────────┘
+                                       │
+            ┌──────────────────────────┴──────────────────────────┐
+            ▼                                                     ▼
+┌───────────────────────────────┐             ┌───────────────────────────────┐
+│         SUPER ADMIN           │             │        MEMBER STANDAR         │
+├───────────────────────────────┤             ├───────────────────────────────┤
+│ • Full System Configuration   │             │ • Project Management & Tasks  │
+│ • User Management & Approvals │             │ • Kanban, Timeline, Calendar  │
+│ • Password Reset & Security   │             │ • AI Task Breakdown & Copilot │
+│ • AI Engine & Zero-Retention  │             │ • Subtask & Progress Updates  │
+│ • Audit Logs & System Telemetry│            │ • Commenting & Collaboration  │
+└───────────────────────────────┘             └───────────────────────────────┘
+```
+
+### Matriks Kebijakan Hak Akses (Access Control Matrix)
+
+| Fitur / Tindakan | Super Admin | Member Standar | Catatan Kebijakan |
+| :--- | :---: | :---: | :--- |
+| **Persetujuan Pendaftar Baru (Pending)** | ✅ Ya | ❌ Tidak | Khusus Super Admin untuk keamanan organisasi |
+| **Manajemen Pengguna (CRUD & Ubah Role)** | ✅ Ya | ❌ Tidak | Dikelola melalui tab Manajemen Pengguna di Admin Settings |
+| **Konfigurasi AI Provider & Zero-Retention** | ✅ Ya | ❌ Tidak | Pengaturan API Key Groq/OpenRouter & privasi data |
+| **Meninjau Riwayat Audit Log Sistem** | ✅ Ya | ❌ Tidak | Pemantauan aktivitas dan log keamanan aplikasi |
+| **Pembuatan & Pengaturan Proyek Baru** | ✅ Ya | ✅ Ya | Kolaborasi terbuka untuk inisiatif baru |
+| **Manajemen Tugas (Buat, Edit, Pindah, Hapus)** | ✅ Ya | ✅ Ya | Hak penuh dalam papan kerja operasional |
+| **Penggunaan AI Breakdown & Copilot Assistant**| ✅ Ya | ✅ Ya | Tersedia untuk seluruh anggota tim |
+| **Akses Schedule & Kalender Kerja** | ✅ Ya | ✅ Ya | Visibilitas jadwal dan blok waktu kegiatan |
+| **Pengaturan Profil Pribadi & Password** | ✅ Ya | ✅ Ya | Setiap pengguna berhak memperbarui profilnya |
 
 ---
 
-## 4. Fitur Utama & Fungsionalitas
+## 4. Fitur Utama & Rincian Fungsionalitas
 
 ### A. Autentikasi & Manajemen Akun
 
-| Fitur | Status | Detail Implementasi |
-| :--- | :--- | :--- |
-| **Login (Sign In)** | ✅ Terimplementasi | Autentikasi email/password via **Firebase Auth** dengan session persistence (browser). Mendukung akun demo. Pesan error detail (password salah, email belum terdaftar, akun pending/ditolak). |
-| **Pendaftaran (Sign Up)** | ✅ Terimplementasi | Registrasi mandiri dengan nama, email perusahaan, departemen, jabatan, dan password. Akun baru berstatus **Pending** hingga disetujui Super Admin. |
-| **Lupa/Reset Password** | ✅ Terimplementasi | Reset password langsung (Firestore) + inisiasi email reset via Firebase Auth. |
-| **Ganti Password** | ✅ Terimplementasi | Re-autentikasi Firebase, validasi password lama, *password strength meter* (Lemah/Cukup/Kuat/Sangat Kuat), dan sinkronisasi ke Firestore. |
-| **Verifikasi Akun Pending** | ✅ Terimplementasi | Antrean pendaftar baru di Admin Settings dengan tombol **Setujui** / **Tolak**. |
-| **Session Timeout Otomatis** | ✅ Terimplementasi | Auto-logout setelah **10 menit tidak ada aktivitas** dengan peringatan toast. |
-| **Manajemen Profil Pengguna** | ✅ Terimplementasi | CRUD pengguna oleh Super Admin: foto (upload custom maks. 2MB atau preset), role, departemen, kapasitas jam/minggu, persona type, status akun. |
+*   **Modern Split-Screen Login Page:**
+    *   Sisi kiri menampilkan kartu visual *Deep Forest Green* dengan logo resmi Proman AI, metrik efisiensi proyek, testimoni manajerial, dan penegasan privasi *Zero-Retention*.
+    *   Sisi kanan menyediakan tab navigasi cepat untuk **Masuk**, **Daftar Akun Baru**, dan **Lupa Password**.
+    *   **Demo Quick-Fill:** Tombol pill 1-klik untuk masuk sebagai akun demo **Super Admin** atau **Member Standar**.
+*   **Registrasi & Alur Verifikasi Akun:** Pengguna baru dapat mendaftar mandiri. Akun baru masuk ke antrean **Pending** dan membutuhkan persetujuan Super Admin sebelum dapat mengakses sistem.
+*   **Keamanan & Sesi:** 
+    *   Auto-logout saat sesi idle mencapai **10 menit** guna melindungi data sensitif di lingkungan bersama.
+    *   *Password strength meter* (Lemah, Cukup, Kuat, Sangat Kuat).
+    *   Pembaruan password langsung dengan re-autentikasi Firebase dan sinkronisasi Firestore.
 
-### B. Fitur Manajemen Proyek Inti (Core)
+### B. Workspace Proyek & Multi-View
 
-1.  **Manajemen Tugas**
-    *   **Status tugas:** `Backlog → To Do → In Progress → Review → Done`.
-    *   **Prioritas:** `Low / Medium / High / Urgent`.
-    *   **Assignee:** mendukung banyak penanggung jawab (*multiple assignees*) per tugas.
-    *   **Sub-tugas:** checklist dengan kategori (Frontend, Backend, Design, QA, Operations, Logistics, Marketing, HR, Finance, Legal, General).
-    *   **Tag/Label, tanggal mulai, tenggat, estimasi jam kerja**, dan deskripsi rinci.
-    *   **Komentar & catatan progres** per tugas dengan riwayat penulis dan waktu.
-    *   **Lampiran (Attachment):** model data tersedia dan ditampilkan di detail tugas (upload file cloud belum termasuk MVP).
+1.  **Papan Kanban (Full-Width Canvas):**
+    *   5 kolom alur kerja: `Backlog → To Do → In Progress → Review → Done`.
+    *   **Context-Aware Quick Add:** Mengklik tombol "+ Tambah Cepat" pada kolom tertentu langsung mengisi status awal tugas sesuai kolom tersebut (misal: klik di kolom *In Progress* langsung membuka modal dengan status *In Progress*).
+    *   Desain *full-canvas* tanpa border sudut melengkung berlebihan di pinggiran luar, memaksimalkan area kerja.
+    *   Dukungan *drag & drop* lancar, tag prioritas, multi-assignee, indikator risiko keterlambatan AI, dan checklist sub-tugas.
 
-2.  **Multi-Tampilan (Views)**
-    *   **Papan Kanban** dengan **drag & drop** antar kolom status.
-    *   **Timeline & Gantt Chart** dengan *zoom* Harian/Mingguan, highlight hari ini, indikator risiko AI (⚠️ estimasi delay) pada bar Gantt.
-    *   **Kalender Proyek** (bulanan) menampilkan rentang tanggal tugas, chip berwarna sesuai prioritas, dan indikator risiko.
-    *   **Daftar & Tabel** dengan kolom yang dapat diurutkan (judul, status, prioritas, tenggat).
+2.  **Modern Schedule & Calendar View:**
+    *   **Top Bar:** Pemilih navigasi bulan/hari ini, filter status tugas, serta tombol aksi primer **`+ Create Event`** berbentuk pill kuning hangat (`#FEE36E`).
+    *   **Panel Kiri:** Mini kalender interaktif untuk lompat tanggal cepat, daftar agenda tugas hari ini (*Today's Agenda*), dan kartu ringkasan jadwal.
+    *   **Panel Kanan (Main Work Area):**
+        *   **Weekly Time Grid:** Tampilan grid waktu 8 kolom (08:00 – 18:00) yang memetakan tugas ke blok waktu harian berdasarkan rentang jam kerja.
+        *   **Monthly Calendar Grid:** Tampilan kalender bulanan penuh dengan kartu tugas ringkas di setiap sel tanggal.
 
-3.  **Manajemen Proyek & Global Board**
-    *   **CRUD Project** (buat, edit, hapus) — dibatasi untuk Super Admin & PM.
-    *   **Bidang/Domain proyek:** Technology, Operations, Marketing, HR, Finance, Event, dan General/Multi-disiplin.
-    *   **Status proyek:** Active, Planning, On Hold, Completed.
-    *   **Project Health Score (0–100)** dengan progress bar (% tugas selesai).
-    *   **Global Board ("Semua Project")** untuk memantau seluruh portofolio lintas proyek sekaligus, lengkap dengan *Global Health*.
-    *   Pemfilteran tugas: pencarian (judul/deskripsi/tag), assignee, prioritas, status, dan *Quick Filters* di sidebar ("Tugas Saya", "Prioritas Urgent").
+3.  **Timeline & Gantt Chart:**
+    *   Pemetaan jadwal dengan skala zoom Harian dan Mingguan.
+    *   Highlight penanda garis waktu "Hari Ini" (*Current Day Marker*).
+    *   Peringatan risiko delay otomatis pada bar Gantt tugas yang terancam meleset dari target.
 
-4.  **Ruang Kolaborasi**
-    *   Kolom komentar pada setiap tugas.
-    *   *Attachment* ditampilkan pada kartu tugas & detail tugas.
-    *   **Catatan:** *@mention* pada komentar belum memiliki UI khusus (model data `mentions` sudah disiapkan).
+4.  **Daftar & Tabel:**
+    *   Tabel terstruktur dengan pengurutan kolom dinamis (judul, status, prioritas, penanggung jawab, tenggat).
 
-### C. Fitur Berbasis AI (AI-Powered) — *USP Aplikasi*
+5.  **Global Board ("Semua Project"):**
+    *   Tampilan portofolio lintas proyek yang menampilkan metrik *Global Health Score* dan pemfilteran cepat (Tugas Saya, Prioritas Urgent, berdasarkan proyek).
 
-Seluruh fitur AI berjalan melalui **multi-LLM provider chain**: **Groq** (primary) → **OpenRouter** (secondary) → **ProMan Local Heuristic Simulator** (fallback). Dengan demikian fitur AI selalu responsif bahkan saat API key tidak dikonfigurasi.
+### C. Universal AI Engine (USP)
 
-1.  **AI Task Breakdown Engine (Pemecah Tugas Otomatis)**
-    *   ✅ **Terimplementasi.** Pengguna memasukkan *prompt* singkat (contoh: "Buka cabang operasional baru di Surabaya", "Buatkan fitur login menggunakan Google").
-    *   AI mengklasifikasikan domain (Operations, Marketing, HR, Technology, Finance, dsb.), menyusun 4–6 sub-tugas terstruktur dengan kategori, menetapkan prioritas, tag, dan **merekomendasikan penanggung jawab** paling sesuai (berdasarkan role & beban kerja).
-    *   Hasil dapat langsung **ditambahkan ke papan proyek (1-click)**.
+Sistem AI beroperasi dengan pendekatan **multi-LLM berantai**: **Groq** (`openai/gpt-oss-120b`) → **OpenRouter** (model gratis/hemat) → **ProMan Local Heuristic Simulator**.
 
-2.  **AI Smart Task Estimator & Auto Due-Date (Estimasi Jam Kerja)**
-    *   ✅ **Terimplementasi.** Saat membuat/mengedit tugas, AI memperkirakan jam kerja riil, tingkat kompleksitas (Rendah/Sedang/Kompleks/Sangat Kompleks), dan **due date realistis** (memperhitungkan jam kerja 6–8 jam/hari, melewati hari Minggu) beserta alasan analisisnya.
+1.  **Universal AI Task Breakdown:**
+    *   Menerima prompt inisiatif dalam bahasa alami tanpa terbatas pada domain spesifik.
+    *   Secara otomatis memecah inisiatif menjadi 4–6 sub-tugas terstruktur, menentukan perkiraan waktu, tingkat prioritas, kategori pekerjaan, dan merekomendasikan assignee dengan beban kerja terendah.
+    *   Hasil dapat langsung dimasukkan ke papan proyek dengan 1 klik.
+2.  **AI Smart Estimator & Auto Due-Date:**
+    *   Menganalisis deskripsi dan kompleksitas tugas untuk memberikan estimasi jam kerja yang realistis dan saran tanggal jatuh tempo (memperhitungkan jam kerja harian dan hari libur).
+3.  **AI Technical Solution & Troubleshooting Advisor:**
+    *   Memberikan rekomendasi diagnosis, langkah penyelesaian masalah, serta checklist teknis yang dapat langsung disematkan ke sub-tugas atau kolom komentar.
+4.  **Predictive Risk & Delay Analysis Dashboard:**
+    *   Menghitung skor kesehatan proyek (0–100) dan probabilitas keterlambatan.
+    *   Menyediakan tombol mitigasi 1-klik (*Alihkan tugas*, *Pecah tugas*, *Beri buffer waktu*).
+5.  **Smart Resource Allocation & Workload Planner:**
+    *   Memantau kapasitas jam kerja mingguan per anggota tim untuk mendeteksi beban berlebih (*overload > 100%*) dan risiko *burnout*.
+6.  **Auto-Status Summarization:**
+    *   Menghasilkan laporan eksekutif komprehensif dalam hitungan detik.
+    *   Mendukung ekspor langsung ke format Teks (`.txt`), cetak/unduh **PDF**, atau salin ke *clipboard*.
+7.  **Project Copilot (Interactive AI Assistant):**
+    *   Asisten chat cerdas yang memahami konteks seluruh data proyek secara real-time untuk menjawab pertanyaan tim, memberikan panduan, dan mengeksekusi tautan aksi langsung.
 
-3.  **AI Solution & Troubleshooting Advisor (Pemecah Masalah Teknis)**
-    *   ✅ **Terimplementasi.** Pada detail tugas, AI memberikan diagnosis, langkah solusi, tips teknis, potensi jebakan, dan sub-tugas rekomendasi; dapat **ditambahkan ke sub-tugas** atau **diposting ke komentar tiket** (1-click).
+### D. Notifikasi & Kolaborasi
 
-4.  **Predictive Risk & Delay Analysis (Deteksi Risiko Dini)**
-    *   ✅ **Terimplementasi.** Dashboard "Predictive Risk & Delay Analysis" menampilkan:
-        *   **Status risiko keseluruhan** (Healthy/Warning/Critical) dengan skor /100.
-        *   4 KPI: jumlah tugas berisiko tinggi, estimasi keterlambatan (hari kerja), anggota overload (>100%), dan akurasi model prediksi (±92%).
-        *   Kartu risiko per tugas dengan alasan + **rekomendasi mitigasi 1-click**: *Alihkan ke anggota lain*, *Pecahkan tugas*, *Kurangi lingkup*, atau *Setujui buffer +N hari*.
-        *   Deteksi **overdue** (tugas melewati tenggat) otomatis.
+*   **Telegram Bot Integration:** Notifikasi real-time saat pembuatan tugas, perpindahan status, pembaruan rincian tugas, dan penambahan komentar.
+*   **Email Notification (Cloud Functions):** Pengiriman email otomatis saat tugas di-assign, diperbarui, serta pengingat harian (*daily digest*) pukul 08:00 WIB untuk tugas yang mendekati deadline (≤ 2 hari).
+*   **Ruang Komentar Tugas:** Riwayat diskusi kontekstual per tugas dengan catatan waktu dan identitas penulis.
 
-5.  **Smart Resource Allocation (Alokasi Beban Kerja Cerdas)**
-    *   ✅ **Terimplementasi.** Halaman "Smart Resource Allocation & Workload Planner" menampilkan kartu kapasitas per anggota tim: bar beban kerja (berwarna: hijau/amber/merah), peringatan *overload (>100%) / burn-out*, daftar tugas aktif yang dapat diklik.
-    *   Saat pembuatan tugas, sistem menyarankan **assignee dengan beban terendah** ("Saran Beban").
+### E. Tata Kelola & Pengaturan (Admin Settings)
 
-6.  **Auto-Status Summarization (Pembuatan Laporan Instan)**
-    *   ✅ **Terimplementasi.** Modal "Auto-Status Summarization" menghasilkan laporan eksekutif (headline, status kesehatan, % selesai, pencapaian, hambatan & mitigasi, rekomendasi) dalam Bahasa Indonesia.
-    *   Cakupan dapat dipilih (**Semua Project** atau proyek tertentu) dan dapat *di-regenerate*.
-    *   **Ekspor laporan:** Unduh teks (`.txt`), **Download PDF** (via dialog cetak), dan **Salin Laporan** ke clipboard — siap dikirim ke Stakeholder.
-
-7.  **Project Copilot (Asisten Chat AI)**
-    *   ✅ **Terimplementasi.** *Chatbot* interaktif (drawer) dengan akses data proyek real-time. Mampu menjawab: "Apa tugas paling mendesak?", "Siapa yang overload?", "Tugas radik apa aja?", panduan cara pakai aplikasi, dan lain-lain.
-    *   Mendukung **action links** (buka dashboard risiko, buka alokasi sumber daya, buka ringkasan status) dan **suggestion chips** untuk pertanyaan cepat.
-
-### D. Notifikasi & Integrasi
-
-| Integrasi | Status | Detail |
-| :--- | :--- | :--- |
-| **Telegram Bot** | ✅ Terimplementasi (client-side, gratis) | Notifikasi otomatis: tugas dibuat, tugas diperbarui (dengan *diff* deskripsi mendetail), status dipindahkan, komentar baru. Konfigurasi via env `VITE_TELEGRAM_BOT_TOKEN` & `VITE_TELEGRAM_CHAT_ID`; tersedia tombol "Kirim Test Notifikasi" di Admin Settings. |
-| **Email (Firebase Cloud Functions)** | ✅ Terimplementasi | Trigger Firestore mengirim email via SMTP (Nodemailer/Gmail): **tugas di-assign**, **tugas diperbarui** (status/prioritas/tenggat), **komentar baru**, dan **reminder deadline harian** (Pub/Sub terjadwal 08:00 WIB) untuk tugas yang jatuh tempo ≤ 2 hari. |
-| Slack / MS Teams / GitHub / Google Drive | ⏳ Belum terimplementasi | Masuk *backlog* roadmap (lihat Bagian 7). |
-
-### E. Admin & Tata Kelola (Super Admin)
-
-1.  **Pengaturan Umum & Perusahaan:** nama organisasi, zona waktu operasional.
-2.  **AI Engine & Privasi Data:**
-    *   Arsitektur **multi-LLM provider**: Groq (primary), OpenRouter (secondary), Local Heuristic Simulator (fallback) — penjelasan status aktif.
-    *   **Enterprise Data Zero-Retention Mode:** data/prompt pengguna **tidak digunakan** untuk melatih model publik (diberlakukan otomatis, bukan opt-in).
-3.  **Manajemen Pengguna & Password:** antrean verifikasi pendaftar, tabel seluruh pengguna (status, password tersembunyi dengan toggle lihat, role, departemen, kapasitas, persona), tambah/edit/hapus anggota, upload foto.
-4.  **Audit Log & Sistem:** riwayat aktivitas & audit log aplikasi, status konfigurasi notifikasi Telegram.
-
-### F. Pengalaman Pengguna (UI/UX)
-
-*   **Tema Dark/Light** dengan persistensi preferensi (default: dark).
-*   Sidebar **auto-hide/icon-only** dengan fitur *pin*; desain responsif (mobile drawer).
-*   Bahasa antarmuka: **Bahasa Indonesia**.
-*   Desain sistem *Sentinel* (dark slate + emerald neon, JetBrains Mono untuk data teknis).
-*   Toast notifikasi untuk umpan balik aksi.
+*   **Informasi Organisasi:** Pengaturan nama perusahaan dan zona waktu operasional.
+*   **AI Engine & Zero-Retention:** Konfigurasi API Key serta penegasan bahwa data proyek tidak pernah disimpan atau digunakan untuk melatih model AI publik.
+*   **Manajemen Pengguna & RBAC:** Antrean persetujuan pendaftar baru, pengubahan role (Super Admin vs Member Standar), penyesuaian kapasitas jam kerja, serta visualisasi matriks kebijakan hak akses.
+*   **Audit Log:** Catatan kronologis seluruh aksi penting di dalam aplikasi untuk kebutuhan audit transparansi dan keamanan.
 
 ---
 
-## 5. Kebutuhan Non-Fungsional (Teknis & Privasi)
+## 5. Kebutuhan Non-Fungsional & Kualitas Sistem
 
-| Kebutuhan | Status / Target | Detail |
-| :--- | :--- | :--- |
-| **Sinkronisasi Real-time** | ✅ Terimplementasi | Firestore `onSnapshot` (proyek, tugas, pengguna, komentar, audit log, settings) — semua pembaruan tersinkron antar pengguna secara langsung. Target latensi sinkronisasi: **≤ 240ms** (configurable via `syncLatencyTargetMs`). |
-| **Privasi & Keamanan Data (AI)** | ✅ Terimplementasi | Mode **zero-retention** diberlakukan: data proyek tidak dipakai untuk melatih model publik. API key AI tidak di-hardcode (env var + localStorage opsional). |
-| **Arsitektur AI Resilient** | ✅ Terimplementasi | Fallback berantai Groq → OpenRouter → simulator lokal, sehingga fitur AI tetap berfungsi tanpa koneksi LLM eksternal. |
-| **Autentikasi & RBAC** | ✅ Terimplementasi | Firebase Auth; hak akses berbasis persona: Super Admin (akses penuh), PM (kelola proyek), Member/Stakeholder (lihat & update tugasnya). |
-| **Notifikasi** | ✅ Terimplementasi | Telegram Bot (client) + Email (Cloud Functions). |
-| **CI/CD & Deployment** | ✅ Terimplementasi | GitHub Actions → build → Firebase Hosting. |
-| **Performa Frontend** | ✅ | React 19 + TypeScript + Vite; desain optimasi mobile (pan-y, overscroll contained). |
-| **Integrasi Eksternal** | ⏳ Parsial | Telegram & Email aktif; Slack/Teams/GitHub belum tersedia. |
-
----
-
-## 6. Metrik Keberhasilan (Success Metrics)
-
-Metrik berikut dipantau untuk mengukur dampak fitur:
-
-*   **Adopsi AI:** Persentase tugas dan proyek yang dibuat menggunakan fitur *AI Task Breakdown* (> 35%).
-*   **Retensi Jangka Panjang:** Tingkat *churn* pengguna berbayar di bawah 3% per bulan.
-*   **Akurasi Prediksi:** Akurasi model AI dalam memprediksi *delay* proyek dengan margin error maksimal **15%** (dashboard menampilkan akurasi model ±92% saat ini).
-*   **Efisiensi PM:** Frekuensi penggunaan fitur *Auto-Status Summarization* per minggu oleh setiap manajer proyek.
-*   **Kesehatan Tim:** Penurunan jumlah anggota *overload (>100%)* setelah penggunaan Smart Resource Allocation.
+| Parameter | Target & Spesifikasi | Status Implementasi |
+| :--- | :--- | :---: |
+| **Sinkronisasi Real-Time** | Firestore real-time listener dengan target latensi update ≤ 240ms | ✅ Aktif |
+| **Ketahanan AI (Resilience)** | Fallback berantai 3 tingkat menjamin 100% waktu aktif fitur AI | ✅ Aktif |
+| **Privasi Data AI** | Mode *Zero-Retention* aktif secara baku tanpa opsi opt-out | ✅ Aktif |
+| **Tipografi & Tampilan** | Font universal Arial, WCAG 2.1 AA contrast, perbaikan penuh kontras dropdown tema gelap | ✅ Aktif |
+| **Keamanan Sesi** | Auto session timeout 10 menit inactivity | ✅ Aktif |
+| **Responsivitas Perangkat** | Optimal di desktop (1440px+), tablet (768px–1439px), dan mobile (< 768px) dengan drawer navigasi | ✅ Aktif |
+| **Arsitektur Kode & Build** | React 19 + TypeScript + Vite 6 + Tailwind CSS v4, kompilasi bebas error | ✅ Aktif |
 
 ---
 
-## 7. Status Implementasi vs. Peta Jalan (Roadmap)
+## 6. Arsitektur Teknologi
 
-### ✅ Telah Terimplementasi (MVP + Iterasi Lanjutan)
-- Fitur manajemen proyek inti: Kanban (drag & drop), Timeline/Gantt, Kalender, Daftar & Tabel.
-- Manajemen proyek multi-domain + Global Board + Health Score.
-- CRUD tugas, sub-tugas, komentar, tag, prioritas, multiple assignee.
-- Autentikasi lengkap (login, registrasi + pending approval, reset & ganti password, session timeout).
-- Seluruh fitur AI inti: **Task Breakdown, Smart Estimator, Solution Advisor, Predictive Risk, Smart Resource Allocation, Auto-Status Summary (ekspor PDF/TXT/Salin), Project Copilot.**
-- Admin Settings (perusahaan, AI & privasi, manajemen pengguna, audit log).
-- Notifikasi **Telegram Bot** dan **Email (Cloud Functions)** + reminder deadline harian.
-- Dark/Light mode, desain responsif, CI/CD.
-
-### 🚧 Sedang Berjalan / Backlog
-- **Fase Integrasi Lanjutan:** Slack/Microsoft Teams (notifikasi), GitHub/GitLab (sinkronisasi status kode), Google Drive (lampiran cloud).
-- **Upload lampiran file cloud** (Firebase Storage) pada tugas.
-- **@mention** aktif pada komentar.
-- Expand Cloud Functions deployment pada CI/CD workflow (saat ini di-comment).
-
-### 🔮 Rencana Masa Depan (Fase 3+)
-- **Voice-to-Task:** mengubah rekaman rapat langsung menjadi delegasi tugas proyek.
-- **Alokasi anggaran otomatis** berbasis prediksi AI.
-- **Offline mode** dan notifikasi *push* (web/mobile).
-- Hirarki **Workspace** penuh (saat ini hanya Project + Folder).
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                          FRONTEND (CLIENT SPA)                         │
+│  React 19 • TypeScript • Vite 6 • Tailwind CSS v4 • Lucide Icons      │
+│  UI: Split Auth • Kanban • Schedule/Time-Grid • Gantt • AI Dashboards │
+└──────────────────────────────────┬─────────────────────────────────────┘
+                                   │
+                                   ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                        BACKEND-AS-A-SERVICE                            │
+│  Firebase Authentication (Session Management & Credentials)           │
+│  Cloud Firestore (Real-time Snapshot Sync & Data Persistence)         │
+│  Firebase Hosting (Global CDN Edge Deployment)                         │
+│  Cloud Functions (Email via Nodemailer/SMTP + Scheduled Daily Digest) │
+└──────────────────────────────────┬─────────────────────────────────────┘
+                                   │
+                                   ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                         AI INFERENCE LAYER                             │
+│  Tier 1: Groq API (High-speed OSS Models)                              │
+│  Tier 2: OpenRouter API (Alternative Redundant Provider)               │
+│  Tier 3: ProMan Local Heuristic Simulator (Deterministic Fallback)     │
+└────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## 8. Teknologi & Arsitektur
+## 7. Status Rilis & Roadmap
 
-| Lapisan | Teknologi | Keterangan |
-| :--- | :--- | :--- |
-| **Frontend** | React 19, TypeScript, Vite 6, Tailwind CSS v4, Lucide Icons, date-fns, clsx/tailwind-merge | SPA responsif, mode dark/light. |
-| **Backend-as-a-Service** | Firebase (Auth, Firestore, Hosting, Cloud Functions) | Realtime sync via Firestore subscriptions. |
-| **AI Engine** | Multi-LLM provider: **Groq** (`openai/gpt-oss-120b`) → **OpenRouter** (free models) → **Local Heuristic Simulator** | Fallback berantai; output JSON terstruktur. |
-| **Notifikasi** | Telegram Bot API (client-side) + Nodemailer/Gmail SMTP (Cloud Functions) | Task lifecycle notifications + reminder deadline. |
-| **CI/CD** | GitHub Actions | Deploy ke Firebase Hosting otomatis. |
-| **Environment** | `.env` (VITE_FIREBASE_*, VITE_GROQ_API_KEY, VITE_OPENROUTER_API_KEY, VITE_TELEGRAM_*) | API key tidak di-commit ke repo. |
+### ✅ Rilis Saat Ini (v2.2.0 - Stabil & Terintegrasi)
+*   Sistem otorisasi disederhanakan ke **2-Tier RBAC** (Super Admin & Member Standar) lengkap dengan matriks kebijakan hak akses.
+*   Pembaruan visual total: Logo resmi Proman AI, halaman login modern dengan demo quick-fill, layout papan Kanban *full-canvas*, dan fitur *Schedule/Calendar View* dengan *Weekly Time Grid* dan *Mini-Calendar*.
+*   Penyempurnaan universal pada *AI Task Breakdown Engine* tanpa bias domain/industri tertentu.
+*   Perbaikan kontras dropdown dan komponen interaktif pada tema gelap (*dark mode*).
+*   Integrasi multi-saluran: Telegram Bot & Email Cloud Functions aktif.
+
+### 🚀 Rencana Pengembangan Mendatang (Backlog)
+*   **Cloud File Attachments:** Unggah dan simpan berkas lampiran tugas langsung ke Firebase Storage.
+*   **Rich @Mention Notifications:** Notifikasi khusus saat anggota tim ditandai langsung di kolom komentar tugas.
+*   **Integrasi Ekosistem Eksternal:** Webhook ke Slack, Microsoft Teams, dan GitHub commit syncing.
+*   **Voice-to-Task Transcription:** Mengonversi rekaman suara atau rangkuman rapat menjadi sub-tugas proyek secara otomatis.
