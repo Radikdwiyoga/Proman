@@ -206,3 +206,4 @@ Sistem AI beroperasi dengan pendekatan **multi-LLM berantai**: **Groq** (`openai
 *   **Rich @Mention Notifications:** Notifikasi khusus saat anggota tim ditandai langsung di kolom komentar tugas.
 *   **Integrasi Ekosistem Eksternal:** Webhook ke Slack, Microsoft Teams, dan GitHub commit syncing.
 *   **Voice-to-Task Transcription:** Mengonversi rekaman suara atau rangkuman rapat menjadi sub-tugas proyek secara otomatis.
+

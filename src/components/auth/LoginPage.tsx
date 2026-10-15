@@ -23,17 +23,38 @@ import { loginWithFirebase, registerWithFirebase, sendPasswordResetLink } from '
 import { AuthIllustration3D } from './AuthIllustration3D';
 import { User } from '../../types';
 
+const STORAGE_KEY_REMEMBER_EMAIL = 'proman_remembered_email';
+const STORAGE_KEY_REMEMBER_SESSION = 'proman_remember_session';
+
 export const LoginPage: React.FC = () => {
   const { login, showToast } = useProject();
   const { theme, toggleTheme } = useTheme();
 
   const [mode, setMode] = useState<'signin' | 'signup' | 'pending_notice' | 'forgot_password'>('signin');
 
-  // Sign In Form State
-  const [email, setEmail] = useState('');
+  // Sign In Form State with Remember Me persistence
+  const [rememberMe, setRememberMe] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_REMEMBER_SESSION);
+      return saved !== 'false';
+    } catch {
+      return true;
+    }
+  });
+
+  const [email, setEmail] = useState<string>(() => {
+    try {
+      const isRemembered = localStorage.getItem(STORAGE_KEY_REMEMBER_SESSION) !== 'false';
+      if (isRemembered) {
+        return localStorage.getItem(STORAGE_KEY_REMEMBER_EMAIL) || '';
+      }
+      return '';
+    } catch {
+      return '';
+    }
+  });
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
 
   // Forgot Password State
   const [forgotEmail, setForgotEmail] = useState('');
@@ -63,6 +84,20 @@ export const LoginPage: React.FC = () => {
 
     try {
       const result = await loginWithFirebase(email, password);
+
+      // Simpan preferensi dan email ke localStorage jika 'rememberMe' aktif
+      try {
+        if (rememberMe && email.trim()) {
+          localStorage.setItem(STORAGE_KEY_REMEMBER_EMAIL, email.trim());
+          localStorage.setItem(STORAGE_KEY_REMEMBER_SESSION, 'true');
+        } else {
+          localStorage.removeItem(STORAGE_KEY_REMEMBER_EMAIL);
+          localStorage.setItem(STORAGE_KEY_REMEMBER_SESSION, 'false');
+        }
+      } catch (storageErr) {
+        console.warn('Gagal menyimpan preferensi email ke localStorage:', storageErr);
+      }
+
       login(result.userProfile);
       showToast(`Selamat datang kembali, ${result.userProfile.name}! (${result.userProfile.personaType})`, 'success');
     } catch (error: any) {
@@ -333,6 +368,15 @@ export const LoginPage: React.FC = () => {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      onBlur={() => {
+                        try {
+                          if (rememberMe && email.trim()) {
+                            localStorage.setItem(STORAGE_KEY_REMEMBER_EMAIL, email.trim());
+                          }
+                        } catch (err) {
+                          console.warn('LocalStorage error on blur:', err);
+                        }
+                      }}
                       placeholder="nama@bitcorp.id"
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6] focus:ring-4 focus:ring-blue-500/10 transition"
                       required
@@ -384,8 +428,24 @@ export const LoginPage: React.FC = () => {
                     type="checkbox"
                     id="remember_me"
                     checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-300 text-[#3B82F6] focus:ring-blue-500"
+                    onChange={(e) => {
+                      const isChecked = e.target.checked;
+                      setRememberMe(isChecked);
+                      try {
+                        if (!isChecked) {
+                          localStorage.removeItem(STORAGE_KEY_REMEMBER_EMAIL);
+                          localStorage.setItem(STORAGE_KEY_REMEMBER_SESSION, 'false');
+                        } else {
+                          localStorage.setItem(STORAGE_KEY_REMEMBER_SESSION, 'true');
+                          if (email.trim()) {
+                            localStorage.setItem(STORAGE_KEY_REMEMBER_EMAIL, email.trim());
+                          }
+                        }
+                      } catch (err) {
+                        console.warn('LocalStorage error on remember me toggle:', err);
+                      }
+                    }}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3B82F6] focus:ring-blue-500 cursor-pointer"
                   />
                   <label htmlFor="remember_me" className="text-xs text-slate-600 dark:text-slate-400 font-medium cursor-pointer">
                     Ingat sesi saya di workstation ini

@@ -299,6 +299,12 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   const logout = async () => {
     try {
+      if (currentUserId) {
+        const activeUser = rawUsers.find(u => u.id === currentUserId || u.email === currentUserId);
+        if (activeUser?.email && localStorage.getItem('proman_remember_session') !== 'false') {
+          localStorage.setItem('proman_remembered_email', activeUser.email);
+        }
+      }
       await logoutFromFirebase();
     } catch (e) {
       console.warn('Firebase logout notice:', e);
