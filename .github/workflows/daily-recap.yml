@@ -2,27 +2,43 @@ name: Daily Recap to Telegram
 
 # Mengirim rekap harian pekerjaan ke grup Telegram.
 #
-# Dipicu manual dengan `gh workflow run daily-recap.yml`, dan otomatis
-# setiap hari kerja Senin-Jumat.
+# Dipicu manual dengan `gh workflow run daily-recap.yml`, dan otomatis lewat
+# beberapa slot jadwal setiap hari.
 #
-# Sabtu dan Minggu dilewati: rekap pagi di hari libur tidak ada yang baca.
-# Kalau akhir pekan masih perlu rekap, ubah cron di bawah ke '0 1 * * *'.
+# Kenapa banyak slot, bukan satu?
+# Cron GitHub Actions tidak menjamin eksekusi tepat pada menitnya. Jadwal
+# '0 1 * * 1-5' (01:00 UTC = 08:00 WIB) pernah nyata telat 6 jam — baru
+# berjalan pukul 14:03 WIB. Men-shift satu jadwal hanya memindahkan jendela
+# kacau, tidak hilang.
 #
-# Cron GitHub Actions memakai UTC. 01:00 UTC = 08:00 WIB.
+# Jadi jadwalnya dipecah jadi beberapa slot yang tersebar, lalu script
+# memutuskan sendiri: kirim hanya kalau (a) bukan akhir pekan, (b) sudah
+# lewat 06:30 WIB, (c) hari ini belum pernah terkirim. Slot pertama yang
+# memenuhi syarat mengirim, slot lain dilewati.
 #
-# Catatan penting soal jadwal: GitHub Actions tidak menjamin eksekusi tepat
-# pada menitnya. Run bisa terlambat beberapa menit, dan kadang terlambat lebih
-# lama saat server GitHub sedang ramai. Kalau rekap benar-benar harus presisi,
-# opsi ini tidak cukup — Cloud Scheduler lebih akurat tapi butuh billing Blaze.
+# Slot: 20:00, 22:00, 00:00, 02:00 UTC = 03:00, 05:00, 07:00, 09:00 WIB.
+# Kalau semua slot telat 6 jam, yang lolos tetap slot 20:00 UTC (pukul 09:00).
+# Kalau tidak ada delay sama sekali, yang lolos slot 00:00 UTC (pukul 07:00).
+#
+# Batas tetap ada: jadwal GitHub bisa otomatis dimatikan kalau repo tidak
+# ada aktivitas 60 hari, dan run tetap bisa terlambat berjam-jam di hari
+# yang sangat ramai. Untuk jadwal yang wajib presisi, Cloud Scheduler
+# lebih akurat tapi menuntut billing Blaze.
 
 on:
   schedule:
-    # 01:00 UTC = 08:00 WIB. Hari 1-5 = Senin-Jumat.
-    - cron: '0 1 * * 1-5'
+    - cron: '0 20 * * *' # 03:00 WIB
+    - cron: '0 22 * * *' # 05:00 WIB
+    - cron: '0 0 * * *'  # 07:00 WIB
+    - cron: '0 2 * * *'  # 09:00 WIB
   workflow_dispatch:
     inputs:
       dry_run:
         description: 'Hanya cetak rekap, jangan kirim ke Telegram'
+        type: boolean
+        default: false
+      force:
+        description: 'Kirim sekarang, abaikan jam dan cek "sudah pernah terkirim"'
         type: boolean
         default: false
 
@@ -51,6 +67,7 @@ jobs:
           VITE_TELEGRAM_CHAT_ID: ${{ secrets.VITE_TELEGRAM_CHAT_ID }}
           VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
           DRY_RUN: ${{ inputs.dry_run }}
+          FORCE: ${{ inputs.force }}
         run: |
           set -euo pipefail
 
@@ -66,8 +83,13 @@ jobs:
             exit 1
           fi
 
+          args=""
           if [ "${DRY_RUN:-false}" = "true" ]; then
-            node scripts/send-daily-recap.mjs --dry-run
-          else
-            node scripts/send-daily-recap.mjs
+            args="--dry-run"
           fi
+          if [ "${FORCE:-false}" = "true" ]; then
+            args="$args --force"
+          fi
+
+          # shellcheck disable=SC2086
+          node scripts/send-daily-recap.mjs $args

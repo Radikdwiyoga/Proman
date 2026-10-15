@@ -31,6 +31,19 @@ const MAX_TASKS_PER_PERSON = 5;
 /** Batas Telegram per pesan. Kalau lewat, pesan dipecah. */
 const TELEGRAM_LIMIT = 4096;
 
+// --- Gerbang pengiriman ---------------------------------------------------
+// GitHub Actions tidak menjalankan cron tepat pada menitnya. Jadwal
+// `0 1 * * 1-5` dalam repo ini pernah telat 6 jam (baru jalan 14:03 WIB).
+// Karena itu jadwalnya diubah menjadi beberapa slot, dan keputusan
+// "kirim / jangan" diambil di sini berdasarkan waktu lokal, bukan di jadwal.
+//
+// Slot di workflow: 20:00, 22:00, 00:00, 02:00 UTC. Dengan ambang 06:30 WIB:
+//   - tanpa delay   -> slot 00:00 UTC (07:00 WIB) yang lolos
+//   - delay 6 jam   -> slot 20:00 UTC baru lolos sekitar 09:00 WIB
+//   - delay 24 jam  -> slot 00:00 UTC hari berikutnya (07:00 WIB) yang lolos
+const SKIP_HARI = new Set([0, 6]); // 0=Minggu, 6=Sabtu
+const EARLIEST_SEND_MINUTES = 6 * 60 + 30; // 06:30 WIB
+
 // Klien OAuth publik milik Firebase CLI. Dipakai hanya untuk menukar refresh
 // token jadi access token; tidak granting akses apa pun sendiri.
 const OAUTH_CLIENT_ID =
@@ -142,6 +155,34 @@ function todayInWIB() {
     month: '2-digit',
     day: '2-digit',
   }).format(new Date());
+}
+
+/**
+ * Waktu sekarang di WIB dalam satu objek: tanggal, indeks hari, dan menit
+ * sejak tengah malam. Satu pembacaan agar jam dan tanggal yang dipakai untuk
+ * pengecekan tidak bisa berbeda karena dipanggil pada detik berbeda.
+ */
+function nowInWIB(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: TIMEZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(date);
+
+  const get = (t) => parts.find((p) => p.type === t)?.value ?? '';
+
+  return {
+    tanggal: `${get('year')}-${get('month')}-${get('day')}`,
+    // 0 = Minggu ... 6 = Sabtu
+    hari: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(get('weekday')),
+    // hour12:false di en-GB sesekali menghasilkan "24" untuk tengah malam.
+    menit: (Number(get('hour')) % 24) * 60 + Number(get('minute')),
+  };
 }
 
 /** Selisih hari antara dueDate (YYYY-MM-DD) dan hari ini, dalam WIB. */
@@ -479,17 +520,86 @@ async function sendToTelegram(text) {
   }
 }
 
+// --- Penanda pengiriman ---------------------------------------------------
+// Setiap slot jadwal yang lolos bisa mengirim. Karena GitHub kadang menjalankan
+// ulang slot yang sama (retry, atau run yang terlambat ditrigger ulang), Tanpa
+// penanda, grup Telegram bisa menerima rekap ganda untuk hari yang sama.
+// ID dokumen memakai tanggal WIB, jadi "sudah terkirim" selalu dimaksudkan
+// untuk hari itu saja.
+
+const docIdRecap = (tanggalWIB) => `recap-${tanggalWIB}`;
+
+async function sudahDikirim(accessToken, tanggalWIB) {
+  const url =
+    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}` +
+    `/databases/(default)/documents/recap_runs/${docName(docIdRecap(tanggalWIB))}`;
+
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
+  if (res.status === 404) return false;
+  if (!res.ok) fail(`Cek penanda kirim gagal (HTTP ${res.status}): ${(await res.text()).slice(0, 200)}`);
+  return true;
+}
+
+async function tandaiTerkirim(accessToken, tanggalWIB, jam) {
+  const url =
+    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}` +
+    `/databases/(default)/documents/recap_runs?documentId=${encodeURIComponent(docIdRecap(tanggalWIB))}`;
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      fields: {
+        tanggal: { stringValue: tanggalWIB },
+        terkirimPada: { stringValue: new Date().toISOString() },
+        jamLokalWIB: { stringValue: jam },
+        dipicuOleh: { stringValue: process.env.GITHUB_RUN_ID || 'lokal' },
+      },
+    }),
+  });
+
+  if (!res.ok) fail(`Tulis penanda kirim gagal (HTTP ${res.status}): ${(await res.text()).slice(0, 200)}`);
+}
+
 // --- Main ----------------------------------------------------------------
+
+/** Bypass semua gerbang, untuk uji manual. --dry-run tetap aman karena tidak mengirim. */
+const FORCE = process.argv.includes('--force');
 
 async function main() {
   if (!DRY_RUN && (!BOT_TOKEN || !CHAT_ID)) {
     fail('VITE_TELEGRAM_BOT_TOKEN atau VITE_TELEGRAM_CHAT_ID kosong');
   }
 
+  const now = nowInWIB();
+  const jamWIB = `${String(Math.floor(now.menit / 60)).padStart(2, '0')}:${String(now.menit % 60).padStart(2, '0')}`;
+
+  console.log(`[recap] project=${PROJECT_ID} waktu(WIB)=${now.tanggal} ${jamWIB} dry-run=${DRY_RUN} force=${FORCE}`);
+
+  // --force hanya melewati gerbang waktu; pengecekan kredensial tetap jalan.
+  if (!FORCE) {
+    if (SKIP_HARI.has(now.hari)) {
+      console.log('[recap] dilewati: akhir pekan');
+      return;
+    }
+    if (now.menit < EARLIEST_SEND_MINUTES) {
+      console.log('[recap] dilewati: masih sebelum 06:30 WIB');
+      return;
+    }
+  }
+
   console.log(`[recap] project=${PROJECT_ID} hari(WIB)=${todayInWIB()} dry-run=${DRY_RUN}`);
 
   const accessToken = await getAccessToken();
   console.log('[recap] access token diperoleh');
+
+  if (!DRY_RUN && !FORCE && (await sudahDikirim(accessToken, now.tanggal))) {
+    console.log(`[recap] dilewati: rekap ${now.tanggal} sudah pernah terkirim`);
+    return;
+  }
 
   const [tasks, users, projects] = await Promise.all([
     readCollection(accessToken, 'tasks'),
@@ -502,6 +612,12 @@ async function main() {
   const message = renderMessage(recap);
 
   await sendToTelegram(message);
+
+  if (!DRY_RUN && !FORCE) {
+    await tandaiTerkirim(accessToken, now.tanggal, jamWIB);
+    console.log('[recap] penanda kirim ditulis');
+  }
+
   console.log('[recap] selesai');
 }
 
