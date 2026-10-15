@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import { useProject } from '../../context/ProjectContext';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, AlertTriangle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, AlertTriangle, X } from 'lucide-react';
 import { Task } from '../../types';
 
 export const CalendarView: React.FC = () => {
   const { filteredTasks, setSelectedTaskId } = useProject();
+
+  const [selectedDateDetail, setSelectedDateDetail] = useState<{
+    dateStr: string;
+    formattedDateDisplay: string;
+    tasks: Task[];
+  } | null>(null);
 
   const today = new Date();
   const todayDay   = today.getDate();
@@ -116,29 +122,54 @@ export const CalendarView: React.FC = () => {
             return (
               <div 
                 key={dayNumber} 
-                className={`p-2 min-h-[90px] flex flex-col justify-between transition hover:bg-slate-50 dark:hover:bg-white/4 ${
-                  isToday ? 'bg-emerald-50/40 dark:bg-emerald-500/8' : ''
+                onClick={() => {
+                  setSelectedDateDetail({
+                    dateStr: formattedDate,
+                    formattedDateDisplay: new Date(currentYear, currentMonth, dayNumber).toLocaleDateString('id-ID', {
+                      weekday: 'long',
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    }),
+                    tasks: dayTasks
+                  });
+                }}
+                className={`p-1.5 sm:p-2 min-h-[65px] sm:min-h-[90px] flex flex-col justify-between transition cursor-pointer hover:bg-slate-50 dark:hover:bg-white/4 active:scale-[0.99] select-none ${
+                  isToday ? 'bg-emerald-50/50 dark:bg-emerald-500/10' : ''
                 }`}
+                title="Klik untuk melihat tugas pada tanggal ini"
               >
                 <div className="flex items-center justify-between">
-                  <span className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center ${
+                  <span className={`text-[11px] sm:text-xs font-bold w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center ${
                     isToday ? 'bg-emerald-600 text-white font-extrabold shadow-sm' : 'text-slate-600 dark:text-slate-400'
                   }`}>
                     {dayNumber}
                   </span>
                   {dayTasks.length > 0 && (
-                    <span className="text-[10px] text-slate-400 font-mono">
+                    <span className="text-[9px] sm:text-[10px] text-slate-400 font-mono hidden sm:inline">
                       {dayTasks.length} tugas
                     </span>
                   )}
                 </div>
 
-                {/* Day Tasks Snippets */}
-                <div className="space-y-1 my-1 overflow-y-auto max-h-16 touch-scroll-y">
+                {/* Mobile Task Counter Indicator */}
+                <div className="sm:hidden flex items-center justify-center my-auto">
+                  {dayTasks.length > 0 && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-signal border border-emerald-300 dark:border-emerald-500/30 font-mono">
+                      {dayTasks.length}
+                    </span>
+                  )}
+                </div>
+
+                {/* Desktop Day Tasks Snippets */}
+                <div className="space-y-1 my-1 overflow-y-auto max-h-16 touch-scroll-y hidden sm:block">
                   {dayTasks.map(t => (
                     <button
                       key={t.id}
-                      onClick={() => setSelectedTaskId(t.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedTaskId(t.id);
+                      }}
                       className={`w-full text-left p-1 rounded-lg text-[10px] truncate border transition shadow-xs flex items-center gap-1 ${priorityColors[t.priority]}`}
                     >
                       {t.aiRisk && t.aiRisk.riskLevel === 'high' && (
@@ -153,6 +184,80 @@ export const CalendarView: React.FC = () => {
           })}
         </div>
       </div>
+
+      {/* Date Tasks Detail Modal (Pop-up per Tanggal) */}
+      {selectedDateDetail && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in text-slate-800 dark:text-slate-100"
+          onClick={() => setSelectedDateDetail(null)}
+        >
+          <div 
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-md max-h-[85vh] flex flex-col shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/60">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                  <CalendarIcon className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white capitalize">
+                    {selectedDateDetail.formattedDateDisplay}
+                  </h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    {selectedDateDetail.tasks.length} Tugas pada tanggal ini
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedDateDetail(null)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                title="Tutup"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body / Task List */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+              {selectedDateDetail.tasks.length === 0 ? (
+                <div className="py-10 text-center text-slate-400 text-xs">
+                  Tidak ada tugas yang dijadwalkan pada tanggal ini.
+                </div>
+              ) : (
+                selectedDateDetail.tasks.map((task) => (
+                  <div
+                    key={task.id}
+                    onClick={() => {
+                      setSelectedDateDetail(null);
+                      setSelectedTaskId(task.id);
+                    }}
+                    className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/50 hover:border-emerald-500/50 dark:hover:border-signal/40 transition cursor-pointer space-y-2 shadow-xs group"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className={`text-[10px] px-2 py-0.5 rounded-md font-bold uppercase ${priorityColors[task.priority]}`}>
+                        {task.priority}
+                      </span>
+                      <span className="text-[10px] text-slate-500 dark:text-muted font-mono">
+                        {task.startDate} → {task.dueDate}
+                      </span>
+                    </div>
+                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 dark:group-hover:text-signal transition">
+                      {task.title}
+                    </h4>
+                    {task.description && (
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2">
+                        {task.description}
+                      </p>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

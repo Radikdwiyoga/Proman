@@ -191,7 +191,7 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen w-screen relative flex items-center justify-center p-4 sm:p-6 overflow-auto select-none transition-colors duration-500 ${
+    <div className={`fixed inset-0 w-full h-full min-h-dvh overflow-y-auto flex items-start sm:items-center justify-center p-4 sm:p-6 select-none transition-colors duration-500 ${
       isDark 
         ? 'login-bg-dark text-readable' 
         : 'login-bg-light text-slate-900'
@@ -209,7 +209,7 @@ export const LoginPage: React.FC = () => {
       </div>
 
       {/* Floating Telemetry & Theme Status Bar */}
-      <div className="absolute top-6 right-6 z-20 flex items-center gap-2">
+      <div className="absolute top-4 sm:top-6 right-4 sm:right-6 z-20 flex items-center gap-2">
         <div className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-sm border backdrop-blur-md ${
           isDark 
             ? 'bg-surface/80 border-white/10' 
@@ -236,9 +236,9 @@ export const LoginPage: React.FC = () => {
       </div>
 
       {/* Main Container */}
-      <div className="w-full max-w-[460px] z-10 space-y-5 animate-fade-in my-6">
+      <div className="w-full max-w-[460px] z-10 space-y-4 sm:space-y-5 animate-fade-in my-4 sm:my-auto pb-16 sm:pb-6">
         {/* Brand Header */}
-        <div className="text-center space-y-2.5">
+        <div className="text-center space-y-2">
           <div className="flex justify-center">
             <TechLogo size="lg" showSubtitle={false} />
           </div>
@@ -247,7 +247,7 @@ export const LoginPage: React.FC = () => {
           <div className="flex justify-center">
             <SentinelBot
               mode={botMode}
-              className="mt-1 mb-10"
+              className="mt-1 mb-4 sm:mb-10 scale-90 sm:scale-100 origin-center"
             />
           </div>
 

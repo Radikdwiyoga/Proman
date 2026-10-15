@@ -241,39 +241,39 @@ ${summaryData.recommendationsForAlex.map((r, i) => `${i + 1}. ${r}`).join('\n')}
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-fade-in text-slate-800 dark:text-slate-100">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in text-slate-800 dark:text-slate-100 overflow-y-auto">
       <div 
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-3xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden"
+        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl w-full max-w-3xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-gradient-to-r from-orange-50 dark:from-slate-950 via-white dark:via-slate-900 to-slate-50 dark:to-slate-900">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-orange-500 via-amber-500 to-navy-900 flex items-center justify-center shadow-lg shadow-orange-500/25">
-              <FileText className="w-5 h-5 text-white" />
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-gradient-to-r from-orange-50 dark:from-slate-950 via-white dark:via-slate-900 to-slate-50 dark:to-slate-900 shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-gradient-to-br from-orange-500 via-amber-500 to-navy-900 flex items-center justify-center shadow-lg shadow-orange-500/25 shrink-0">
+              <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Auto-Status Summarization</h3>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-100 dark:bg-emerald-600/20 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-500/30 font-bold">
-                  ProMan AI Engine
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">Auto-Status Summarization</h3>
+                <span className="text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full bg-orange-100 dark:bg-emerald-600/20 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-500/30 font-bold">
+                  AI Engine
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">Ringkasan status proyek otomatis terpadu</p>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 truncate">Ringkasan status proyek otomatis terpadu</p>
             </div>
           </div>
           <button
             onClick={() => setIsSummaryModalOpen(false)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition shrink-0 ml-2"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-5">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 space-y-4 sm:space-y-5">
           {/* Scope Selector: Semua Project vs Specific Project */}
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <div className="flex items-center gap-2">
               <FolderKanban className="w-4 h-4 text-emerald-600 shrink-0" />
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
@@ -281,14 +281,14 @@ ${summaryData.recommendationsForAlex.map((r, i) => `${i + 1}. ${r}`).join('\n')}
               </label>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto min-w-0">
               <select
                 value={selectedProjectId}
                 onChange={handleScopeChange}
                 disabled={isGenerating}
-                className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-orange-500 shadow-xs cursor-pointer"
+                className="w-full sm:w-auto min-w-0 max-w-full px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-orange-500 shadow-xs cursor-pointer truncate"
               >
-                <option value="all">Semua Project (Global Enterprise Portfolio)</option>
+                <option value="all">Semua Project (Global Board)</option>
                 {projects.map(p => (
                   <option key={p.id} value={p.id}>
                     {p.name} ({p.healthScore}% health)
@@ -299,7 +299,7 @@ ${summaryData.recommendationsForAlex.map((r, i) => `${i + 1}. ${r}`).join('\n')}
               <button
                 onClick={() => generateSummaryForScope(selectedProjectId)}
                 disabled={isGenerating}
-                className="p-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition disabled:opacity-50"
+                className="p-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition disabled:opacity-50 shrink-0"
                 title="Generate Ulang dengan AI"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${isGenerating ? 'animate-spin' : ''}`} />
@@ -308,15 +308,15 @@ ${summaryData.recommendationsForAlex.map((r, i) => `${i + 1}. ${r}`).join('\n')}
           </div>
 
           {/* Top Banner Status */}
-          <div className="p-4 rounded-2xl bg-emerald-50/50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-500/20 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <div className="text-[10px] text-emerald-700 dark:text-emerald-400 uppercase font-bold tracking-wider">
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-emerald-50/50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div className="min-w-0 flex-1">
+              <div className="text-[10px] text-emerald-700 dark:text-emerald-400 uppercase font-bold tracking-wider truncate">
                 Cakupan: {currentScopeTitle}
               </div>
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white mt-0.5">{summaryData.headline}</h4>
+              <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white mt-0.5 break-words">{summaryData.headline}</h4>
             </div>
-            <div className="flex items-center gap-2">
-              <span className={`text-xs px-2.5 py-1 rounded-xl font-bold border ${
+            <div className="flex items-center gap-2 shrink-0">
+              <span className={`text-[11px] sm:text-xs px-2.5 py-1 rounded-xl font-bold border ${
                 summaryData.overallHealth === 'On Track'
                   ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-500/30'
                   : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-500/30'
@@ -390,35 +390,35 @@ ${summaryData.recommendationsForAlex.map((r, i) => `${i + 1}. ${r}`).join('\n')}
         </div>
 
         {/* Footer Actions: Download PDF, Download TXT, Copy */}
-        <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-slate-50 dark:bg-slate-900/80">
-          <div className="flex items-center gap-2">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3 bg-slate-50 dark:bg-slate-900/80 shrink-0">
+          <div className="grid grid-cols-2 sm:flex sm:items-center gap-2">
             {/* Download TXT Button */}
             <button
               onClick={handleDownloadText}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 transition shadow-xs"
+              className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 transition shadow-xs cursor-pointer"
               title="Unduh laporan sebagai file teks (.txt)"
             >
-              <FileDown className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Unduh Text (.txt)</span>
+              <FileDown className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span className="truncate">Unduh (.txt)</span>
             </button>
 
             {/* Download / Print PDF Button */}
             <button
               onClick={handlePrintPDF}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-xs font-bold text-white dark:text-slate-900 transition shadow-sm"
+              className="flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-xs font-bold text-white dark:text-slate-900 transition shadow-sm cursor-pointer"
               title="Unduh / Cetak Dokumen PDF Resmi"
             >
-              <Printer className="w-3.5 h-3.5 text-emerald-400 dark:text-emerald-700" />
-              <span>Download PDF</span>
+              <Printer className="w-3.5 h-3.5 text-emerald-400 dark:text-emerald-700 shrink-0" />
+              <span className="truncate">Cetak PDF</span>
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center">
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-bold text-white transition shadow-md shadow-orange-500/25 active:scale-95"
+              className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-bold text-white transition shadow-md shadow-emerald-500/25 active:scale-95 cursor-pointer"
             >
-              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              {copied ? <Check className="w-4 h-4 shrink-0" /> : <Copy className="w-4 h-4 shrink-0" />}
               <span>{copied ? 'Tersalin!' : 'Salin Laporan'}</span>
             </button>
           </div>

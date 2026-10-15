@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useProject } from '../../context/ProjectContext';
 import { 
   Calendar, 
@@ -12,7 +12,8 @@ import {
   Layers,
   ChevronRight,
   ZoomIn,
-  ZoomOut
+  ZoomOut,
+  ChevronLeft
 } from 'lucide-react';
 import { TaskStatus, TaskPriority } from '../../types';
 
@@ -29,6 +30,28 @@ export const TimelineView: React.FC = () => {
   } = useProject();
 
   const [zoomLevel, setZoomLevel] = useState<'days' | 'weeks'>('days');
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const scrollToToday = () => {
+    if (!scrollContainerRef.current) return;
+    const todayIndex = 13; // timelineStartDate is 13 days before today
+    const colWidth = zoomLevel === 'days' ? 46 : 160;
+    const offset = zoomLevel === 'days' ? todayIndex * colWidth : (todayIndex / 7) * colWidth;
+    const targetScroll = Math.max(0, offset - 120);
+    scrollContainerRef.current.scrollTo({ left: targetScroll, behavior: 'smooth' });
+  };
+
+  const scrollHorizontally = (delta: number) => {
+    if (!scrollContainerRef.current) return;
+    scrollContainerRef.current.scrollBy({ left: delta, behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      scrollToToday();
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [zoomLevel]);
 
   // Base Timeline Configuration — always relative to today
   const timelineStartDate = useMemo(() => {
@@ -137,7 +160,32 @@ export const TimelineView: React.FC = () => {
         </div>
 
         {/* View Mode & Zoom Toggle Buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Quick Scroll Navigation */}
+          <div className="flex items-center gap-1 bg-white dark:bg-canvas border border-slate-200 dark:border-white/10 p-1 rounded-lg shadow-xs">
+            <button
+              onClick={() => scrollHorizontally(-220)}
+              className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-elevated/60 text-slate-600 dark:text-slate-300 transition cursor-pointer"
+              title="Geser Kiri (Sebelumnya)"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={scrollToToday}
+              className="px-2.5 py-1 rounded-md bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-signal hover:bg-emerald-500/20 text-xs font-bold transition cursor-pointer"
+              title="Lompat ke Hari Ini"
+            >
+              Hari Ini
+            </button>
+            <button
+              onClick={() => scrollHorizontally(220)}
+              className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-elevated/60 text-slate-600 dark:text-slate-300 transition cursor-pointer"
+              title="Geser Kanan (Berikutnya)"
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
           <div className="flex items-center rounded-lg bg-white dark:bg-canvas border border-slate-200 dark:border-white/10 p-1 shadow-xs">
             <button
               onClick={() => setZoomLevel('days')}
@@ -147,7 +195,7 @@ export const TimelineView: React.FC = () => {
                   : 'text-slate-600 dark:text-muted hover:text-slate-900 dark:hover:text-readable'
               }`}
             >
-              <span>Harian (Days)</span>
+              <span>Harian</span>
             </button>
             <button
               onClick={() => setZoomLevel('weeks')}
@@ -157,22 +205,29 @@ export const TimelineView: React.FC = () => {
                   : 'text-slate-600 dark:text-muted hover:text-slate-900 dark:hover:text-readable'
               }`}
             >
-              <span>Mingguan (Weeks)</span>
+              <span>Mingguan</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* Main Gantt Canvas Container */}
-      <div className="flex-1 overflow-auto rounded-lg bg-white dark:bg-surface/70 backdrop-blur border border-slate-200 dark:border-white/8 shadow-sm relative flex flex-col elevated-tray touch-scroll">
+      <div 
+        ref={scrollContainerRef}
+        className="flex-1 overflow-x-auto overflow-y-auto rounded-lg bg-white dark:bg-surface/70 backdrop-blur border border-slate-200 dark:border-white/8 shadow-sm relative flex flex-col elevated-tray"
+        style={{
+          WebkitOverflowScrolling: 'touch',
+          touchAction: 'pan-x pan-y',
+        }}
+      >
         <div className="min-w-max flex flex-col flex-1">
           {/* Synchronized Timeline Header Grid */}
           <div className="flex border-b border-slate-200 dark:border-white/8 sticky top-0 bg-slate-50 dark:bg-canvas/60 z-30 shrink-0">
             {/* Left Sticky Column Header */}
-            <div className="w-80 sm:w-96 p-3.5 font-bold text-xs text-slate-600 dark:text-muted border-r border-slate-200 dark:border-white/8 shrink-0 sticky left-0 bg-slate-50 dark:bg-canvas/60 z-40 flex items-center justify-between">
-              <span>Daftar Tugas &amp; Penanggung Jawab</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 font-mono font-bold text-slate-700 dark:text-slate-300">
-                {filteredTasks.length} Tiket
+            <div className="w-44 sm:w-64 md:w-80 lg:w-96 p-2.5 sm:p-3.5 font-bold text-xs text-slate-600 dark:text-muted border-r border-slate-200 dark:border-white/8 shrink-0 sticky left-0 bg-slate-50 dark:bg-canvas/60 z-40 flex items-center justify-between">
+              <span className="truncate">Tugas &amp; PIC</span>
+              <span className="text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 font-mono font-bold text-slate-700 dark:text-slate-300">
+                {filteredTasks.length}
               </span>
             </div>
 
@@ -256,14 +311,14 @@ export const TimelineView: React.FC = () => {
                     onClick={() => setSelectedTaskId(task.id)}
                   >
                     {/* Left Sticky Task Info Column */}
-                    <div className="w-80 sm:w-96 p-3 border-r border-slate-200 dark:border-white/8 shrink-0 sticky left-0 bg-white dark:bg-surface group-hover:bg-slate-50 dark:group-hover:bg-white/6 transition z-20 flex items-center justify-between gap-2.5">
+                    <div className="w-44 sm:w-64 md:w-80 lg:w-96 p-2.5 sm:p-3 border-r border-slate-200 dark:border-white/8 shrink-0 sticky left-0 bg-white dark:bg-surface group-hover:bg-slate-50 dark:group-hover:bg-white/6 transition z-20 flex items-center justify-between gap-1.5 sm:gap-2.5">
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5 mb-0.5">
-                          <span className={`text-[9px] px-1.5 py-0.2 rounded font-bold font-mono uppercase ${styleConfig.badge}`}>
+                        <div className="flex items-center gap-1 mb-0.5">
+                          <span className={`text-[8px] sm:text-[9px] px-1 sm:px-1.5 py-0.2 rounded font-bold font-mono uppercase ${styleConfig.badge}`}>
                             {task.status}
                           </span>
                           {project && (
-                            <span className="text-[9px] text-slate-400 truncate max-w-[120px]">
+                            <span className="text-[8px] sm:text-[9px] text-slate-400 truncate max-w-[70px] sm:max-w-[120px] hidden xs:inline">
                               {project.name}
                             </span>
                           )}
@@ -271,10 +326,10 @@ export const TimelineView: React.FC = () => {
                         <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 dark:group-hover:text-signal-active transition truncate">
                           {task.title}
                         </h4>
-                        <div className="flex items-center gap-2 text-[10px] text-slate-400 mt-0.5 font-mono">
-                          <span>{task.startDate} → {task.dueDate}</span>
+                        <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] text-slate-400 mt-0.5 font-mono">
+                          <span className="truncate">{task.startDate?.slice(5)} → {task.dueDate?.slice(5)}</span>
                           {totalSubtasks > 0 && (
-                            <span className="text-slate-500 dark:text-slate-400 font-sans">
+                            <span className="text-slate-500 dark:text-slate-400 font-sans hidden sm:inline">
                               ({completedSubtasks}/{totalSubtasks})
                             </span>
                           )}
@@ -286,7 +341,7 @@ export const TimelineView: React.FC = () => {
                           <img
                             src={primaryAssignee.avatar}
                             alt={primaryAssignee.name}
-                            className="w-6 h-6 rounded-full object-cover border border-slate-200 dark:border-slate-700 shadow-xs"
+                            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover border border-slate-200 dark:border-slate-700 shadow-xs"
                           />
                         </div>
                       )}
