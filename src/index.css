@@ -129,6 +129,32 @@
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
+
+  /* Ensure all select dropdowns and options render with high contrast across themes */
+  select {
+    color-scheme: light dark;
+  }
+
+  .dark select,
+  html.dark select,
+  [data-theme='dark'] select {
+    color-scheme: dark;
+    color: #f8fafc;
+  }
+
+  .dark select option,
+  html.dark select option,
+  [data-theme='dark'] select option {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+  }
+
+  .light select option,
+  html.light select option,
+  [data-theme='light'] select option {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+  }
 }
 
 /* Touch scrolling helpers */

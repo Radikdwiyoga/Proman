@@ -29,7 +29,7 @@ export const AITaskBreakdownModal: React.FC = () => {
     users,
   } = useProject();
 
-  const [prompt, setPrompt] = useState('Buka cabang operasional baru di Surabaya');
+  const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<GeneratedBreakdown | null>(null);
 
@@ -111,14 +111,14 @@ export const AITaskBreakdownModal: React.FC = () => {
           <div className="space-y-2">
             <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between">
               <span>Masukkan Rencana / Ide / Kebutuhan Tugas:</span>
-              <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-medium">Bebas input operasional, teknologi, marketing, HR, logistik, dll.</span>
+              <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-medium">Bebas input inisiatif, fitur, atau kebutuhan proyek apapun</span>
             </label>
             <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Contoh: Buka cabang operasional di Surabaya, atau Migrasi database ke PostgreSQL..."
+                placeholder="Ketik inisiatif atau kebutuhan proyek (misal: Implementasi modul baru, optimasi sistem)..."
                 className="flex-1 px-4 py-3 rounded-2xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition shadow-inner"
                 onKeyDown={(e) => { if (e.key === 'Enter') handleGenerate(); }}
               />

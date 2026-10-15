@@ -112,9 +112,9 @@ export const KanbanView: React.FC = () => {
               onChange={(e) => setCurrentProjectId(e.target.value)}
               className="bg-transparent border-none text-xs font-bold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
             >
-              <option value="all">Semua Project</option>
+              <option value="all" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Semua Project</option>
               {projects.map(p => (
-                <option key={p.id} value={p.id}>
+                <option key={p.id} value={p.id} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
                   {p.name}
                 </option>
               ))}
@@ -187,9 +187,9 @@ export const KanbanView: React.FC = () => {
               onChange={(e) => setFilters(prev => ({ ...prev, assigneeId: e.target.value || null }))}
               className="bg-transparent border-none text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-none cursor-pointer"
             >
-              <option value="">Semua Anggota Tim</option>
+              <option value="" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Semua Anggota Tim</option>
               {users.map(u => (
-                <option key={u.id} value={u.id}>{u.name}</option>
+                <option key={u.id} value={u.id} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">{u.name}</option>
               ))}
             </select>
           </div>
@@ -202,11 +202,11 @@ export const KanbanView: React.FC = () => {
               onChange={(e) => setFilters(prev => ({ ...prev, priority: (e.target.value as TaskPriority) || null }))}
               className="bg-transparent border-none text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-none cursor-pointer"
             >
-              <option value="">Semua Prioritas</option>
-              <option value="urgent">Urgent / Mendesak</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
+              <option value="" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Semua Prioritas</option>
+              <option value="urgent" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Urgent / Mendesak</option>
+              <option value="high" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">High</option>
+              <option value="medium" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Medium</option>
+              <option value="low" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Low</option>
             </select>
           </div>
 

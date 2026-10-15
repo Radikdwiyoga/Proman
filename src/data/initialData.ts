@@ -110,7 +110,7 @@ export const INITIAL_PROJECTS: Project[] = [
   },
   {
     id: 'proj-2',
-    name: 'Ekspansi Operasional Cabang Surabaya',
+    name: 'Ekspansi Operasional & Bisnis',
     description: 'Pembukaan cabang, audit SOP logistik, perizinan legal, dan rekrutmen tim lapangan regional.',
     icon: '🏢',
     color: '#10b981',
@@ -267,12 +267,12 @@ export const INITIAL_TASKS: Task[] = [
   {
     id: 'task-106',
     projectId: 'proj-2',
-    title: 'Survei Lokasi & Negosiasi Sewa Gedung Cabang Surabaya',
-    description: 'Survei kelayakan 3 titik lokasi komersial di Surabaya Pusat dan perizinan domisili.',
+    title: 'Survei Lokasi & Negosiasi Fasilitas Operasional',
+    description: 'Survei kelayakan titik lokasi komersial dan perizinan regulasi domisili.',
     status: 'todo',
     priority: 'urgent',
     assigneeIds: ['user-4'],
-    tags: ['Operations', 'Surabaya', 'Legal'],
+    tags: ['Operations', 'Ekspansi', 'Legal'],
     startDate: '2026-08-12',
     dueDate: '2026-08-25',
     subtasks: [

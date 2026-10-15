@@ -147,9 +147,9 @@ export const TimelineView: React.FC = () => {
               onChange={(e) => setCurrentProjectId(e.target.value)}
               className="bg-transparent border-none text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none cursor-pointer"
             >
-              <option value="all">Semua Project (Global Board)</option>
+              <option value="all" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Semua Project (Global Board)</option>
               {projects.map(p => (
-                <option key={p.id} value={p.id}>{p.name}</option>
+                <option key={p.id} value={p.id} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">{p.name}</option>
               ))}
             </select>
           </div>
