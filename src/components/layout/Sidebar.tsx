@@ -364,32 +364,41 @@ export const Sidebar: React.FC = () => {
               <ChevronRight className={`w-4 h-4 text-blue-200 shrink-0 transition-transform ${isProfileMenuOpen ? 'rotate-90' : ''}`} />
             </div>
 
-            {/* Profile Dropdown Actions */}
+            {/* Profile Dropdown Actions (Pop-up opens UPWARD above the profile card) */}
             {isProfileMenuOpen && (
-              <div className="mt-1 p-1 rounded-xl bg-[#1E3A8A] dark:bg-[#0F172A] border border-blue-400/20 shadow-xl space-y-0.5 animate-in fade-in slide-in-from-bottom-2 duration-150">
-                <button
-                  onClick={() => {
+              <>
+                <div 
+                  className="fixed inset-0 z-20" 
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setIsProfileMenuOpen(false);
-                    setIsMobileSidebarOpen(false);
-                    setIsChangePasswordModalOpen(true);
-                  }}
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-blue-100 hover:text-white hover:bg-white/10 transition"
-                >
-                  <Key className="w-3.5 h-3.5 text-blue-300" />
-                  <span>Ganti Password</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setIsProfileMenuOpen(false);
-                    setIsMobileSidebarOpen(false);
-                    logout();
-                  }}
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-rose-300 hover:text-rose-200 hover:bg-rose-500/20 transition"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  <span>Keluar (Logout)</span>
-                </button>
-              </div>
+                  }} 
+                />
+                <div className="absolute bottom-[calc(100%+8px)] left-0 right-0 p-1.5 rounded-2xl bg-[#1E3A8A] dark:bg-[#0F172A] border border-blue-400/30 shadow-2xl space-y-1 animate-in fade-in slide-in-from-bottom-2 duration-150 z-30">
+                  <button
+                    onClick={() => {
+                      setIsProfileMenuOpen(false);
+                      setIsMobileSidebarOpen(false);
+                      setIsChangePasswordModalOpen(true);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-blue-100 hover:text-white hover:bg-white/10 transition"
+                  >
+                    <Key className="w-4 h-4 text-blue-300" />
+                    <span>Ganti Password</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsProfileMenuOpen(false);
+                      setIsMobileSidebarOpen(false);
+                      logout();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold text-rose-300 hover:text-rose-200 hover:bg-rose-500/20 transition"
+                  >
+                    <LogOut className="w-4 h-4 text-rose-400" />
+                    <span>Keluar (Logout)</span>
+                  </button>
+                </div>
+              </>
             )}
           </div>
         ) : (

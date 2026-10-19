@@ -234,21 +234,21 @@ export const TaskModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-fade-in text-slate-800 dark:text-slate-100">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 md:p-6 animate-fade-in text-slate-800 dark:text-slate-100">
       <div 
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl"
+        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl w-full max-w-4xl max-h-[94vh] sm:max-h-[90vh] flex flex-col shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900/80 rounded-t-3xl">
-          <div className="flex flex-wrap items-center gap-2.5">
+        <div className="px-3.5 sm:px-6 py-3 sm:py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 bg-slate-50 dark:bg-slate-900/80 rounded-t-2xl sm:rounded-t-3xl min-w-0">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5 min-w-0 flex-1">
             {/* Project Quick Selector in Header */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-600/10 border border-emerald-200 dark:border-emerald-500/20 text-xs font-bold text-emerald-700 dark:text-emerald-400">
-              <FolderKanban className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-600/10 border border-emerald-200 dark:border-emerald-500/20 text-xs font-bold text-emerald-700 dark:text-emerald-400 max-w-[160px] sm:max-w-xs">
+              <FolderKanban className="w-3.5 h-3.5 shrink-0" />
               <select
                 value={projectId}
                 onChange={(e) => setProjectId(e.target.value)}
-                className="bg-transparent text-xs font-bold text-emerald-700 dark:text-emerald-400 focus:outline-none cursor-pointer"
+                className="bg-transparent text-xs font-bold text-emerald-700 dark:text-emerald-400 focus:outline-none cursor-pointer truncate w-full"
                 title="Pilih / Ubah Project Terkait"
               >
                 {projects.map(p => (
@@ -263,7 +263,7 @@ export const TaskModal: React.FC = () => {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as TaskStatus)}
-              className="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-500 cursor-pointer"
+              className="px-2 sm:px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-500 cursor-pointer shrink-0"
             >
               {statusOptions.map(s => (
                 <option key={s.value} value={s.value}>{s.label}</option>
@@ -274,7 +274,7 @@ export const TaskModal: React.FC = () => {
             <select
               value={priority}
               onChange={(e) => setPriority(e.target.value as TaskPriority)}
-              className="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 uppercase focus:outline-none focus:border-emerald-500 cursor-pointer"
+              className="px-2 sm:px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 uppercase focus:outline-none focus:border-emerald-500 cursor-pointer shrink-0"
             >
               {priorityOptions.map(p => (
                 <option key={p} value={p}>{p}</option>
@@ -282,12 +282,12 @@ export const TaskModal: React.FC = () => {
             </select>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {/* Header Save Button */}
             <button
               onClick={() => handleSaveChanges()}
               disabled={isSaving || !isDirty}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95 ${
+              className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 sm:gap-1.5 shadow-sm active:scale-95 ${
                 isDirty 
                   ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/25 ring-2 ring-orange-400/40 animate-pulse' 
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700 opacity-60 cursor-not-allowed'
@@ -300,14 +300,14 @@ export const TaskModal: React.FC = () => {
 
             <button
               onClick={() => deleteTask(selectedTask.id)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
+              className="p-1 sm:p-1.5 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
               title="Hapus Tugas"
             >
               <Trash2 className="w-4 h-4" />
             </button>
             <button
               onClick={() => setSelectedTaskId(null)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
+              className="p-1 sm:p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
             >
               <X className="w-5 h-5" />
             </button>
@@ -315,9 +315,9 @@ export const TaskModal: React.FC = () => {
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-3.5 sm:p-6 grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 min-w-0">
           {/* Main Column (2/3 width) */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-5 sm:space-y-6 min-w-0">
             {/* Editable Title */}
             <div className="space-y-1">
               <label className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Judul Tugas</label>
@@ -343,7 +343,7 @@ export const TaskModal: React.FC = () => {
             </div>
 
             {/* 🌟 AI SMART TROUBLESHOOTING & SOLUTION ADVISOR */}
-            <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-amber-500/10 via-teal-500/5 to-slate-50 dark:from-orange-950/30 dark:via-slate-900/60 dark:to-slate-950 border border-emerald-200 dark:border-emerald-500/30 space-y-3.5 shadow-xs">
+            <div className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-amber-500/10 via-teal-500/5 to-slate-50 dark:from-orange-950/30 dark:via-slate-900/60 dark:to-slate-950 border border-emerald-200 dark:border-emerald-500/30 space-y-3.5 shadow-xs min-w-0">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <div className="p-1.5 rounded-xl bg-emerald-600 text-white shadow-xs">
@@ -372,18 +372,18 @@ export const TaskModal: React.FC = () => {
               </div>
 
               {/* Optional Custom Question Input */}
-              <form onSubmit={handleGetSolutionAdvice} className="flex gap-2">
+              <form onSubmit={handleGetSolutionAdvice} className="flex flex-wrap sm:flex-nowrap gap-2 min-w-0">
                 <input
                   type="text"
-                  placeholder="Ketik pertanyaan / kendala spesifik (misal: 'Error connection timeout' atau 'Format SOP')..."
+                  placeholder="Ketik pertanyaan / kendala spesifik..."
                   value={advisorQuestion}
                   onChange={(e) => setAdvisorQuestion(e.target.value)}
-                  className="flex-1 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition"
+                  className="w-full sm:flex-1 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition min-w-0"
                 />
                 <button
                   type="submit"
                   disabled={isAskingAdvisor}
-                  className="px-3.5 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition"
+                  className="w-full sm:w-auto px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition shrink-0"
                 >
                   Tanya
                 </button>
@@ -494,19 +494,19 @@ export const TaskModal: React.FC = () => {
                 </div>
 
                 {selectedTask.aiRisk.isActionable && (
-                  <div className="flex items-center gap-2 pt-1">
+                  <div className="flex flex-wrap items-center gap-2 pt-1 min-w-0">
                     {selectedTask.aiRisk.suggestedAssigneeId && (
                       <button
                         onClick={() => applyRiskMitigation(selectedTask.id, 'reassign', selectedTask.aiRisk?.suggestedAssigneeId)}
-                        className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-semibold text-white transition flex items-center gap-1.5 shadow-sm"
+                        className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-semibold text-white transition flex items-center gap-1.5 shadow-sm shrink-0"
                       >
-                        <UserIcon className="w-3.5 h-3.5" />
-                        <span>Alihkan ke {users.find(u => u.id === selectedTask.aiRisk?.suggestedAssigneeId)?.name || 'Rekan Tim'}</span>
+                        <UserIcon className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate max-w-[180px] sm:max-w-none">Alihkan ke {users.find(u => u.id === selectedTask.aiRisk?.suggestedAssigneeId)?.name || 'Rekan Tim'}</span>
                       </button>
                     )}
                     <button
                       onClick={() => applyRiskMitigation(selectedTask.id, 'extend_buffer', undefined, 3)}
-                      className="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition flex items-center gap-1.5"
+                      className="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition flex items-center gap-1.5 shrink-0"
                     >
                       <span>Tambah Buffer +3 Hari</span>
                     </button>
@@ -527,27 +527,27 @@ export const TaskModal: React.FC = () => {
               </div>
 
               {/* Subtasks List */}
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 min-w-0">
                 {selectedTask.subtasks.map((st) => (
                   <div
                     key={st.id}
-                    className={`flex items-center justify-between p-2.5 rounded-xl border transition ${
+                    className={`flex items-center justify-between p-2.5 rounded-xl border transition gap-2 min-w-0 ${
                       st.completed 
                         ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/40 text-slate-500 line-through' 
                         : 'bg-slate-50 dark:bg-slate-950/60 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200'
                     }`}
                   >
-                    <label className="flex items-center gap-3 cursor-pointer flex-1">
+                    <label className="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0">
                       <input
                         type="checkbox"
                         checked={st.completed}
                         onChange={() => toggleSubtask(selectedTask.id, st.id)}
-                        className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                        className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 shrink-0"
                       />
-                      <span className="text-xs">{st.title}</span>
+                      <span className="text-xs break-words min-w-0 leading-tight">{st.title}</span>
                     </label>
                     {st.category && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 shrink-0">
                         {st.category}
                       </span>
                     )}
@@ -556,34 +556,36 @@ export const TaskModal: React.FC = () => {
               </div>
 
               {/* Add Subtask Form */}
-              <form onSubmit={handleAddSubtask} className="flex gap-2 pt-1">
+              <form onSubmit={handleAddSubtask} className="flex flex-wrap sm:flex-nowrap gap-2 pt-1 min-w-0">
                 <input
                   type="text"
                   placeholder="Tambah sub-tugas baru..."
                   value={newSubtaskTitle}
                   onChange={(e) => setNewSubtaskTitle(e.target.value)}
-                  className="flex-1 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full sm:flex-1 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 min-w-0"
                 />
-                <select
-                  value={newSubtaskCategory}
-                  onChange={(e) => setNewSubtaskCategory(e.target.value)}
-                  className="px-2 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 focus:outline-none"
-                >
-                  <option value="General">General</option>
-                  <option value="Frontend">Frontend</option>
-                  <option value="Backend">Backend</option>
-                  <option value="Design">Design</option>
-                  <option value="Operations">Operations</option>
-                  <option value="QA">QA</option>
-                  <option value="Marketing">Marketing</option>
-                </select>
-                <button
-                  type="submit"
-                  className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-bold text-white transition flex items-center gap-1 shadow-xs"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Tambah</span>
-                </button>
+                <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                  <select
+                    value={newSubtaskCategory}
+                    onChange={(e) => setNewSubtaskCategory(e.target.value)}
+                    className="flex-1 sm:w-auto px-2.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 focus:outline-none shrink-0"
+                  >
+                    <option value="General">General</option>
+                    <option value="Frontend">Frontend</option>
+                    <option value="Backend">Backend</option>
+                    <option value="Design">Design</option>
+                    <option value="Operations">Operations</option>
+                    <option value="QA">QA</option>
+                    <option value="Marketing">Marketing</option>
+                  </select>
+                  <button
+                    type="submit"
+                    className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-bold text-white transition flex items-center justify-center gap-1 shadow-xs shrink-0"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Tambah</span>
+                  </button>
+                </div>
               </form>
             </div>
 
@@ -817,26 +819,26 @@ export const TaskModal: React.FC = () => {
         </div>
 
         {/* 🌟 MODAL STICKY FOOTER: CONFIRMATION & SAVE ACTION BAR */}
-        <div className="px-6 py-3.5 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/90 flex flex-wrap items-center justify-between gap-3 rounded-b-3xl">
-          <div className="flex items-center gap-2">
+        <div className="px-3.5 sm:px-6 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/90 flex flex-wrap items-center justify-between gap-2.5 rounded-b-2xl sm:rounded-b-3xl">
+          <div className="flex items-center gap-1.5 min-w-0">
             {isDirty ? (
-              <span className="flex items-center gap-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 px-2.5 py-1 rounded-lg border border-amber-200 dark:border-amber-800/50 animate-fade-in">
-                <AlertTriangle className="w-3.5 h-3.5" />
-                <span>Ada perubahan yang belum disimpan</span>
+              <span className="flex items-center gap-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 px-2 sm:px-2.5 py-1 rounded-lg border border-amber-200 dark:border-amber-800/50 animate-fade-in">
+                <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">Perubahan belum disimpan</span>
               </span>
             ) : (
-              <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800/50">
-                <Check className="w-3.5 h-3.5" />
+              <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 sm:px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800/50">
+                <Check className="w-3.5 h-3.5 shrink-0" />
                 <span>Semua data tersimpan</span>
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={() => setSelectedTaskId(null)}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition"
+              className="px-3 sm:px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition"
             >
               Tutup
             </button>
@@ -845,14 +847,14 @@ export const TaskModal: React.FC = () => {
               type="button"
               onClick={() => handleSaveChanges()}
               disabled={isSaving || !isDirty}
-              className={`px-5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md active:scale-95 ${
+              className={`px-3.5 sm:px-5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 sm:gap-2 shadow-md active:scale-95 ${
                 isDirty
                   ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/25 ring-2 ring-orange-400/50 animate-pulse'
                   : 'bg-slate-200 dark:bg-slate-800 text-slate-400 border border-slate-300 dark:border-slate-700 opacity-60 cursor-not-allowed'
               }`}
             >
-              <Save className="w-4 h-4" />
-              <span>{isSaving ? 'Menyimpan Perubahan...' : 'Simpan Perubahan Tugas'}</span>
+              <Save className="w-4 h-4 shrink-0" />
+              <span>{isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}</span>
             </button>
           </div>
         </div>
