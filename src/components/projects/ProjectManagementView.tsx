@@ -46,8 +46,6 @@ export const ProjectManagementView: React.FC = () => {
   const [domain, setDomain] = useState<Project['domain']>('all');
   const [status, setStatus] = useState<Project['status']>('active');
 
-  const [filterDomain, setFilterDomain] = useState<string>('all');
-
   const openCreateModal = () => {
     setEditingProject(null);
     setName('');
@@ -101,20 +99,7 @@ export const ProjectManagementView: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const filteredProjects = projects.filter(p => {
-    if (filterDomain === 'all') return true;
-    return p.domain === filterDomain;
-  });
-
-  const domainIcons: Record<string, string> = {
-    all: '🌐',
-    operations: '🏢',
-    marketing: '🎯',
-    technology: '💻',
-    hr: '👥',
-    finance: '💰',
-    event: '🎪',
-  };
+  const filteredProjects = projects;
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-y-auto bg-slate-100/50 dark:bg-slate-950/70 p-4 sm:p-6 space-y-6 text-slate-800 dark:text-slate-100 transition-colors touch-scroll-y">
@@ -123,10 +108,10 @@ export const ProjectManagementView: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <FolderKanban className="w-5 h-5 text-emerald-600" />
-              <span>Halaman Manajemen & Daftar Project</span>
+              <FolderKanban className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <span>Daftar Proyek</span>
             </h2>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 font-bold border border-indigo-200 dark:border-indigo-500/30">
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-500/30">
               {projects.length} Project Aktif
             </span>
           </div>
@@ -148,32 +133,13 @@ export const ProjectManagementView: React.FC = () => {
           {(isSuperAdmin || isPM) && (
             <button
               onClick={openCreateModal}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-xs font-bold text-white flex items-center gap-2 shadow-lg shadow-indigo-500/20 transition active:scale-95"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-xs font-bold text-white flex items-center gap-2 shadow-lg shadow-blue-500/20 transition active:scale-95"
             >
               <Plus className="w-4 h-4" />
               <span>Tambah Project Baru</span>
             </button>
           )}
         </div>
-      </div>
-
-      {/* Domain Filters */}
-      <div className="flex items-center gap-2 flex-wrap pb-1">
-        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 mr-1">Filter Bidang:</span>
-        {['all', 'operations', 'marketing', 'technology', 'hr', 'finance'].map(d => (
-          <button
-            key={d}
-            onClick={() => setFilterDomain(d)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-medium transition ${
-              filterDomain === d
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-            }`}
-          >
-            <span className="mr-1.5">{domainIcons[d] || '📁'}</span>
-            <span className="capitalize">{d === 'all' ? 'Semua Bidang' : d}</span>
-          </button>
-        ))}
       </div>
 
       {/* Projects Grid */}

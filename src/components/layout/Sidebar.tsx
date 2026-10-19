@@ -89,10 +89,10 @@ export const Sidebar: React.FC = () => {
   // Primary Navigation matching reference (Tasks, Activities, Dashboard, Schedule, List)
   const primaryNavItems: { id: ActiveView; label: string; icon: React.ReactNode; badge?: string | number }[] = [
     { id: 'kanban', label: 'Tasks', icon: <Kanban className="w-4 h-4 shrink-0" />, badge: totalActiveTasks },
-    { id: 'timeline', label: 'Activities', icon: <GanttChartSquare className="w-4 h-4 shrink-0" /> },
-    { id: 'project_management', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4 shrink-0" /> },
+    { id: 'timeline', label: 'Timeline/Gantt Chart', icon: <GanttChartSquare className="w-4 h-4 shrink-0" /> },
+    { id: 'project_management', label: 'Daftar Proyek', icon: <LayoutDashboard className="w-4 h-4 shrink-0" /> },
     { id: 'calendar', label: 'Schedule', icon: <CalendarIcon className="w-4 h-4 shrink-0" /> },
-    { id: 'list', label: 'Products & List', icon: <ListOrdered className="w-4 h-4 shrink-0" /> },
+    { id: 'list', label: 'Daftar Tugas', icon: <ListOrdered className="w-4 h-4 shrink-0" /> },
   ];
 
   const aiIntelligenceItems: { id: ActiveView; label: string; icon: React.ReactNode; badge?: string; badgeColor?: string }[] = [

@@ -225,7 +225,7 @@ export const LoginPage: React.FC = () => {
       }`}>
 
         {/* ── LEFT COLUMN: Blue 3D Branding & Illustration Panel ── */}
-        <div className="w-full md:w-[42%] lg:w-[40%] bg-linear-to-br from-[#4D96FF] via-[#3B82F6] to-[#2563EB] p-7 sm:p-9 flex flex-col justify-between text-white relative overflow-hidden shrink-0">
+        <div className="w-full md:w-[42%] lg:w-[40%] bg-linear-to-br from-[#4D96FF] via-[#3B82F6] to-brand-blue-accent p-7 sm:p-9 flex flex-col justify-between text-white relative overflow-hidden shrink-0">
           
           {/* Subtle Ambient Shapes behind left panel */}
           <div className="absolute -top-12 -left-12 w-44 h-44 bg-white/10 rounded-full blur-xl pointer-events-none" />
@@ -456,7 +456,7 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3.5 px-6 rounded-xl bg-linear-to-r from-[#4D96FF] to-[#2563EB] hover:from-[#3B82F6] hover:to-[#1D4ED8] text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-500/25 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 px-6 rounded-xl bg-linear-to-r from-[#4D96FF] to-brand-blue-accent hover:from-[#3B82F6] hover:to-[#1D4ED8] text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-500/25 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {isLoading ? (
                     <>
@@ -595,7 +595,7 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3.5 px-6 rounded-xl bg-linear-to-r from-[#4D96FF] to-[#2563EB] hover:from-[#3B82F6] hover:to-[#1D4ED8] text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-500/25 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 px-6 rounded-xl bg-linear-to-r from-[#4D96FF] to-brand-blue-accent hover:from-[#3B82F6] hover:to-[#1D4ED8] text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-500/25 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {isLoading ? (
                     <>
@@ -637,7 +637,7 @@ export const LoginPage: React.FC = () => {
                         setForgotSuccessMessage(''); 
                         setErrorMessage(''); 
                       }}
-                      className="w-full py-3 px-4 rounded-xl bg-[#3B82F6] hover:bg-[#2563EB] text-white text-xs font-bold shadow-md transition active:scale-95"
+                      className="w-full py-3 px-4 rounded-xl bg-[#3B82F6] hover:bg-brand-blue-accent text-white text-xs font-bold shadow-md transition active:scale-95"
                     >
                       Kembali ke Halaman Sign In
                     </button>
@@ -670,7 +670,7 @@ export const LoginPage: React.FC = () => {
                       <button
                         type="submit"
                         disabled={isLoading}
-                        className="flex-1 py-3 px-4 rounded-xl bg-[#3B82F6] hover:bg-[#2563EB] text-white text-xs font-bold shadow-md transition active:scale-98 disabled:opacity-50 flex items-center justify-center gap-1.5"
+                        className="flex-1 py-3 px-4 rounded-xl bg-[#3B82F6] hover:bg-brand-blue-accent text-white text-xs font-bold shadow-md transition active:scale-98 disabled:opacity-50 flex items-center justify-center gap-1.5"
                       >
                         {isLoading ? (
                           <>
@@ -716,7 +716,7 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => { setMode('signin'); setErrorMessage(''); }}
-                  className="px-6 py-2.5 rounded-xl bg-[#3B82F6] hover:bg-[#2563EB] text-white text-xs font-bold shadow-md transition active:scale-95"
+                  className="px-6 py-2.5 rounded-xl bg-[#3B82F6] hover:bg-brand-blue-accent text-white text-xs font-bold shadow-md transition active:scale-95"
                 >
                   Kembali ke Halaman Sign In
                 </button>
