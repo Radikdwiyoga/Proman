@@ -208,31 +208,31 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className={`fixed inset-0 w-full h-full min-h-dvh overflow-y-auto flex items-center justify-center p-3 sm:p-6 md:p-8 select-none transition-colors duration-300 ${
+    <div className={`fixed inset-0 w-full h-full min-h-dvh overflow-y-auto overflow-x-hidden flex flex-col items-center justify-start md:justify-center p-3 sm:p-6 md:p-8 pb-10 sm:pb-8 transition-colors duration-300 ${
       isDark 
         ? 'bg-[#0B1120] text-slate-100' 
         : 'bg-[#DDEBFC] text-slate-900'
     }`} style={{ 
       WebkitOverflowScrolling: 'touch',
-      overscrollBehavior: 'contain'
+      touchAction: 'pan-y'
     }}>
 
       {/* Main Split-Card Container */}
-      <div className={`w-full max-w-245 rounded-4xl overflow-hidden shadow-2xl transition-all duration-300 flex flex-col md:flex-row my-auto ${
+      <div className={`w-full max-w-245 rounded-3xl sm:rounded-4xl overflow-hidden shadow-2xl transition-all duration-300 flex flex-col md:flex-row my-auto shrink-0 ${
         isDark
           ? 'bg-slate-900/95 border border-slate-800 shadow-blue-950/40'
           : 'bg-white border border-white/80 shadow-[0_25px_50px_-12px_rgba(59,130,246,0.18)]'
       }`}>
 
         {/* ── LEFT COLUMN: Blue 3D Branding & Illustration Panel ── */}
-        <div className="w-full md:w-[42%] lg:w-[40%] bg-linear-to-br from-[#4D96FF] via-[#3B82F6] to-brand-blue-accent p-7 sm:p-9 flex flex-col justify-between text-white relative overflow-hidden shrink-0">
+        <div className="w-full md:w-[42%] lg:w-[40%] bg-linear-to-br from-[#4D96FF] via-[#3B82F6] to-brand-blue-accent p-5 sm:p-7 md:p-9 flex flex-col justify-between text-white relative overflow-hidden shrink-0">
           
           {/* Subtle Ambient Shapes behind left panel */}
           <div className="absolute -top-12 -left-12 w-44 h-44 bg-white/10 rounded-full blur-xl pointer-events-none" />
           <div className="absolute -bottom-16 -right-16 w-56 h-56 bg-cyan-300/20 rounded-full blur-2xl pointer-events-none" />
 
           {/* Top Brand Header */}
-          <div className="relative z-10 space-y-3">
+          <div className="relative z-10 space-y-2 sm:space-y-3">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl bg-white p-1.5 shadow-md flex items-center justify-center shrink-0">
                 <img 
@@ -253,13 +253,13 @@ export const LoginPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Middle 3D Illustration Graphic */}
-          <div className="relative z-10 my-4 md:my-0 flex items-center justify-center">
+          {/* Middle 3D Illustration Graphic (hidden on small mobile screens to keep registration forms accessible, visible on md+) */}
+          <div className="relative z-10 my-4 md:my-0 hidden md:flex items-center justify-center">
             <AuthIllustration3D />
           </div>
 
-          {/* Bottom Switcher Navigation */}
-          <div className="relative z-10 pt-4 border-t border-white/15 text-xs text-blue-50/90 flex items-center justify-between">
+          {/* Bottom Switcher Navigation (desktop view) */}
+          <div className="relative z-10 pt-4 border-t border-white/15 text-xs text-blue-50/90 hidden md:flex items-center justify-between">
             {mode === 'signin' ? (
               <p>
                 Belum punya akun?{' '}
@@ -298,7 +298,7 @@ export const LoginPage: React.FC = () => {
         </div>
 
         {/* ── RIGHT COLUMN: Clean White Form Panel ── */}
-        <div className="flex-1 p-6 sm:p-9 md:p-11 flex flex-col justify-between overflow-y-auto">
+        <div className="flex-1 p-5 sm:p-8 md:p-11 flex flex-col justify-between overflow-visible md:overflow-y-auto">
 
           {/* Top Bar: Language & Dark Mode Switcher */}
           <div className="flex items-center justify-between pb-4">
@@ -470,6 +470,20 @@ export const LoginPage: React.FC = () => {
                     </>
                   )}
                 </button>
+
+                {/* Mobile Quick Switcher */}
+                <div className="pt-2 text-center md:hidden">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Belum punya akun?{' '}
+                    <button
+                      type="button"
+                      onClick={() => { setMode('signup'); setErrorMessage(''); setInfoMessage(''); }}
+                      className="font-bold text-[#3B82F6] hover:underline transition ml-1 cursor-pointer"
+                    >
+                      Daftar di sini
+                    </button>
+                  </p>
+                </div>
               </form>
             )}
 
@@ -609,6 +623,20 @@ export const LoginPage: React.FC = () => {
                     </>
                   )}
                 </button>
+
+                {/* Mobile Quick Switcher */}
+                <div className="pt-2 text-center md:hidden">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Sudah punya akun?{' '}
+                    <button
+                      type="button"
+                      onClick={() => { setMode('signin'); setErrorMessage(''); setInfoMessage(''); }}
+                      className="font-bold text-[#3B82F6] hover:underline transition ml-1 cursor-pointer"
+                    >
+                      Masuk di sini
+                    </button>
+                  </p>
+                </div>
               </form>
             )}
 
@@ -684,6 +712,20 @@ export const LoginPage: React.FC = () => {
                           </>
                         )}
                       </button>
+                    </div>
+
+                    {/* Mobile Quick Switcher */}
+                    <div className="pt-2 text-center md:hidden">
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        Kembali ke login?{' '}
+                        <button
+                          type="button"
+                          onClick={() => { setMode('signin'); setErrorMessage(''); setInfoMessage(''); setForgotSuccessMessage(''); }}
+                          className="font-bold text-[#3B82F6] hover:underline transition ml-1 cursor-pointer"
+                        >
+                          Klik di sini
+                        </button>
+                      </p>
                     </div>
                   </form>
                 )}
