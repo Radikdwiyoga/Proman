@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useProject } from '../../context/ProjectContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { Project } from '../../types';
 import { 
   FolderKanban, 
@@ -33,6 +34,8 @@ export const ProjectManagementView: React.FC = () => {
     isSuperAdmin,
     isPM,
   } = useProject();
+
+  const { t, language } = useLanguage();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -109,14 +112,14 @@ export const ProjectManagementView: React.FC = () => {
           <div className="flex items-center gap-2">
             <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <FolderKanban className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-              <span>Daftar Proyek</span>
+              <span>{t('projects.title')}</span>
             </h2>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-500/30">
-              {projects.length} Project Aktif
+              {projects.length} {language === 'en' ? 'Active Projects' : 'Project Aktif'}
             </span>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Kelola seluruh inisiatif proyek operasional dan teknologi: tambah project baru, sesuaikan target jadwal, atau buka papan kerja.
+            {t('projects.subtitle')}
           </p>
         </div>
 
@@ -127,7 +130,7 @@ export const ProjectManagementView: React.FC = () => {
             title="Tutup & Kembali ke Papan Proyek"
           >
             <X className="w-4 h-4 text-slate-400" />
-            <span>Tutup</span>
+            <span>{t('common.close')}</span>
           </button>
 
           {(isSuperAdmin || isPM) && (
@@ -136,7 +139,7 @@ export const ProjectManagementView: React.FC = () => {
               className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-xs font-bold text-white flex items-center gap-2 shadow-lg shadow-blue-500/20 transition active:scale-95"
             >
               <Plus className="w-4 h-4" />
-              <span>Tambah Project Baru</span>
+              <span>{t('projects.newProject')}</span>
             </button>
           )}
         </div>
@@ -174,7 +177,7 @@ export const ProjectManagementView: React.FC = () => {
                         </span>
                         {isCurrent && (
                           <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-indigo-50 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
-                            Aktif Sekarang
+                            {language === 'en' ? 'Current' : 'Aktif Sekarang'}
                           </span>
                         )}
                       </div>
@@ -189,14 +192,14 @@ export const ProjectManagementView: React.FC = () => {
                       <button
                         onClick={() => openEditModal(proj)}
                         className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-700 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-                        title="Edit Project"
+                        title={language === 'en' ? 'Edit Project' : 'Edit Project'}
                       >
                         <Edit3 className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => deleteProject(proj.id)}
                         className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
-                        title="Hapus Project"
+                        title={language === 'en' ? 'Delete Project' : 'Hapus Project'}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -213,8 +216,8 @@ export const ProjectManagementView: React.FC = () => {
               <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-semibold">
-                    <span>Kemajuan Proyek ({progress}%)</span>
-                    <span>{completedTasks}/{projTasks.length} Tugas Selesai</span>
+                    <span>{language === 'en' ? `Project Progress (${progress}%)` : `Kemajuan Proyek (${progress}%)`}</span>
+                    <span>{completedTasks}/{projTasks.length} {language === 'en' ? 'Tasks Done' : 'Tugas Selesai'}</span>
                   </div>
                   <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
                     <div
@@ -227,7 +230,7 @@ export const ProjectManagementView: React.FC = () => {
                 <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                   <div className="flex items-center gap-1.5 font-medium text-[11px] text-slate-700 dark:text-slate-300">
                     <Layers className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>{projTasks.length} Tugas Terdaftar</span>
+                    <span>{projTasks.length} {language === 'en' ? 'Tasks' : 'Tugas Terdaftar'}</span>
                   </div>
                   <span className="text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
                     {proj.status}
@@ -243,7 +246,7 @@ export const ProjectManagementView: React.FC = () => {
                 }}
                 className="w-full py-2 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 dark:hover:bg-indigo-600 text-slate-700 dark:text-slate-200 hover:text-white dark:hover:text-white text-xs font-bold transition flex items-center justify-center gap-2 group shadow-sm"
               >
-                <span>Buka Papan Kerja Proyek</span>
+                <span>{t('projects.openBoard')}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition transform" />
               </button>
             </div>
@@ -262,7 +265,9 @@ export const ProjectManagementView: React.FC = () => {
               <div className="flex items-center gap-2.5">
                 <FolderKanban className="w-5 h-5 text-emerald-600" />
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                  {editingProject ? 'Edit Informasi Project' : 'Buat Project Baru'}
+                  {editingProject 
+                    ? (language === 'en' ? 'Edit Project Details' : 'Edit Informasi Project') 
+                    : (language === 'en' ? 'Create New Project' : 'Buat Project Baru')}
                 </h3>
               </div>
               <button
@@ -286,12 +291,12 @@ export const ProjectManagementView: React.FC = () => {
                   />
                 </div>
                 <div className="col-span-3 space-y-1">
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Nama Project <span className="text-rose-500">*</span></label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">{language === 'en' ? 'Project Name' : 'Nama Project'} <span className="text-rose-500">*</span></label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Contoh: IT Security Assessment..."
+                    placeholder={language === 'en' ? 'E.g. IT Security Assessment...' : 'Contoh: IT Security Assessment...'}
                     className="w-full p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
                     required
                   />
@@ -299,45 +304,45 @@ export const ProjectManagementView: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Deskripsi & Ruang Lingkup</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">{language === 'en' ? 'Description & Scope' : 'Deskripsi & Ruang Lingkup'}</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
-                  placeholder="Jelaskan tujuan dan ruang lingkup inisiatif project ini..."
+                  placeholder={language === 'en' ? 'Describe the project goals and scope...' : 'Jelaskan tujuan dan ruang lingkup inisiatif project ini...'}
                   className="w-full p-3 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Bidang / Domain</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">{language === 'en' ? 'Domain / Category' : 'Bidang / Domain'}</label>
                   <select
                     value={domain}
                     onChange={(e) => setDomain(e.target.value as any)}
                     className="w-full p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none"
                   >
-                    <option value="all">General / Multi-Disiplin</option>
-                    <option value="operations">Operasional Bisnis</option>
+                    <option value="all">{language === 'en' ? 'General / Multi-Discipline' : 'General / Multi-Disiplin'}</option>
+                    <option value="operations">{language === 'en' ? 'Business Operations' : 'Operasional Bisnis'}</option>
                     <option value="marketing">Marketing & GTM</option>
                     <option value="technology">IT & Software</option>
-                    <option value="hr">HR & Rekrutmen</option>
+                    <option value="hr">{language === 'en' ? 'HR & Recruitment' : 'HR & Rekrutmen'}</option>
                     <option value="finance">Finance & Legal</option>
-                    <option value="event">Event & Aktivasi</option>
+                    <option value="event">{language === 'en' ? 'Event & Activation' : 'Event & Aktivasi'}</option>
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Status Project</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">{language === 'en' ? 'Project Status' : 'Status Project'}</label>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value as any)}
                     className="w-full p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none"
                   >
-                    <option value="active">Active (Sedang Berjalan)</option>
-                    <option value="planning">Planning (Perencanaan)</option>
-                    <option value="on_hold">On Hold (Ditunda)</option>
-                    <option value="completed">Completed (Selesai)</option>
+                    <option value="active">{language === 'en' ? 'Active (In Progress)' : 'Active (Sedang Berjalan)'}</option>
+                    <option value="planning">{language === 'en' ? 'Planning' : 'Planning (Perencanaan)'}</option>
+                    <option value="on_hold">{language === 'en' ? 'On Hold' : 'On Hold (Ditunda)'}</option>
+                    <option value="completed">{language === 'en' ? 'Completed' : 'Completed (Selesai)'}</option>
                   </select>
                 </div>
               </div>
@@ -348,13 +353,15 @@ export const ProjectManagementView: React.FC = () => {
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer"
                 >
-                  Batal
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-bold text-white shadow-lg shadow-indigo-500/20 cursor-pointer"
                 >
-                  {editingProject ? 'Simpan Perubahan' : 'Buat Project Sekarang'}
+                  {editingProject 
+                    ? (language === 'en' ? 'Save Changes' : 'Simpan Perubahan') 
+                    : (language === 'en' ? 'Create Project Now' : 'Buat Project Sekarang')}
                 </button>
               </div>
             </form>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useProject } from '../../context/ProjectContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { 
   Sparkles, 
   Plus, 
@@ -17,7 +18,8 @@ import {
   Menu,
   Clock,
   Bell,
-  HelpCircle
+  HelpCircle,
+  Globe2
 } from 'lucide-react';
 import { TechLogo } from '../common/TechLogo';
 import { UserAvatar } from '../common/UserAvatar';
@@ -84,6 +86,7 @@ export const Navbar: React.FC = () => {
   } = useProject();
 
   const { theme, toggleTheme } = useTheme();
+  const { language, toggleLanguage, t } = useLanguage();
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(() => getOperationalTime(systemSettings?.timezone));
 
@@ -104,7 +107,7 @@ export const Navbar: React.FC = () => {
           <button
             onClick={() => setIsMobileSidebarOpen(true)}
             className="p-2 -ml-1 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 md:hidden transition cursor-pointer"
-            title="Buka Menu Navigasi"
+            title={t('nav.openNav')}
           >
             <Menu className="w-5 h-5" />
           </button>
@@ -112,7 +115,7 @@ export const Navbar: React.FC = () => {
           {/* User Welcome Header (Exact obantor style) */}
           <div className="flex flex-col text-left">
             <span className="text-[11px] text-slate-400 dark:text-slate-400 font-medium leading-none">
-              Welcome,
+              {t('navbar.welcome')}
             </span>
             <div className="flex items-center gap-1.5 mt-0.5">
               <span className="text-sm font-bold text-slate-800 dark:text-slate-100 leading-tight">
@@ -133,13 +136,13 @@ export const Navbar: React.FC = () => {
               type="text"
               value={filters.searchQuery}
               onChange={(e) => setFilters(prev => ({ ...prev, searchQuery: e.target.value }))}
-              placeholder="Search here.."
+              placeholder={t('common.searchPlaceholder')}
               className="w-full pl-10 pr-9 py-2 rounded-full bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 shadow-2xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 transition"
             />
             {filters.searchQuery && (
               <button
                 onClick={() => setFilters(prev => ({ ...prev, searchQuery: '' }))}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -147,8 +150,8 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Actions: Mobile Search, Copilot, Time, Bell, Theme */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
+        {/* Right Actions: Mobile Search, Copilot, Time, Bell, Language, Theme */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {/* Mobile Search Toggle Button */}
           <button
             onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
@@ -157,7 +160,7 @@ export const Navbar: React.FC = () => {
                 ? 'bg-[#2563EB] text-white border-blue-500'
                 : 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700 text-slate-600 dark:text-slate-300'
             }`}
-            title="Cari Tugas"
+            title={t('navbar.searchTasks')}
           >
             <Search className="w-4 h-4" />
           </button>
@@ -170,10 +173,10 @@ export const Navbar: React.FC = () => {
                 ? 'bg-[#2563EB] text-white border-blue-600 shadow-sm' 
                 : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200/80 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50'
             }`}
-            title="Buka ProMan AI Copilot Assistant"
+            title={t('navbar.copilotTooltip')}
           >
             <Bot className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            <span className="hidden sm:inline text-xs font-semibold">Copilot</span>
+            <span className="hidden sm:inline text-xs font-semibold">{t('navbar.copilot')}</span>
             <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shrink-0" />
           </button>
 
@@ -195,17 +198,29 @@ export const Navbar: React.FC = () => {
           <button
             onClick={() => setIsAIBreakdownModalOpen(true)}
             className="p-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 shadow-2xs transition cursor-pointer relative"
-            title="AI Breakdown & Intelligence Tools"
+            title={t('navbar.notifications')}
           >
             <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-blue-500 ring-2 ring-white dark:ring-slate-900" />
+          </button>
+
+          {/* Language Switcher Pill Button */}
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-2xs transition cursor-pointer"
+            title={t('navbar.languageToggle')}
+          >
+            <Globe2 className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+            <span className="text-[11px] font-extrabold uppercase tracking-wide">
+              {language === 'id' ? 'ID' : 'EN'}
+            </span>
           </button>
 
           {/* Dark / Light Mode Toggle */}
           <button
             onClick={toggleTheme}
             className="p-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-2xs transition cursor-pointer"
-            title={`Beralih ke mode ${theme === 'dark' ? 'Terang' : 'Gelap'}`}
+            title={`${t('navbar.toggleTheme')} (${theme === 'dark' ? t('navbar.lightMode') : t('navbar.darkMode')})`}
           >
             {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}
           </button>

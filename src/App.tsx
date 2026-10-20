@@ -1,6 +1,7 @@
 import React from 'react';
 import { ProjectProvider, useProject } from './context/ProjectContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { LanguageProvider } from './context/LanguageContext';
 import { LoginPage } from './components/auth/LoginPage';
 import { Navbar } from './components/layout/Navbar';
 import { Sidebar } from './components/layout/Sidebar';
@@ -95,9 +96,11 @@ const AppCore: React.FC = () => {
 export function App() {
   return (
     <ThemeProvider>
-      <ProjectProvider>
-        <AppCore />
-      </ProjectProvider>
+      <LanguageProvider>
+        <ProjectProvider>
+          <AppCore />
+        </ProjectProvider>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }

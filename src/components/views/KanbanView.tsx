@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useProject } from '../../context/ProjectContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { TaskCard } from '../tasks/TaskCard';
 import { TaskStatus, TaskPriority } from '../../types';
 import { 
@@ -34,6 +35,8 @@ export const KanbanView: React.FC = () => {
     moveTaskStatus,
   } = useProject();
 
+  const { language, t } = useLanguage();
+
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [collapsedColumns, setCollapsedColumns] = useState<Record<string, boolean>>({});
   const [isFilterBarOpen, setIsFilterBarOpen] = useState(false);
@@ -46,11 +49,11 @@ export const KanbanView: React.FC = () => {
   };
 
   const columns: { id: TaskStatus; label: string; dotColor: string }[] = [
-    { id: 'todo', label: 'To Do List', dotColor: 'bg-[#EF4444]' },
-    { id: 'in_progress', label: 'In Progress', dotColor: 'bg-[#F59E0B]' },
-    { id: 'review', label: 'In Review', dotColor: 'bg-[#8B5CF6]' },
-    { id: 'done', label: 'Done', dotColor: 'bg-[#10B981]' },
-    { id: 'backlog', label: 'Backlog', dotColor: 'bg-[#94A3B8]' },
+    { id: 'todo', label: t('status.todo'), dotColor: 'bg-[#EF4444]' },
+    { id: 'in_progress', label: t('status.in_progress'), dotColor: 'bg-[#F59E0B]' },
+    { id: 'review', label: t('status.review'), dotColor: 'bg-[#8B5CF6]' },
+    { id: 'done', label: t('status.done'), dotColor: 'bg-[#10B981]' },
+    { id: 'backlog', label: t('status.backlog'), dotColor: 'bg-[#94A3B8]' },
   ];
 
   const handleDragStart = (e: React.DragEvent, taskId: string) => {
@@ -75,13 +78,11 @@ export const KanbanView: React.FC = () => {
 
   // Dynamic Date Display matching "April / Today is Saturday, April 6th, 2024"
   const now = new Date();
-  const monthName = new Intl.DateTimeFormat('id-ID', { month: 'long' }).format(now);
-  const todaySubtitle = `Hari ini adalah ${new Intl.DateTimeFormat('id-ID', { 
-    weekday: 'long', 
-    day: 'numeric', 
-    month: 'short', 
-    year: 'numeric' 
-  }).format(now)}`;
+  const locale = language === 'en' ? 'en-US' : 'id-ID';
+  const monthName = new Intl.DateTimeFormat(locale, { month: 'long' }).format(now);
+  const todaySubtitle = language === 'en'
+    ? `Today is ${new Intl.DateTimeFormat('en-US', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' }).format(now)}`
+    : `Hari ini adalah ${new Intl.DateTimeFormat('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' }).format(now)}`;
 
   // Active Project Assignees for team cluster
   const activeProjectUsers = users.slice(0, 4);
@@ -112,7 +113,9 @@ export const KanbanView: React.FC = () => {
               onChange={(e) => setCurrentProjectId(e.target.value)}
               className="bg-transparent border-none text-xs font-bold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
             >
-              <option value="all" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Semua Project</option>
+              <option value="all" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+                {language === 'en' ? 'All Projects' : 'Semua Project'}
+              </option>
               {projects.map(p => (
                 <option key={p.id} value={p.id} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
                   {p.name}
@@ -148,7 +151,7 @@ export const KanbanView: React.FC = () => {
             }`}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
-            <span>Filters</span>
+            <span>{t('common.filter')}</span>
             {hasActiveFilters && (
               <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
             )}
@@ -170,7 +173,7 @@ export const KanbanView: React.FC = () => {
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-linear-to-r from-[#4D96FF] to-[#2563EB] hover:from-[#3B82F6] hover:to-[#1D4ED8] text-white text-xs font-bold transition shadow-md shadow-blue-500/25 active:scale-95 cursor-pointer"
           >
             <PenSquare className="w-3.5 h-3.5" />
-            <span>Create task</span>
+            <span>{t('tasks.newTask')}</span>
           </button>
         </div>
 
@@ -187,7 +190,9 @@ export const KanbanView: React.FC = () => {
               onChange={(e) => setFilters(prev => ({ ...prev, assigneeId: e.target.value || null }))}
               className="bg-transparent border-none text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-none cursor-pointer"
             >
-              <option value="" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Semua Anggota Tim</option>
+              <option value="" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+                {language === 'en' ? 'All Team Members' : 'Semua Anggota Tim'}
+              </option>
               {users.map(u => (
                 <option key={u.id} value={u.id} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">{u.name}</option>
               ))}
@@ -202,11 +207,13 @@ export const KanbanView: React.FC = () => {
               onChange={(e) => setFilters(prev => ({ ...prev, priority: (e.target.value as TaskPriority) || null }))}
               className="bg-transparent border-none text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-none cursor-pointer"
             >
-              <option value="" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Semua Prioritas</option>
-              <option value="urgent" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Urgent / Mendesak</option>
-              <option value="high" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">High</option>
-              <option value="medium" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Medium</option>
-              <option value="low" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Low</option>
+              <option value="" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+                {language === 'en' ? 'All Priorities' : 'Semua Prioritas'}
+              </option>
+              <option value="urgent" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">{t('priorities.urgent')}</option>
+              <option value="high" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">{t('priorities.high')}</option>
+              <option value="medium" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">{t('priorities.medium')}</option>
+              <option value="low" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">{t('priorities.low')}</option>
             </select>
           </div>
 
@@ -217,12 +224,12 @@ export const KanbanView: React.FC = () => {
               className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-950/70 border border-rose-200 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold transition"
             >
               <X className="w-3 h-3" />
-              <span>Reset Filter</span>
+              <span>{language === 'en' ? 'Reset Filters' : 'Reset Filter'}</span>
             </button>
           )}
 
           <span className="text-xs text-slate-400 dark:text-slate-500 font-mono ml-auto">
-            {filteredTasks.length} tugas ditemukan
+            {filteredTasks.length} {language === 'en' ? 'tasks found' : 'tugas ditemukan'}
           </span>
         </div>
       )}
@@ -267,7 +274,7 @@ export const KanbanView: React.FC = () => {
                 {/* Mobile Accordion Toggle */}
                 <div className="md:hidden flex items-center gap-1 text-slate-400">
                   <span className="text-[10px]">
-                    {isCollapsed ? 'Buka' : 'Tutup'}
+                    {isCollapsed ? (language === 'en' ? 'Open' : 'Buka') : (language === 'en' ? 'Close' : 'Tutup')}
                   </span>
                   {isCollapsed ? (
                     <ChevronDown className="w-3.5 h-3.5" />
@@ -283,7 +290,7 @@ export const KanbanView: React.FC = () => {
                   type="button"
                   onClick={() => openCreateTaskModal(col.id)}
                   className="w-full py-1.5 rounded-xl bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 shadow-2xs text-xs font-bold transition flex items-center justify-center cursor-pointer hover:border-slate-300"
-                  title={`Tambah tugas ke ${col.label}`}
+                  title={`${language === 'en' ? 'Add task to' : 'Tambah tugas ke'} ${col.label}`}
                 >
                   <Plus className="w-3.5 h-3.5" />
                 </button>
@@ -310,7 +317,7 @@ export const KanbanView: React.FC = () => {
 
                 {colTasks.length === 0 && (
                   <div className="py-8 rounded-[18px] border border-dashed border-slate-300/80 dark:border-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 text-xs">
-                    Tidak ada tugas
+                    {language === 'en' ? 'No tasks' : 'Tidak ada tugas'}
                   </div>
                 )}
               </div>

@@ -14,7 +14,8 @@ Saat ini ProMan-AI telah beroperasi penuh dengan fitur utama mencakup:
 *   **Multi-View Project Workspace:** Papan Kanban interaktif dengan drag & drop dan *context-aware quick add*, Timeline/Gantt Chart dengan indikator risiko AI, Kalender Kerja Modern dengan *Weekly Time Grid* dan *Mini-Calendar*, serta Daftar & Tabel tugas yang dapat disortir.
 *   **Universal AI Engine:** Didukung oleh arsitektur *multi-LLM provider* berantai (**Groq** → **OpenRouter** → **ProMan Local Heuristic Simulator**) yang menjamin fitur AI selalu aktif, cepat, dan mandiri tanpa ketergantungan mutlak pada API key eksternal.
 *   **2-Tier Role-Based Access Control (RBAC):** Sistem otorisasi sederhana, terstruktur, dan tegas yang membagi pengguna ke dalam peran **Super Admin** dan **Member Standar**.
-*   **Modern Executive Design & Dual Theme:** Mengusung identitas visual *Deep Forest Green & Signal Emerald*, tipografi universal Arial, kontras tinggi di tema gelap (*dark mode*), serta halaman login *split-screen* modern.
+*   **Dukungan Bilingual (Bahasa Indonesia & English):** Penyediaan pengalih bahasa instan (*language switcher*) di layar autentikasi, navbar utama, dan profil sidebar dengan penyimpanan preferensi di penyimpanan lokal (`localStorage`).
+*   **Modern Executive Design & Dual Theme:** Mengusung identitas visual *Royal Blue Executive*, tipografi universal Arial, kontras tinggi di tema gelap (*dark mode*), serta halaman login *split-screen* modern.
 *   **Notifikasi Multi-Saluran:** Integrasi otomatis ke **Telegram Bot** (client-side) dan **Email via Cloud Functions** (Nodemailer/SMTP) lengkap dengan pengingat tenggat harian.
 
 ---

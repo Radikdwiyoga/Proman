@@ -137,6 +137,14 @@ Sistem tipografi aplikasi menggunakan font standar **Arial** sebagai font utama 
   * 👤 **Member Standar:** Pengguna operasional untuk membuat/mengelola tugas, berkolaborasi di board, kalender, dan menggunakan AI Copilot.
 * **Tabel Matriks Kebijakan:** Kartu panduan visual di Admin Settings yang merinci izin akses Super Admin vs Member Standar secara transparan.
 
+### 4.6 Sistem Internasionalisasi & Bilingual (ID/EN)
+* **Dukungan 2 Bahasa Utama:** Bahasa Indonesia (`id`) sebagai bahasa *default* dan Bahasa Inggris (`en`).
+* **Peralihan Cepat (Language Switcher):**
+  * **Halaman Login & Register:** Tombol pill toggle bendera (`🇮🇩 ID` / `🇬🇧 EN`) di sudut kanan atas kartu autentikasi.
+  * **Navbar Utama:** Tombol pill ikon bola dunia (`Globe2`) di samping pengalih tema gelap/terang.
+  * **Profil Pengguna (Sidebar):** Opsi pemilihan bahasa di dalam pop-up menu profil dan mode mini bar.
+* **Penyimpanan Status:** Preferensi bahasa tersimpan permanen di `localStorage` (`proman_selected_language`).
+
 ---
 
 ## 5. Responsivitas & Aksesibilitas (a11y)

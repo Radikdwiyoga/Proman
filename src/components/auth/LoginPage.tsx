@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useProject } from '../../context/ProjectContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { 
   Lock, 
   Mail, 
@@ -29,6 +30,7 @@ const STORAGE_KEY_REMEMBER_SESSION = 'proman_remember_session';
 export const LoginPage: React.FC = () => {
   const { login, showToast } = useProject();
   const { theme, toggleTheme } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
 
   const [mode, setMode] = useState<'signin' | 'signup' | 'pending_notice' | 'forgot_password'>('signin');
 
@@ -249,7 +251,7 @@ export const LoginPage: React.FC = () => {
             </div>
 
             <p className="text-xs text-blue-50/90 leading-relaxed font-normal max-w-xs">
-              Interface assets &amp; workspace cerdas untuk manajemen proyek dan tata kelola operasional enterprise.
+              {t('auth.tagline')}
             </p>
           </div>
 
@@ -262,35 +264,35 @@ export const LoginPage: React.FC = () => {
           <div className="relative z-10 pt-4 border-t border-white/15 text-xs text-blue-50/90 hidden md:flex items-center justify-between">
             {mode === 'signin' ? (
               <p>
-                Belum punya akun?{' '}
+                {t('auth.dontHaveAccount')}{' '}
                 <button
                   type="button"
                   onClick={() => { setMode('signup'); setErrorMessage(''); setInfoMessage(''); }}
                   className="font-bold text-white hover:underline transition ml-1 cursor-pointer"
                 >
-                  Daftar di sini
+                  {t('auth.signUpHere')}
                 </button>
               </p>
             ) : mode === 'signup' ? (
               <p>
-                Sudah punya akun?{' '}
+                {t('auth.alreadyHaveAccount')}{' '}
                 <button
                   type="button"
                   onClick={() => { setMode('signin'); setErrorMessage(''); setInfoMessage(''); }}
                   className="font-bold text-white hover:underline transition ml-1 cursor-pointer"
                 >
-                  Masuk di sini
+                  {t('auth.signInHere')}
                 </button>
               </p>
             ) : (
               <p>
-                Kembali ke login?{' '}
+                {t('auth.backToLogin')}{' '}
                 <button
                   type="button"
                   onClick={() => { setMode('signin'); setErrorMessage(''); setInfoMessage(''); setForgotSuccessMessage(''); }}
                   className="font-bold text-white hover:underline transition ml-1 cursor-pointer"
                 >
-                  Klik di sini
+                  {t('auth.clickHere')}
                 </button>
               </p>
             )}
@@ -302,14 +304,39 @@ export const LoginPage: React.FC = () => {
 
           {/* Top Bar: Language & Dark Mode Switcher */}
           <div className="flex items-center justify-between pb-4">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
-              <Globe2 className="w-3.5 h-3.5 text-[#3B82F6]" />
-              <span>Indonesia (WIB)</span>
+            {/* Interactive Language Switcher */}
+            <div className="flex items-center gap-1 p-0.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs">
+              <button
+                type="button"
+                onClick={() => setLanguage('id')}
+                className={`px-2.5 py-1 rounded-lg font-bold text-[11px] transition cursor-pointer flex items-center gap-1 ${
+                  language === 'id'
+                    ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs'
+                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
+                }`}
+                title="Bahasa Indonesia"
+              >
+                <span>🇮🇩</span>
+                <span>ID</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setLanguage('en')}
+                className={`px-2.5 py-1 rounded-lg font-bold text-[11px] transition cursor-pointer flex items-center gap-1 ${
+                  language === 'en'
+                    ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs'
+                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
+                }`}
+                title="English"
+              >
+                <span>🇬🇧</span>
+                <span>EN</span>
+              </button>
             </div>
 
             <button
               onClick={toggleTheme}
-              className={`p-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition ${
+              className={`p-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
                 isDark
                   ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700'
                   : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
@@ -327,16 +354,16 @@ export const LoginPage: React.FC = () => {
             {/* Header Titles */}
             <div className="space-y-1">
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-                {mode === 'signin' && 'Sign In'}
-                {mode === 'signup' && 'Sign Up'}
-                {mode === 'forgot_password' && 'Reset Password'}
-                {mode === 'pending_notice' && 'Verifikasi Akun'}
+                {mode === 'signin' && t('auth.signInTitle')}
+                {mode === 'signup' && t('auth.signUpTitle')}
+                {mode === 'forgot_password' && t('auth.resetTitle')}
+                {mode === 'pending_notice' && t('auth.verifyTitle')}
               </h1>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                {mode === 'signin' && 'Selamat datang kembali! Silakan masukkan kredensial akun Anda.'}
-                {mode === 'signup' && 'Daftarkan akun perusahaan baru untuk mulai berkolaborasi di ProMan.'}
-                {mode === 'forgot_password' && 'Masukkan email terdaftar untuk menerima tautan pembaruan kata sandi.'}
-                {mode === 'pending_notice' && 'Pendaftaran akun Anda telah berhasil diterima oleh sistem.'}
+                {mode === 'signin' && t('auth.signInSubtitle')}
+                {mode === 'signup' && t('auth.signUpSubtitle')}
+                {mode === 'forgot_password' && t('auth.resetSubtitle')}
+                {mode === 'pending_notice' && t('auth.verifySubtitle')}
               </p>
             </div>
 
@@ -361,7 +388,7 @@ export const LoginPage: React.FC = () => {
               <form onSubmit={handleLogin} className="space-y-4 animate-fade-in text-left">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                    Email address
+                    {t('auth.workEmail')}
                   </label>
                   <div className="relative">
                     <input
@@ -377,7 +404,7 @@ export const LoginPage: React.FC = () => {
                           console.warn('LocalStorage error on blur:', err);
                         }
                       }}
-                      placeholder="nama@bitcorp.id"
+                      placeholder={t('auth.emailPlaceholder')}
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6] focus:ring-4 focus:ring-blue-500/10 transition"
                       required
                     />
@@ -387,7 +414,7 @@ export const LoginPage: React.FC = () => {
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                      Password
+                      {t('auth.password')}
                     </label>
                     <button
                       type="button"
@@ -398,9 +425,9 @@ export const LoginPage: React.FC = () => {
                         setForgotSuccessMessage('');
                         if (email) setForgotEmail(email);
                       }}
-                      className="text-xs font-semibold text-[#3B82F6] hover:underline"
+                      className="text-xs font-semibold text-[#3B82F6] hover:underline cursor-pointer"
                     >
-                      Lupa password?
+                      {t('auth.forgotPassword')}
                     </button>
                   </div>
                   <div className="relative">
@@ -415,7 +442,7 @@ export const LoginPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -448,7 +475,7 @@ export const LoginPage: React.FC = () => {
                     className="w-4 h-4 rounded border-slate-300 text-[#3B82F6] focus:ring-blue-500 cursor-pointer"
                   />
                   <label htmlFor="remember_me" className="text-xs text-slate-600 dark:text-slate-400 font-medium cursor-pointer">
-                    Ingat sesi saya di workstation ini
+                    {t('auth.rememberSession')}
                   </label>
                 </div>
 
@@ -461,11 +488,11 @@ export const LoginPage: React.FC = () => {
                   {isLoading ? (
                     <>
                       <Sparkles className="w-4 h-4 animate-spin" />
-                      <span>Memverifikasi Akun...</span>
+                      <span>{t('auth.signingIn')}</span>
                     </>
                   ) : (
                     <>
-                      <span>Sign In</span>
+                      <span>{t('auth.signInButton')}</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
@@ -474,13 +501,13 @@ export const LoginPage: React.FC = () => {
                 {/* Mobile Quick Switcher */}
                 <div className="pt-2 text-center md:hidden">
                   <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Belum punya akun?{' '}
+                    {t('auth.dontHaveAccount')}{' '}
                     <button
                       type="button"
                       onClick={() => { setMode('signup'); setErrorMessage(''); setInfoMessage(''); }}
                       className="font-bold text-[#3B82F6] hover:underline transition ml-1 cursor-pointer"
                     >
-                      Daftar di sini
+                      {t('auth.signUpHere')}
                     </button>
                   </p>
                 </div>
@@ -492,13 +519,13 @@ export const LoginPage: React.FC = () => {
               <form onSubmit={handleSignUp} className="space-y-3.5 animate-fade-in text-left">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                    Full name
+                    {t('auth.fullName')}
                   </label>
                   <input
                     type="text"
                     value={regName}
                     onChange={(e) => setRegName(e.target.value)}
-                    placeholder="Contoh: Joey Willson"
+                    placeholder={t('auth.fullNamePlaceholder')}
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6] focus:ring-4 focus:ring-blue-500/10 transition"
                     required
                   />
@@ -506,13 +533,13 @@ export const LoginPage: React.FC = () => {
 
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                    Email address
+                    {t('auth.workEmail')}
                   </label>
                   <input
                     type="email"
                     value={regEmail}
                     onChange={(e) => setRegEmail(e.target.value)}
-                    placeholder="jowillson@gmail.com"
+                    placeholder={t('auth.emailPlaceholder')}
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6] focus:ring-4 focus:ring-blue-500/10 transition"
                     required
                   />
@@ -521,7 +548,7 @@ export const LoginPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                      Departemen
+                      {t('auth.department')}
                     </label>
                     <select
                       value={regDepartment}
@@ -540,13 +567,13 @@ export const LoginPage: React.FC = () => {
 
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                      Jabatan / Posisi
+                      {t('auth.role')}
                     </label>
                     <input
                       type="text"
                       value={regRole}
                       onChange={(e) => setRegRole(e.target.value)}
-                      placeholder="Contoh: IT Engineer"
+                      placeholder={t('auth.rolePlaceholder')}
                       className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6] transition"
                       required
                     />
@@ -556,7 +583,7 @@ export const LoginPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                      Set password
+                      {t('auth.setPassword')}
                     </label>
                     <div className="relative">
                       <input
@@ -570,7 +597,7 @@ export const LoginPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setShowRegPassword(!showRegPassword)}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
                       >
                         {showRegPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                       </button>
@@ -579,7 +606,7 @@ export const LoginPage: React.FC = () => {
 
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                      Ulangi password
+                      {t('auth.confirmPassword')}
                     </label>
                     <input
                       type={showRegPassword ? 'text' : 'password'}
@@ -599,10 +626,18 @@ export const LoginPage: React.FC = () => {
                     id="agree_terms"
                     checked={agreeTerms}
                     onChange={(e) => setAgreeTerms(e.target.checked)}
-                    className="w-4 h-4 mt-0.5 rounded border-slate-300 text-[#3B82F6] focus:ring-blue-500"
+                    className="w-4 h-4 mt-0.5 rounded border-slate-300 text-[#3B82F6] focus:ring-blue-500 cursor-pointer"
                   />
                   <label htmlFor="agree_terms" className="leading-tight cursor-pointer">
-                    By creating an account, you agree to the <span className="text-[#3B82F6] font-semibold hover:underline">Terms of Service</span> and <span className="text-[#3B82F6] font-semibold hover:underline">Privacy Policy</span>.
+                    {language === 'id' ? (
+                      <>
+                        Dengan mendaftar, Anda menyetujui <span className="text-[#3B82F6] font-semibold hover:underline">Ketentuan Layanan</span> dan <span className="text-[#3B82F6] font-semibold hover:underline">Kebijakan Privasi</span>.
+                      </>
+                    ) : (
+                      <>
+                        By creating an account, you agree to the <span className="text-[#3B82F6] font-semibold hover:underline">Terms of Service</span> and <span className="text-[#3B82F6] font-semibold hover:underline">Privacy Policy</span>.
+                      </>
+                    )}
                   </label>
                 </div>
 
@@ -614,11 +649,11 @@ export const LoginPage: React.FC = () => {
                   {isLoading ? (
                     <>
                       <Sparkles className="w-4 h-4 animate-spin" />
-                      <span>Mendaftarkan Akun...</span>
+                      <span>{t('auth.registering')}</span>
                     </>
                   ) : (
                     <>
-                      <span>Create Account</span>
+                      <span>{t('auth.createAccountButton')}</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
@@ -627,13 +662,13 @@ export const LoginPage: React.FC = () => {
                 {/* Mobile Quick Switcher */}
                 <div className="pt-2 text-center md:hidden">
                   <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Sudah punya akun?{' '}
+                    {t('auth.alreadyHaveAccount')}{' '}
                     <button
                       type="button"
                       onClick={() => { setMode('signin'); setErrorMessage(''); setInfoMessage(''); }}
                       className="font-bold text-[#3B82F6] hover:underline transition ml-1 cursor-pointer"
                     >
-                      Masuk di sini
+                      {t('auth.signInHere')}
                     </button>
                   </p>
                 </div>
@@ -650,7 +685,7 @@ export const LoginPage: React.FC = () => {
                     </div>
                     <div className="space-y-1">
                       <h4 className="text-sm font-bold text-slate-900 dark:text-white">
-                        Tautan Reset Terkirim
+                        {t('auth.resetSuccessTitle')}
                       </h4>
                       <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                         {forgotSuccessMessage}
@@ -661,26 +696,26 @@ export const LoginPage: React.FC = () => {
                       onClick={() => { 
                         setMode('signin'); 
                         setEmail(forgotEmail);
-                        setPassword('');
+                        setPassword(''); 
                         setForgotSuccessMessage(''); 
                         setErrorMessage(''); 
                       }}
-                      className="w-full py-3 px-4 rounded-xl bg-[#3B82F6] hover:bg-brand-blue-accent text-white text-xs font-bold shadow-md transition active:scale-95"
+                      className="w-full py-3 px-4 rounded-xl bg-[#3B82F6] hover:bg-brand-blue-accent text-white text-xs font-bold shadow-md transition active:scale-95 cursor-pointer"
                     >
-                      Kembali ke Halaman Sign In
+                      {t('auth.backToSignIn')}
                     </button>
                   </div>
                 ) : (
                   <form onSubmit={handleForgotPassword} className="space-y-4">
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                        Email Perusahaan Terdaftar
+                        {t('auth.workEmail')}
                       </label>
                       <input
                         type="email"
                         value={forgotEmail}
                         onChange={(e) => setForgotEmail(e.target.value)}
-                        placeholder="nama@bitcorp.id"
+                        placeholder={t('auth.emailPlaceholder')}
                         className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6] transition"
                         required
                       />
@@ -690,24 +725,24 @@ export const LoginPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => { setMode('signin'); setErrorMessage(''); }}
-                        className="flex-1 py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 transition"
+                        className="flex-1 py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 transition cursor-pointer"
                       >
-                        Batal
+                        {t('common.cancel')}
                       </button>
 
                       <button
                         type="submit"
                         disabled={isLoading}
-                        className="flex-1 py-3 px-4 rounded-xl bg-[#3B82F6] hover:bg-brand-blue-accent text-white text-xs font-bold shadow-md transition active:scale-98 disabled:opacity-50 flex items-center justify-center gap-1.5"
+                        className="flex-1 py-3 px-4 rounded-xl bg-[#3B82F6] hover:bg-brand-blue-accent text-white text-xs font-bold shadow-md transition active:scale-98 disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
                       >
                         {isLoading ? (
                           <>
                             <Sparkles className="w-3.5 h-3.5 animate-spin" />
-                            <span>Memproses...</span>
+                            <span>{t('auth.sendingLink')}</span>
                           </>
                         ) : (
                           <>
-                            <span>Kirim Tautan</span>
+                            <span>{t('auth.sendResetLink')}</span>
                             <ArrowRight className="w-3.5 h-3.5" />
                           </>
                         )}
@@ -717,13 +752,13 @@ export const LoginPage: React.FC = () => {
                     {/* Mobile Quick Switcher */}
                     <div className="pt-2 text-center md:hidden">
                       <p className="text-xs text-slate-500 dark:text-slate-400">
-                        Kembali ke login?{' '}
+                        {t('auth.backToLogin')}{' '}
                         <button
                           type="button"
                           onClick={() => { setMode('signin'); setErrorMessage(''); setInfoMessage(''); setForgotSuccessMessage(''); }}
                           className="font-bold text-[#3B82F6] hover:underline transition ml-1 cursor-pointer"
                         >
-                          Klik di sini
+                          {t('auth.clickHere')}
                         </button>
                       </p>
                     </div>
@@ -741,26 +776,26 @@ export const LoginPage: React.FC = () => {
 
                 <div className="space-y-1.5">
                   <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
-                    Pendaftaran Berhasil Dikirim!
+                    {t('auth.pendingTitle')}
                   </h3>
                   <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed max-w-sm mx-auto">
-                    Akun Anda telah berhasil terdaftar ke database ProMan. Demi keamanan perusahaan, akun Anda saat ini berstatus:
+                    {t('auth.pendingDesc')}
                   </p>
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-700 my-1">
                     <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                    STATUS: MENUNGGU VERIFIKASI ADMIN
+                    {t('auth.pendingBadge')}
                   </div>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                    Silakan konfirmasi ke Super Admin untuk mengaktifkan akun Anda agar dapat masuk ke dashboard.
+                    {t('auth.pendingNote')}
                   </p>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => { setMode('signin'); setErrorMessage(''); }}
-                  className="px-6 py-2.5 rounded-xl bg-[#3B82F6] hover:bg-brand-blue-accent text-white text-xs font-bold shadow-md transition active:scale-95"
+                  className="px-6 py-2.5 rounded-xl bg-[#3B82F6] hover:bg-brand-blue-accent text-white text-xs font-bold shadow-md transition active:scale-95 cursor-pointer"
                 >
-                  Kembali ke Halaman Sign In
+                  {t('auth.backToSignIn')}
                 </button>
               </div>
             )}
@@ -771,7 +806,7 @@ export const LoginPage: React.FC = () => {
           {/* Bottom Security Notice */}
           <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-center gap-1.5 text-[11px] text-slate-400 dark:text-slate-500">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-            <span>Terenkripsi &amp; Terlindungi Protokol Firebase Enterprise</span>
+            <span>{t('auth.securityNotice')}</span>
           </div>
 
         </div>

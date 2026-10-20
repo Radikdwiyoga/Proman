@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useProject, ActiveView } from '../../context/ProjectContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { 
   Kanban, 
   Calendar as CalendarIcon, 
@@ -23,7 +24,8 @@ import {
   Pin,
   PinOff,
   LayoutDashboard,
-  ShieldCheck
+  ShieldCheck,
+  Globe2
 } from 'lucide-react';
 import { analyzeProjectRisks } from '../../utils/aiSimulator';
 import { UserAvatar } from '../common/UserAvatar';
@@ -47,6 +49,8 @@ export const Sidebar: React.FC = () => {
     setIsChangePasswordModalOpen,
     logout,
   } = useProject();
+
+  const { language, toggleLanguage, t } = useLanguage();
 
   // Auto-hide / Compact Icon Mode State
   const [isHovered, setIsHovered] = useState(false);
@@ -88,11 +92,11 @@ export const Sidebar: React.FC = () => {
 
   // Primary Navigation matching reference (Tasks, Activities, Dashboard, Schedule, List)
   const primaryNavItems: { id: ActiveView; label: string; icon: React.ReactNode; badge?: string | number }[] = [
-    { id: 'kanban', label: 'Tasks', icon: <Kanban className="w-4 h-4 shrink-0" />, badge: totalActiveTasks },
-    { id: 'timeline', label: 'Timeline/Gantt Chart', icon: <GanttChartSquare className="w-4 h-4 shrink-0" /> },
-    { id: 'project_management', label: 'Daftar Proyek', icon: <LayoutDashboard className="w-4 h-4 shrink-0" /> },
-    { id: 'calendar', label: 'Schedule', icon: <CalendarIcon className="w-4 h-4 shrink-0" /> },
-    { id: 'list', label: 'Daftar Tugas', icon: <ListOrdered className="w-4 h-4 shrink-0" /> },
+    { id: 'kanban', label: t('nav.tasks'), icon: <Kanban className="w-4 h-4 shrink-0" />, badge: totalActiveTasks },
+    { id: 'timeline', label: t('nav.timeline'), icon: <GanttChartSquare className="w-4 h-4 shrink-0" /> },
+    { id: 'project_management', label: t('nav.projectList'), icon: <LayoutDashboard className="w-4 h-4 shrink-0" /> },
+    { id: 'calendar', label: t('nav.schedule'), icon: <CalendarIcon className="w-4 h-4 shrink-0" /> },
+    { id: 'list', label: t('nav.taskList'), icon: <ListOrdered className="w-4 h-4 shrink-0" /> },
   ];
 
   const aiIntelligenceItems: { id: ActiveView; label: string; icon: React.ReactNode; badge?: string; badgeColor?: string }[] = [
@@ -100,7 +104,7 @@ export const Sidebar: React.FC = () => {
       id: 'risk_dashboard', 
       label: 'Predictive Risk', 
       icon: <AlertTriangle className="w-4 h-4 text-amber-300 shrink-0" />,
-      badge: riskAnalysis.atRiskTasksCount > 0 ? `${riskAnalysis.atRiskTasksCount} Risiko` : undefined,
+      badge: riskAnalysis.atRiskTasksCount > 0 ? `${riskAnalysis.atRiskTasksCount} ${language === 'en' ? 'Risks' : 'Risiko'}` : undefined,
       badgeColor: 'bg-amber-400/20 text-amber-200 border-amber-400/30'
     },
     { 
@@ -270,7 +274,7 @@ export const Sidebar: React.FC = () => {
             {expanded && (
               <div className="px-3 pb-1.5 text-[10px] font-bold text-blue-200/70 uppercase tracking-wider flex items-center gap-1">
                 <Crown className="w-3 h-3 text-amber-300" />
-                <span>Pengaturan</span>
+                <span>{t('nav.settings')}</span>
               </div>
             )}
             <button
@@ -284,7 +288,7 @@ export const Sidebar: React.FC = () => {
             >
               <div className="flex items-center gap-3 min-w-0">
                 <Settings className={`w-4 h-4 shrink-0 ${activeView === 'admin_settings' ? 'text-[#1D4ED8]' : 'text-amber-300'}`} />
-                {expanded && <span className="text-[12.5px]">Settings</span>}
+                {expanded && <span className="text-[12.5px]">{t('nav.settings')}</span>}
               </div>
               {expanded && (
                 <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-200 border border-amber-400/30">
@@ -299,7 +303,7 @@ export const Sidebar: React.FC = () => {
         {expanded && (
           <div className="pt-2 border-t border-white/10">
             <div className="px-3 pb-1.5 text-[10px] font-bold text-blue-200/70 uppercase tracking-wider">
-              Filter Cepat
+              {t('nav.quickFilters')}
             </div>
             <div className="space-y-1">
               <button
@@ -315,7 +319,7 @@ export const Sidebar: React.FC = () => {
               >
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-blue-300" />
-                  <span>Tugas Saya</span>
+                  <span>{t('nav.myTasks')}</span>
                 </div>
                 <span className="text-[10px] font-mono">{myTasksCount}</span>
               </button>
@@ -333,7 +337,7 @@ export const Sidebar: React.FC = () => {
               >
                 <div className="flex items-center gap-2">
                   <Flame className="w-3.5 h-3.5 text-rose-400" />
-                  <span>Prioritas Urgent</span>
+                  <span>{t('nav.urgentPriority')}</span>
                 </div>
                 <span className="text-[10px] font-mono">{urgentTasksCount}</span>
               </button>
@@ -375,6 +379,22 @@ export const Sidebar: React.FC = () => {
                   }} 
                 />
                 <div className="absolute bottom-[calc(100%+8px)] left-0 right-0 p-1.5 rounded-2xl bg-[#1E3A8A] dark:bg-[#0F172A] border border-blue-400/30 shadow-2xl space-y-1 animate-in fade-in slide-in-from-bottom-2 duration-150 z-30">
+                  {/* Language Toggle in Profile Menu */}
+                  <button
+                    onClick={() => {
+                      toggleLanguage();
+                    }}
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-blue-100 hover:text-white hover:bg-white/10 transition"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Globe2 className="w-4 h-4 text-blue-300" />
+                      <span>{t('common.language')}</span>
+                    </div>
+                    <span className="font-bold text-[10px] px-2 py-0.5 rounded-md bg-blue-500/30 text-blue-200 border border-blue-400/30">
+                      {language === 'id' ? '🇮🇩 ID' : '🇬🇧 EN'}
+                    </span>
+                  </button>
+
                   <button
                     onClick={() => {
                       setIsProfileMenuOpen(false);
@@ -384,7 +404,7 @@ export const Sidebar: React.FC = () => {
                     className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-blue-100 hover:text-white hover:bg-white/10 transition"
                   >
                     <Key className="w-4 h-4 text-blue-300" />
-                    <span>Ganti Password</span>
+                    <span>{t('nav.changePassword')}</span>
                   </button>
                   <button
                     onClick={() => {
@@ -395,7 +415,7 @@ export const Sidebar: React.FC = () => {
                     className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold text-rose-300 hover:text-rose-200 hover:bg-rose-500/20 transition"
                   >
                     <LogOut className="w-4 h-4 text-rose-400" />
-                    <span>Keluar (Logout)</span>
+                    <span>{t('nav.logout')}</span>
                   </button>
                 </div>
               </>
@@ -405,16 +425,23 @@ export const Sidebar: React.FC = () => {
           <div className="flex flex-col items-center gap-2">
             <UserAvatar src={currentUser.avatar} name={currentUser.name} size="sm" />
             <button
+              onClick={toggleLanguage}
+              className="p-1.5 rounded-lg text-blue-200 hover:text-white hover:bg-white/10 transition"
+              title={`${t('common.language')}: ${language.toUpperCase()}`}
+            >
+              <Globe2 className="w-3.5 h-3.5" />
+            </button>
+            <button
               onClick={() => setIsChangePasswordModalOpen(true)}
               className="p-1.5 rounded-lg text-blue-200 hover:text-white hover:bg-white/10 transition"
-              title="Ganti Password"
+              title={t('nav.changePassword')}
             >
               <Key className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={logout}
               className="p-1.5 rounded-lg text-rose-300 hover:bg-rose-500/20 transition"
-              title="Logout"
+              title={t('nav.logout')}
             >
               <LogOut className="w-3.5 h-3.5" />
             </button>
