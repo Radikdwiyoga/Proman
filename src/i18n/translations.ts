@@ -29,6 +29,7 @@ export const translations = {
       language: 'Bahasa',
       indonesian: 'Bahasa Indonesia',
       english: 'English',
+      filter: 'Filter',
     },
 
     // Navigation & Sidebar
@@ -38,6 +39,7 @@ export const translations = {
       projectList: 'Daftar Proyek',
       schedule: 'Schedule',
       taskList: 'Daftar Tugas',
+      settings: 'Pengaturan',
       aiIntelligence: 'AI INTELLIGENCE',
       predictiveRisk: 'Predictive Risk',
       smartResource: 'Smart Resource',
@@ -123,6 +125,7 @@ export const translations = {
       subtitle: 'Kelola seluruh inisiatif proyek operasional dan teknologi: tambah project baru, sesuaikan target jadwal, atau buka papan kerja.',
       activeCount: 'Project Aktif',
       addNew: 'Tambah Project Baru',
+      newProject: 'Proyek Baru',
       createNewTitle: 'Buat Proyek Baru',
       editTitle: 'Edit Proyek',
       nameLabel: 'Nama Proyek',
@@ -197,6 +200,7 @@ export const translations = {
       aiEstimatorButton: 'AI Estimasi Jam & Due Date',
       aiEstimating: 'AI Menganalisis...',
       createTaskSubmit: 'Buat Tugas Sekarang',
+      newTask: 'Tugas Baru',
     },
 
     // Task Priorities
@@ -207,7 +211,15 @@ export const translations = {
       urgent: 'Urgent',
     },
 
-    // Task Statuses
+    // Task Statuses (Singular & Plural aliases)
+    status: {
+      backlog: 'Backlog',
+      todo: 'To Do',
+      in_progress: 'In Progress',
+      review: 'In Review',
+      done: 'Done',
+    },
+
     statuses: {
       backlog: 'Backlog',
       todo: 'To Do',
@@ -245,6 +257,7 @@ export const translations = {
       language: 'Language',
       indonesian: 'Bahasa Indonesia',
       english: 'English',
+      filter: 'Filter',
     },
 
     // Navigation & Sidebar
@@ -254,6 +267,7 @@ export const translations = {
       projectList: 'Project List',
       schedule: 'Schedule',
       taskList: 'Task List',
+      settings: 'Settings',
       aiIntelligence: 'AI INTELLIGENCE',
       predictiveRisk: 'Predictive Risk',
       smartResource: 'Smart Resource',
@@ -339,6 +353,7 @@ export const translations = {
       subtitle: 'Manage all operational and tech project initiatives: create new projects, adjust timelines, or open Kanban boards.',
       activeCount: 'Active Projects',
       addNew: 'Add New Project',
+      newProject: 'New Project',
       createNewTitle: 'Create New Project',
       editTitle: 'Edit Project',
       nameLabel: 'Project Name',
@@ -413,6 +428,7 @@ export const translations = {
       aiEstimatorButton: 'AI Estimate Hours & Due Date',
       aiEstimating: 'AI Analyzing...',
       createTaskSubmit: 'Create Task Now',
+      newTask: 'New Task',
     },
 
     // Task Priorities
@@ -423,7 +439,15 @@ export const translations = {
       urgent: 'Urgent',
     },
 
-    // Task Statuses
+    // Task Statuses (Singular & Plural aliases)
+    status: {
+      backlog: 'Backlog',
+      todo: 'To Do',
+      in_progress: 'In Progress',
+      review: 'In Review',
+      done: 'Done',
+    },
+
     statuses: {
       backlog: 'Backlog',
       todo: 'To Do',
@@ -433,3 +457,4 @@ export const translations = {
     },
   },
 } as const;
+

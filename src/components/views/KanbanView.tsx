@@ -49,11 +49,11 @@ export const KanbanView: React.FC = () => {
   };
 
   const columns: { id: TaskStatus; label: string; dotColor: string }[] = [
-    { id: 'todo', label: t('status.todo'), dotColor: 'bg-[#EF4444]' },
-    { id: 'in_progress', label: t('status.in_progress'), dotColor: 'bg-[#F59E0B]' },
-    { id: 'review', label: t('status.review'), dotColor: 'bg-[#8B5CF6]' },
-    { id: 'done', label: t('status.done'), dotColor: 'bg-[#10B981]' },
-    { id: 'backlog', label: t('status.backlog'), dotColor: 'bg-[#94A3B8]' },
+    { id: 'todo', label: t('status.todo', 'To Do'), dotColor: 'bg-[#EF4444]' },
+    { id: 'in_progress', label: t('status.in_progress', 'In Progress'), dotColor: 'bg-[#F59E0B]' },
+    { id: 'review', label: t('status.review', 'In Review'), dotColor: 'bg-[#8B5CF6]' },
+    { id: 'done', label: t('status.done', 'Done'), dotColor: 'bg-[#10B981]' },
+    { id: 'backlog', label: t('status.backlog', 'Backlog'), dotColor: 'bg-[#94A3B8]' },
   ];
 
   const handleDragStart = (e: React.DragEvent, taskId: string) => {
@@ -151,7 +151,7 @@ export const KanbanView: React.FC = () => {
             }`}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
-            <span>{t('common.filter')}</span>
+            <span>{t('common.filter', 'Filter')}</span>
             {hasActiveFilters && (
               <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
             )}
@@ -173,7 +173,7 @@ export const KanbanView: React.FC = () => {
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-linear-to-r from-[#4D96FF] to-[#2563EB] hover:from-[#3B82F6] hover:to-[#1D4ED8] text-white text-xs font-bold transition shadow-md shadow-blue-500/25 active:scale-95 cursor-pointer"
           >
             <PenSquare className="w-3.5 h-3.5" />
-            <span>{t('tasks.newTask')}</span>
+            <span>{t('tasks.newTask', language === 'en' ? 'New Task' : 'Tugas Baru')}</span>
           </button>
         </div>
 

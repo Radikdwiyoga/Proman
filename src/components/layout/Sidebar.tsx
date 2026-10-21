@@ -92,11 +92,11 @@ export const Sidebar: React.FC = () => {
 
   // Primary Navigation matching reference (Tasks, Activities, Dashboard, Schedule, List)
   const primaryNavItems: { id: ActiveView; label: string; icon: React.ReactNode; badge?: string | number }[] = [
-    { id: 'kanban', label: t('nav.tasks'), icon: <Kanban className="w-4 h-4 shrink-0" />, badge: totalActiveTasks },
-    { id: 'timeline', label: t('nav.timeline'), icon: <GanttChartSquare className="w-4 h-4 shrink-0" /> },
-    { id: 'project_management', label: t('nav.projectList'), icon: <LayoutDashboard className="w-4 h-4 shrink-0" /> },
-    { id: 'calendar', label: t('nav.schedule'), icon: <CalendarIcon className="w-4 h-4 shrink-0" /> },
-    { id: 'list', label: t('nav.taskList'), icon: <ListOrdered className="w-4 h-4 shrink-0" /> },
+    { id: 'kanban', label: t('nav.tasks', 'Tasks'), icon: <Kanban className="w-4 h-4 shrink-0" />, badge: totalActiveTasks },
+    { id: 'timeline', label: t('nav.timeline', 'Timeline/Gantt Chart'), icon: <GanttChartSquare className="w-4 h-4 shrink-0" /> },
+    { id: 'project_management', label: t('nav.projectList', language === 'en' ? 'Project List' : 'Daftar Proyek'), icon: <LayoutDashboard className="w-4 h-4 shrink-0" /> },
+    { id: 'calendar', label: t('nav.schedule', 'Schedule'), icon: <CalendarIcon className="w-4 h-4 shrink-0" /> },
+    { id: 'list', label: t('nav.taskList', language === 'en' ? 'Task List' : 'Daftar Tugas'), icon: <ListOrdered className="w-4 h-4 shrink-0" /> },
   ];
 
   const aiIntelligenceItems: { id: ActiveView; label: string; icon: React.ReactNode; badge?: string; badgeColor?: string }[] = [
@@ -274,12 +274,12 @@ export const Sidebar: React.FC = () => {
             {expanded && (
               <div className="px-3 pb-1.5 text-[10px] font-bold text-blue-200/70 uppercase tracking-wider flex items-center gap-1">
                 <Crown className="w-3 h-3 text-amber-300" />
-                <span>{t('nav.settings')}</span>
+                <span>{t('nav.settings', language === 'en' ? 'Settings' : 'Pengaturan')}</span>
               </div>
             )}
             <button
               onClick={() => handleNavClick('admin_settings')}
-              title="Admin Settings"
+              title={t('nav.settings', language === 'en' ? 'Settings' : 'Pengaturan')}
               className={`w-full flex items-center ${expanded ? 'justify-between px-3.5' : 'justify-center px-0'} py-2.5 rounded-xl text-xs font-medium transition group cursor-pointer ${
                 activeView === 'admin_settings'
                   ? 'bg-white text-[#1D4ED8] font-bold shadow-md shadow-blue-950/20'
@@ -288,7 +288,7 @@ export const Sidebar: React.FC = () => {
             >
               <div className="flex items-center gap-3 min-w-0">
                 <Settings className={`w-4 h-4 shrink-0 ${activeView === 'admin_settings' ? 'text-[#1D4ED8]' : 'text-amber-300'}`} />
-                {expanded && <span className="text-[12.5px]">{t('nav.settings')}</span>}
+                {expanded && <span className="text-[12.5px]">{t('nav.settings', language === 'en' ? 'Settings' : 'Pengaturan')}</span>}
               </div>
               {expanded && (
                 <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-200 border border-amber-400/30">
@@ -303,7 +303,7 @@ export const Sidebar: React.FC = () => {
         {expanded && (
           <div className="pt-2 border-t border-white/10">
             <div className="px-3 pb-1.5 text-[10px] font-bold text-blue-200/70 uppercase tracking-wider">
-              {t('nav.quickFilters')}
+              {t('nav.quickFilters', language === 'en' ? 'Quick Filters' : 'Filter Cepat')}
             </div>
             <div className="space-y-1">
               <button
@@ -319,7 +319,7 @@ export const Sidebar: React.FC = () => {
               >
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-blue-300" />
-                  <span>{t('nav.myTasks')}</span>
+                  <span>{t('nav.myTasks', language === 'en' ? 'My Tasks' : 'Tugas Saya')}</span>
                 </div>
                 <span className="text-[10px] font-mono">{myTasksCount}</span>
               </button>
@@ -337,7 +337,7 @@ export const Sidebar: React.FC = () => {
               >
                 <div className="flex items-center gap-2">
                   <Flame className="w-3.5 h-3.5 text-rose-400" />
-                  <span>{t('nav.urgentPriority')}</span>
+                  <span>{t('nav.urgentPriority', language === 'en' ? 'Urgent Priority' : 'Prioritas Urgent')}</span>
                 </div>
                 <span className="text-[10px] font-mono">{urgentTasksCount}</span>
               </button>

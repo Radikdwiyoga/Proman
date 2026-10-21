@@ -130,7 +130,7 @@ export const ProjectManagementView: React.FC = () => {
             title="Tutup & Kembali ke Papan Proyek"
           >
             <X className="w-4 h-4 text-slate-400" />
-            <span>{t('common.close')}</span>
+            <span>{t('common.close', language === 'en' ? 'Close' : 'Tutup')}</span>
           </button>
 
           {(isSuperAdmin || isPM) && (
@@ -139,7 +139,7 @@ export const ProjectManagementView: React.FC = () => {
               className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-xs font-bold text-white flex items-center gap-2 shadow-lg shadow-blue-500/20 transition active:scale-95"
             >
               <Plus className="w-4 h-4" />
-              <span>{t('projects.newProject')}</span>
+              <span>{t('projects.newProject', language === 'en' ? 'New Project' : 'Proyek Baru')}</span>
             </button>
           )}
         </div>
