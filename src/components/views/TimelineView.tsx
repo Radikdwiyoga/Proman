@@ -12,8 +12,7 @@ import {
   Sparkles,
   User as UserIcon,
   CornerDownRight,
-  ExternalLink,
-  Info
+  ExternalLink
 } from 'lucide-react';
 import { Task, Subtask, TaskStatus, TaskPriority, User } from '../../types';
 import { UserAvatar } from '../common/UserAvatar';
@@ -154,7 +153,7 @@ function daysDiff(from: Date, to: Date): number {
 
 // Flat Visible Row interface used by both left and right synchronized panels
 interface VisibleRow {
-  id: string; // unique row id (parent task id or child id)
+  id: string; // unique row id (parent task id or unique child row id)
   type: 'parent' | 'child';
   taskId: string; // original Task ID
   subtaskId?: string; // subtask ID if child
@@ -170,13 +169,14 @@ interface VisibleRow {
   isExpanded?: boolean;
   subtaskCount?: number;
   hasChildren?: boolean;
-  parentRowId?: string;
-  dependencies?: string[]; // IDs of predecessor rows for Finish-to-Start
+  parentRowId?: string; // Links back to parent task ID
+  childOrderIndex?: number; // 0, 1, 2... within the parent
   aiRisk?: Task['aiRisk'];
   // Calculated horizontal bar metrics (relative to calendar grid origin)
   barLeft: number;
   barWidth: number;
   barRight: number;
+  centerY: number;
   rowIndex: number;
 }
 
@@ -367,6 +367,7 @@ export const TimelineView: React.FC = () => {
   };
 
   // 2. Build WBS Hierarchy & Flattened Visible Rows (Parent & Sub-tasks)
+  // Each task is its own self-contained parent with its own sub-tasks
   const visibleRows = useMemo(() => {
     const rows: VisibleRow[] = [];
     if (!projectTasks || projectTasks.length === 0) return rows;
@@ -389,14 +390,13 @@ export const TimelineView: React.FC = () => {
       const palette = WBS_PALETTES[pIdx % WBS_PALETTES.length];
       const isCollapsed = !!collapsedMap[parentTask.id];
 
-      // Determine sub-tasks:
-      // Either explicit child tasks (t.parentId === parentTask.id) OR subtasks array (task.subtasks)
+      // Determine sub-tasks for THIS specific task
       const explicitChildren = childrenByParent.get(parentTask.id) || [];
       const checklistSubtasks = parentTask.subtasks || [];
       const hasChildren = explicitChildren.length > 0 || checklistSubtasks.length > 0;
       const totalSubtaskCount = explicitChildren.length > 0 ? explicitChildren.length : checklistSubtasks.length;
 
-      // Calculate Parent start & due date span (if child dates extend beyond parent)
+      // Calculate Parent start & due date span
       let pStart = parentTask.startDate || todayStr;
       let pDue = parentTask.dueDate || todayStr;
 
@@ -410,6 +410,9 @@ export const TimelineView: React.FC = () => {
 
       const pMetrics = calculateBarMetrics(pStart, pDue);
       const primaryAssignee = userMap.get((parentTask.assigneeIds || [])[0]);
+
+      const parentRowIndex = currentRowIndex++;
+      const parentCenterY = parentRowIndex * ROW_HEIGHT + (ROW_HEIGHT / 2);
 
       // Push Parent Row
       rows.push({
@@ -432,10 +435,11 @@ export const TimelineView: React.FC = () => {
         barLeft: pMetrics.barLeft,
         barWidth: pMetrics.barWidth,
         barRight: pMetrics.barRight,
-        rowIndex: currentRowIndex++
+        centerY: parentCenterY,
+        rowIndex: parentRowIndex
       });
 
-      // If not collapsed, generate and push Sub-task Rows
+      // If not collapsed, generate and push Sub-task Rows STRICTLY under THIS parent
       if (!isCollapsed && hasChildren) {
         if (explicitChildren.length > 0) {
           explicitChildren.forEach((childTask, cIdx) => {
@@ -445,11 +449,11 @@ export const TimelineView: React.FC = () => {
             const cAssignee = userMap.get((childTask.assigneeIds || [])[0]) || primaryAssignee;
             const cProgress = childTask.status === 'done' ? 100 : childTask.status === 'in_progress' ? 50 : 20;
 
-            // Sequential Finish-to-Start fallback: link to previous child
-            const prevChildId = cIdx > 0 ? explicitChildren[cIdx - 1].id : undefined;
+            const childRowIndex = currentRowIndex++;
+            const childCenterY = childRowIndex * ROW_HEIGHT + (ROW_HEIGHT / 2);
 
             rows.push({
-              id: childTask.id,
+              id: `${parentTask.id}__child__${childTask.id}`,
               type: 'child',
               taskId: parentTask.id,
               subtaskId: childTask.id,
@@ -463,11 +467,12 @@ export const TimelineView: React.FC = () => {
               priority: childTask.priority,
               palette,
               parentRowId: parentTask.id,
-              dependencies: childTask.dependencies || (prevChildId ? [prevChildId] : []),
+              childOrderIndex: cIdx,
               barLeft: cMetrics.barLeft,
               barWidth: cMetrics.barWidth,
               barRight: cMetrics.barRight,
-              rowIndex: currentRowIndex++
+              centerY: childCenterY,
+              rowIndex: childRowIndex
             });
           });
         } else if (checklistSubtasks.length > 0) {
@@ -487,10 +492,12 @@ export const TimelineView: React.FC = () => {
             const sMetrics = calculateBarMetrics(sStartStr, sDueStr);
             const sAssignee = subtask.assigneeId ? userMap.get(subtask.assigneeId) : primaryAssignee;
             const sProgress = subtask.completed ? 100 : (subtask.progress !== undefined ? subtask.progress : (parentTask.status === 'in_progress' ? 40 : 0));
-            const prevSubtaskId = sIdx > 0 ? checklistSubtasks[sIdx - 1].id : undefined;
+
+            const childRowIndex = currentRowIndex++;
+            const childCenterY = childRowIndex * ROW_HEIGHT + (ROW_HEIGHT / 2);
 
             rows.push({
-              id: subtask.id,
+              id: `${parentTask.id}__sub__${subtask.id || sIdx}`,
               type: 'child',
               taskId: parentTask.id,
               subtaskId: subtask.id,
@@ -503,11 +510,12 @@ export const TimelineView: React.FC = () => {
               status: subtask.completed ? 'done' : parentTask.status,
               palette,
               parentRowId: parentTask.id,
-              dependencies: subtask.dependencies || (prevSubtaskId ? [prevSubtaskId] : []),
+              childOrderIndex: sIdx,
               barLeft: sMetrics.barLeft,
               barWidth: sMetrics.barWidth,
               barRight: sMetrics.barRight,
-              rowIndex: currentRowIndex++
+              centerY: childCenterY,
+              rowIndex: childRowIndex
             });
           });
         }
@@ -517,82 +525,88 @@ export const TimelineView: React.FC = () => {
     return rows;
   }, [projectTasks, collapsedMap, todayStr, timelineStartDate, zoomLevel, userMap]);
 
-  // Map of rows by ID for quick O(1) lookup when computing dependency lines
-  const rowMap = useMemo(() => {
-    return new Map<string, VisibleRow>(visibleRows.map(r => [r.id, r]));
-  }, [visibleRows]);
-
   // 3. Compute SVG Dependency Connector Lines
-  // Positioned directly inside the Right Timeline Canvas (coordinates 0..totalGridWidth)
+  // CRITICAL: Relasi flow HANYA terjadi di dalam masing-masing tugas (Parent ➔ Subtask 1 ➔ Subtask 2 ...).
+  // TIDAK ADA garis yang menghubungkan antar tugas berbeda!
   const dependencyLines = useMemo(() => {
     const lines: {
       key: string;
       d: string;
       color: string;
-      arrowX: number;
-      arrowY: number;
     }[] = [];
 
+    // Group visible child rows by their parentRowId
+    const childrenByParent = new Map<string, VisibleRow[]>();
+    const parentRows: VisibleRow[] = [];
+
     visibleRows.forEach((row) => {
-      // 1) Parent-to-Child Line: from Parent bar start down into first child bar start
-      if (row.type === 'parent' && row.isExpanded && row.hasChildren) {
-        const firstChild = visibleRows.find(r => r.type === 'child' && r.parentRowId === row.id);
-        if (firstChild) {
-          const yParent = row.rowIndex * ROW_HEIGHT + (ROW_HEIGHT / 2);
-          const yChild = firstChild.rowIndex * ROW_HEIGHT + (ROW_HEIGHT / 2);
-          const xParent = row.barLeft;
-          const xChild = firstChild.barLeft;
-
-          // Orthogonal bracket line: steps left from parent start, drops vertically, enters first child
-          const stemX = Math.max(6, Math.min(xParent, xChild) - 14);
-          const path = `M ${xParent} ${yParent} H ${stemX} V ${yChild} H ${xChild}`;
-
-          lines.push({
-            key: `p2c-${row.id}-${firstChild.id}`,
-            d: path,
-            color: row.palette.lineColor,
-            arrowX: xChild,
-            arrowY: yChild
-          });
-        }
-      }
-
-      // 2) Finish-to-Start (FS) Line: from predecessor sub-task finish to this sub-task start
-      if (row.type === 'child' && row.dependencies && row.dependencies.length > 0) {
-        row.dependencies.forEach((predId) => {
-          const predRow = rowMap.get(predId);
-          if (predRow) {
-            const yA = predRow.rowIndex * ROW_HEIGHT + (ROW_HEIGHT / 2);
-            const yB = row.rowIndex * ROW_HEIGHT + (ROW_HEIGHT / 2);
-            const xAEnd = predRow.barRight;
-            const xBStart = row.barLeft;
-
-            let path = '';
-            if (xBStart >= xAEnd) {
-              // Standard Finish-to-Start staircase
-              const midX = Math.round((xAEnd + xBStart) / 2);
-              path = `M ${xAEnd} ${yA} H ${midX} V ${yB} H ${xBStart}`;
-            } else {
-              // Backward loop-around for overlapping/parallel tasks
-              const stepRight = xAEnd + 10;
-              const stepLeft = xBStart - 10;
-              path = `M ${xAEnd} ${yA} H ${stepRight} V ${yA + (ROW_HEIGHT / 2)} H ${stepLeft} V ${yB} H ${xBStart}`;
-            }
-
-            lines.push({
-              key: `fs-${predRow.id}-${row.id}`,
-              d: path,
-              color: row.palette.lineColor,
-              arrowX: xBStart,
-              arrowY: yB
-            });
-          }
-        });
+      if (row.type === 'parent') {
+        parentRows.push(row);
+      } else if (row.type === 'child' && row.parentRowId) {
+        const list = childrenByParent.get(row.parentRowId) || [];
+        list.push(row);
+        childrenByParent.set(row.parentRowId, list);
       }
     });
 
+    // For EACH individual parent task, draw its self-contained flow
+    parentRows.forEach((parent) => {
+      const children = childrenByParent.get(parent.id) || [];
+      if (children.length === 0) return; // No sub-tasks or collapsed
+
+      const groupColor = parent.palette.lineColor;
+
+      // 1) Line from Parent bar to its first child (c0)
+      const c0 = children[0];
+      const yParent = parent.centerY;
+      const yC0 = c0.centerY;
+      const xParent = parent.barLeft;
+      const xC0 = c0.barLeft;
+
+      // Orthogonal bracket line: steps left from parent start, drops vertically, enters first child
+      const stemX = Math.max(6, Math.min(xParent, xC0) - 12);
+      const p2cPath = `M ${xParent} ${yParent} H ${stemX} V ${yC0} H ${xC0}`;
+
+      lines.push({
+        key: `p2c-${parent.id}-${c0.id}`,
+        d: p2cPath,
+        color: groupColor
+      });
+
+      // 2) Sequential Finish-to-Start lines STRICTLY between sub-tasks of THIS parent task
+      for (let i = 0; i < children.length - 1; i++) {
+        const currentChild = children[i];
+        const nextChild = children[i + 1];
+
+        const xCurrentEnd = currentChild.barRight;
+        const yCurrent = currentChild.centerY;
+        const xNextStart = nextChild.barLeft;
+        const yNext = nextChild.centerY;
+
+        let path = '';
+        if (xNextStart >= xCurrentEnd) {
+          // Standard Finish-to-Start staircase
+          const midX = Math.round((xCurrentEnd + xNextStart) / 2);
+          path = `M ${xCurrentEnd} ${yCurrent} H ${midX} V ${yNext} H ${xNextStart}`;
+        } else {
+          // Parallel or overlapping dates within the same task: clean loop
+          const stepRight = xCurrentEnd + 8;
+          const yMid = yCurrent + (ROW_HEIGHT / 2);
+          const stepLeft = xNextStart - 10;
+          path = `M ${xCurrentEnd} ${yCurrent} H ${stepRight} V ${yMid} H ${stepLeft} V ${yNext} H ${xNextStart}`;
+        }
+
+        lines.push({
+          key: `fs-${currentChild.id}-${nextChild.id}`,
+          d: path,
+          color: groupColor
+        });
+      }
+      // Note: The last subtask has NO outgoing line. It never connects to another parent task!
+    });
+
     return lines;
-  }, [visibleRows, rowMap]);
+  }, [visibleRows]);
 
   // 4. Auto-Scroll & Focus on Click
   const handleFocusTask = (row: VisibleRow) => {
@@ -698,7 +712,7 @@ export const TimelineView: React.FC = () => {
                 Timeline &amp; Gantt Chart WBS
               </h2>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                {totalParents} {language === 'en' ? 'Main Phases' : 'Fase Utama'} • {totalSubtasksCount} {language === 'en' ? 'Sub-tasks' : 'Sub-tugas WBS'}
+                {totalParents} {language === 'en' ? 'Main Tasks' : 'Tugas Utama'} • {totalSubtasksCount} {language === 'en' ? 'Sub-tasks' : 'Sub-tugas WBS'}
               </p>
             </div>
           </div>
@@ -708,7 +722,7 @@ export const TimelineView: React.FC = () => {
             <FolderKanban className="w-4 h-4 text-blue-500 shrink-0" />
             <div className="flex flex-col">
               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-                {language === 'en' ? 'Active Project' : 'Project Terpilih'}
+                {language === 'en' ? 'Project' : 'Proyek'}
               </span>
               <select
                 value={currentProjectId}
@@ -729,7 +743,7 @@ export const TimelineView: React.FC = () => {
             <button
               onClick={expandAll}
               className="px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-[11px] font-semibold text-slate-700 dark:text-slate-300 transition"
-              title="Expand semua fase & sub-tugas"
+              title="Expand semua sub-tugas"
             >
               Expand
             </button>
@@ -1006,7 +1020,7 @@ export const TimelineView: React.FC = () => {
                   className="relative shrink-0 divide-y divide-slate-100 dark:divide-slate-800/60"
                   style={{ width: `${totalGridWidth}px` }}
                 >
-                  {/* SVG Dependency Lines directly inside the right timeline canvas */}
+                  {/* SVG Dependency Lines strictly within each task */}
                   <svg
                     className="absolute inset-0 pointer-events-none z-15"
                     width={totalGridWidth}
@@ -1041,7 +1055,7 @@ export const TimelineView: React.FC = () => {
                           strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="opacity-80 transition-all duration-300"
+                          className="opacity-85 transition-all duration-300"
                           markerEnd={`url(#arrow-${palette.name})`}
                         />
                       );
