@@ -6,10 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview",
-    "migrate:users": "node scripts/migrate-users-to-auth.mjs",
-    "migrate:users:apply": "node scripts/migrate-users-to-auth.mjs --apply",
-    "verify:migration": "node scripts/verify-migration.mjs"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@google/genai": "^2.19.0",

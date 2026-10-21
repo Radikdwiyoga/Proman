@@ -21,7 +21,6 @@ import {
   HelpCircle,
   Globe2
 } from 'lucide-react';
-import { TechLogo } from '../common/TechLogo';
 import { UserAvatar } from '../common/UserAvatar';
 
 function getOperationalTime(tzString?: string): { time: string; date: string; label: string } {

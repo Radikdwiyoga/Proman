@@ -241,14 +241,15 @@ src/
 │   ├── admin/          # Admin Settings & User Management
 │   ├── ai/             # ProMan AI Suite (Breakdown, Copilot, Summarizer, Dashboards)
 │   ├── auth/           # Login, Register, & Change Password Modal
-│   ├── common/         # TechLogo, UserAvatar, Reusable Components
+│   ├── common/         # UserAvatar, Reusable Components
 │   ├── layout/         # Navbar, Auto-Hide Sidebar, Toast
 │   ├── projects/       # Project Management View & Modals
 │   ├── tasks/          # Kanban TaskCard, TaskModal, CreateTaskModal
 │   └── views/          # KanbanView, TimelineView, CalendarView, ListView
 ├── context/
-│   ├── ProjectContext.tsx   # State Management & Realtime Sync Engine
-│   └── ThemeContext.tsx     # Dark / Light Mode Provider
+│   ├── ProjectContext.tsx    # State Management & Realtime Sync Engine
+│   ├── ThemeContext.tsx      # Dark / Light Mode Provider
+│   └── LanguageContext.tsx   # Dual Language (ID / EN) Provider
 ├── data/
 │   ├── copilotKnowledge.ts  # ProMan AI Domain Knowledge Base
 │   └── initialData.ts       # Mock Seeder & Initial Structures
