@@ -20,6 +20,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { SubtaskCategory } from '../../types';
+import { UserAvatar } from '../common/UserAvatar';
 
 export const AITaskBreakdownModal: React.FC = () => {
   const {
@@ -204,7 +205,7 @@ export const AITaskBreakdownModal: React.FC = () => {
               {recommendedUser && (
                 <div className="p-3.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-500/20 flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <img src={recommendedUser.avatar} alt={recommendedUser.name} className="w-8 h-8 rounded-full object-cover border border-indigo-400" />
+                    <UserAvatar src={recommendedUser.avatar} name={recommendedUser.name} size="sm" />
                     <div>
                       <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                         <span>Rekomendasi Penanggung Jawab: {recommendedUser.name}</span>

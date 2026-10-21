@@ -87,7 +87,7 @@ export const AdminSettingsView: React.FC = () => {
   const [userCapacity, setUserCapacity] = useState(40);
   const [userPersona, setUserPersona] = useState<User['personaType']>('Member Standar');
   const [userStatus, setUserStatus] = useState<User['status']>('active');
-  const [userAvatar, setUserAvatar] = useState(PRESET_AVATARS[0]);
+  const [userAvatar, setUserAvatar] = useState('');
 
   const pendingUsers = users.filter(u => u.status === 'pending');
 
@@ -136,7 +136,7 @@ export const AdminSettingsView: React.FC = () => {
     setUserCapacity(40);
     setUserPersona('Member Standar');
     setUserStatus('active');
-    setUserAvatar(PRESET_AVATARS[Math.floor(Math.random() * PRESET_AVATARS.length)]);
+    setUserAvatar('');
     setShowPassword(false);
     setIsUserModalOpen(true);
   };
@@ -926,36 +926,33 @@ export const AdminSettingsView: React.FC = () => {
                   <UserAvatar src={userAvatar} name={userName || 'User'} size="xl" />
 
                   <div className="flex-1 space-y-2">
-                    {/* Custom File Upload Button */}
-                    <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition active:scale-95">
-                      <Upload className="w-3.5 h-3.5" />
-                      <span>Upload Foto Sendiri</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleAvatarFileUpload}
-                        className="hidden"
-                      />
-                    </label>
-                    <p className="text-[10px] text-slate-400">JPG, PNG atau WebP (Maks 2MB)</p>
-                  </div>
-                </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {/* Custom File Upload Button */}
+                      <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition active:scale-95">
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Upload Foto Kustom</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleAvatarFileUpload}
+                          className="hidden"
+                        />
+                      </label>
 
-                {/* Preset Avatars List */}
-                <div className="space-y-1.5 pt-1">
-                  <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Atau Pilih Avatar Bawaan:</span>
-                  <div className="flex gap-2 overflow-x-auto pb-1">
-                    {PRESET_AVATARS.map((preset, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => setUserAvatar(preset)}
-                        className={`w-9 h-9 rounded-full overflow-hidden border-2 transition shrink-0 ${userAvatar === preset ? 'border-emerald-500 ring-2 ring-orange-500/40' : 'border-transparent opacity-70 hover:opacity-100'
-                          }`}
-                      >
-                        <img src={preset} alt="preset" className="w-full h-full object-cover" />
-                      </button>
-                    ))}
+                      {/* Reset to Initials Button */}
+                      {userAvatar && (
+                        <button
+                          type="button"
+                          onClick={() => setUserAvatar('')}
+                          className="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-300 dark:hover:bg-slate-700 transition"
+                        >
+                          Gunakan Inisial (Default)
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-slate-400">
+                      Default foto profil menggunakan inisial nama. Upload file jika ingin menggunakan foto kustom (JPG, PNG atau WebP maks 2MB).
+                    </p>
                   </div>
                 </div>
               </div>

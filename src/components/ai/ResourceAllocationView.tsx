@@ -1,6 +1,7 @@
 import React from 'react';
 import { useProject } from '../../context/ProjectContext';
 import { Users2, AlertTriangle, Building2, X } from 'lucide-react';
+import { UserAvatar } from '../common/UserAvatar';
 
 export const ResourceAllocationView: React.FC = () => {
   const { users, tasks, setSelectedTaskId, setActiveView } = useProject();
@@ -58,7 +59,7 @@ export const ResourceAllocationView: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="relative">
-                    <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-slate-700" />
+                    <UserAvatar src={user.avatar} name={user.name} size="md" />
                     {isOverloaded && (
                       <span className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-rose-500 text-white" title="Overload">
                         <AlertTriangle className="w-3 h-3" />

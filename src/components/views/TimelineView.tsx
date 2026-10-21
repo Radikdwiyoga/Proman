@@ -16,6 +16,7 @@ import {
   ChevronLeft
 } from 'lucide-react';
 import { TaskStatus, TaskPriority } from '../../types';
+import { UserAvatar } from '../common/UserAvatar';
 
 export const TimelineView: React.FC = () => {
   const { 
@@ -338,10 +339,10 @@ export const TimelineView: React.FC = () => {
 
                       {primaryAssignee && (
                         <div className="flex items-center gap-1 shrink-0" title={`PIC: ${primaryAssignee.name}`}>
-                          <img
+                          <UserAvatar
                             src={primaryAssignee.avatar}
-                            alt={primaryAssignee.name}
-                            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover border border-slate-200 dark:border-slate-700 shadow-xs"
+                            name={primaryAssignee.name}
+                            size="xs"
                           />
                         </div>
                       )}

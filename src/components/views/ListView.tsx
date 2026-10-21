@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useProject } from '../../context/ProjectContext';
 import { Task } from '../../types';
 import { ArrowUpDown, AlertTriangle, Plus } from 'lucide-react';
+import { UserAvatar } from '../common/UserAvatar';
 
 export const ListView: React.FC = () => {
   const { filteredTasks, setSelectedTaskId, users, setIsCreateModalOpen } = useProject();
@@ -132,7 +133,7 @@ export const ListView: React.FC = () => {
                     <td className="p-3.5">
                       {assignee ? (
                         <div className="flex items-center gap-2">
-                          <img src={assignee.avatar} alt={assignee.name} className="w-5 h-5 rounded-full object-cover" />
+                          <UserAvatar src={assignee.avatar} name={assignee.name} size="xs" />
                           <span className="truncate max-w-[120px]">{assignee.name}</span>
                         </div>
                       ) : (
