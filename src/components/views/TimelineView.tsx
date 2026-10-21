@@ -12,7 +12,10 @@ import {
   Sparkles,
   User as UserIcon,
   CornerDownRight,
-  ExternalLink
+  ExternalLink,
+  CheckCircle2,
+  ListTodo,
+  Filter
 } from 'lucide-react';
 import { Task, Subtask, TaskStatus, TaskPriority, User } from '../../types';
 import { UserAvatar } from '../common/UserAvatar';
@@ -196,6 +199,14 @@ export const TimelineView: React.FC = () => {
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
+  // New Filters per User Request:
+  // 1) Filter per Orang (Assignee / PIC)
+  const [selectedAssigneeId, setSelectedAssigneeId] = useState<string>('all');
+  // 2) Filter per Tugas (Specific Parent Task)
+  const [selectedTaskIdFilter, setSelectedTaskIdFilter] = useState<string>('all');
+  // 3) Sembunyikan Tugas yang Selesai (Hide Completed - default true)
+  const [hideCompleted, setHideCompleted] = useState<boolean>(true);
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const highlightTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -210,17 +221,70 @@ export const TimelineView: React.FC = () => {
     }
   }, [currentProjectId, projects, setCurrentProjectId]);
 
+  // Reset Task & Assignee Filter when changing active project
+  useEffect(() => {
+    setSelectedTaskIdFilter('all');
+    setSelectedAssigneeId('all');
+  }, [currentProjectId]);
+
   const activeProject = useMemo(() => {
     return projects.find(p => p.id === currentProjectId) || projects[0];
   }, [projects, currentProjectId]);
 
   const userMap = useMemo(() => new Map(users.map(u => [u.id, u])), [users]);
 
-  // Filter tasks belonging exclusively to the single selected project
-  const projectTasks = useMemo(() => {
+  // All unfiltered tasks of the active project
+  const allProjectTasks = useMemo(() => {
     if (!activeProject) return [];
     return tasks.filter(t => t.projectId === activeProject.id);
   }, [tasks, activeProject]);
+
+  // Assignees involved in this project (for the Assignee Filter dropdown)
+  const projectAssignees = useMemo(() => {
+    const ids = new Set<string>();
+    allProjectTasks.forEach(t => {
+      (t.assigneeIds || []).forEach(id => ids.add(id));
+      (t.subtasks || []).forEach(st => {
+        if (st.assigneeId) ids.add(st.assigneeId);
+      });
+    });
+    return users.filter(u => ids.has(u.id));
+  }, [allProjectTasks, users]);
+
+  // Parent tasks in this project (for the Task Filter dropdown)
+  const parentTasksList = useMemo(() => {
+    return allProjectTasks.filter(t => !t.parentId);
+  }, [allProjectTasks]);
+
+  // Filter tasks based on:
+  // 1. hideCompleted: exclude tasks with status === 'done'
+  // 2. selectedTaskIdFilter: match specific task
+  // 3. selectedAssigneeId: match assignee on parent or subtasks
+  const projectTasks = useMemo(() => {
+    if (!activeProject) return [];
+    let filtered = allProjectTasks;
+
+    // Filter out completed tasks if hideCompleted is true
+    if (hideCompleted) {
+      filtered = filtered.filter(t => t.status !== 'done');
+    }
+
+    // Filter by specific task
+    if (selectedTaskIdFilter !== 'all') {
+      filtered = filtered.filter(t => t.id === selectedTaskIdFilter || t.parentId === selectedTaskIdFilter);
+    }
+
+    // Filter by assignee
+    if (selectedAssigneeId !== 'all') {
+      filtered = filtered.filter(t => {
+        const isAssignedParent = (t.assigneeIds || []).includes(selectedAssigneeId);
+        const isAssignedSubtask = (t.subtasks || []).some(st => st.assigneeId === selectedAssigneeId);
+        return isAssignedParent || isAssignedSubtask;
+      });
+    }
+
+    return filtered;
+  }, [allProjectTasks, hideCompleted, selectedTaskIdFilter, selectedAssigneeId]);
 
   // Today string reference
   const todayStr = useMemo(() => formatDate(new Date()), []);
@@ -442,7 +506,13 @@ export const TimelineView: React.FC = () => {
       // If not collapsed, generate and push Sub-task Rows STRICTLY under THIS parent
       if (!isCollapsed && hasChildren) {
         if (explicitChildren.length > 0) {
-          explicitChildren.forEach((childTask, cIdx) => {
+          const explicitChildrenToProcess = explicitChildren.filter(childTask => {
+            if (selectedAssigneeId === 'all') return true;
+            if ((childTask.assigneeIds || []).length > 0) return (childTask.assigneeIds || []).includes(selectedAssigneeId);
+            return (parentTask.assigneeIds || []).includes(selectedAssigneeId);
+          });
+
+          explicitChildrenToProcess.forEach((childTask, cIdx) => {
             const cStart = childTask.startDate || pStart;
             const cDue = childTask.dueDate || pDue;
             const cMetrics = calculateBarMetrics(cStart, cDue);
@@ -480,7 +550,13 @@ export const TimelineView: React.FC = () => {
           const parentStartDate = parseDate(pStart);
           const parentTotalDays = Math.max(checklistSubtasks.length, daysDiff(parentStartDate, parseDate(pDue)) + 1);
 
-          checklistSubtasks.forEach((subtask, sIdx) => {
+          const subtasksToProcess = checklistSubtasks.filter(subtask => {
+            if (selectedAssigneeId === 'all') return true;
+            if (subtask.assigneeId) return subtask.assigneeId === selectedAssigneeId;
+            return (parentTask.assigneeIds || []).includes(selectedAssigneeId);
+          });
+
+          subtasksToProcess.forEach((subtask, sIdx) => {
             const n = checklistSubtasks.length;
             const sOffset = Math.floor((sIdx * parentTotalDays) / n);
             const sDuration = Math.max(1, Math.floor(((sIdx + 1) * parentTotalDays) / n) - sOffset);
@@ -737,6 +813,71 @@ export const TimelineView: React.FC = () => {
               </select>
             </div>
           </div>
+
+          {/* 2. Filter per Orang (Assignee / PIC) */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-xs">
+            <UserIcon className="w-4 h-4 text-emerald-500 shrink-0" />
+            <div className="flex flex-col">
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+                {language === 'en' ? 'Person / PIC' : 'PIC / Orang'}
+              </span>
+              <select
+                value={selectedAssigneeId}
+                onChange={(e) => setSelectedAssigneeId(e.target.value)}
+                className="bg-transparent border-none text-xs font-bold text-slate-900 dark:text-slate-100 focus:outline-none cursor-pointer pr-3"
+              >
+                <option value="all" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+                  {language === 'en' ? 'All People' : 'Semua Orang'}
+                </option>
+                {projectAssignees.map(u => (
+                  <option key={u.id} value={u.id} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+                    {u.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* 3. Filter per Tugas */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-xs">
+            <ListTodo className="w-4 h-4 text-indigo-500 shrink-0" />
+            <div className="flex flex-col">
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+                {language === 'en' ? 'Task' : 'Tugas'}
+              </span>
+              <select
+                value={selectedTaskIdFilter}
+                onChange={(e) => setSelectedTaskIdFilter(e.target.value)}
+                className="bg-transparent border-none text-xs font-bold text-slate-900 dark:text-slate-100 focus:outline-none cursor-pointer pr-3 max-w-[120px] sm:max-w-[180px] truncate"
+              >
+                <option value="all" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+                  {language === 'en' ? 'All Tasks' : 'Semua Tugas'}
+                </option>
+                {parentTasksList.map(t => (
+                  <option key={t.id} value={t.id} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+                    {t.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* 4. Sembunyikan Tugas yang Selesai Toggle */}
+          <button
+            onClick={() => setHideCompleted(!hideCompleted)}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-bold transition shadow-xs cursor-pointer ${
+              hideCompleted
+                ? 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-400/50'
+                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-slate-800'
+            }`}
+            title={hideCompleted ? 'Selesai disembunyikan (Klik untuk tampilkan semua)' : 'Semua ditampilkan (Klik untuk sembunyikan selesai)'}
+          >
+            <CheckCircle2 className={`w-3.5 h-3.5 ${hideCompleted ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}`} />
+            <span>{language === 'en' ? 'Hide Done' : 'Sembunyikan Selesai'}</span>
+            {hideCompleted && (
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+            )}
+          </button>
 
           {/* Quick Collapse / Expand All Buttons */}
           <div className="hidden md:flex items-center gap-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 p-1 rounded-lg shadow-xs text-xs">
