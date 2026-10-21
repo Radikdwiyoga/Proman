@@ -41,6 +41,10 @@ export interface Subtask {
   completed: boolean;
   category?: SubtaskCategory;
   assigneeId?: string;
+  startDate?: string;
+  dueDate?: string;
+  progress?: number;
+  dependencies?: string[];
 }
 
 export interface Attachment {
@@ -120,6 +124,10 @@ export interface Task {
   attachments: Attachment[];
   commentsCount: number;
   aiRisk?: AIRiskAnalysis;
+  parentId?: string;
+  dependencies?: string[];
+  phase?: string;
+  progress?: number;
   createdAt: string;
   updatedAt: string;
 }
