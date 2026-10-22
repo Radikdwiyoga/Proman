@@ -35,6 +35,7 @@ export const TaskModal: React.FC = () => {
     moveTaskStatus,
     toggleSubtask,
     addSubtask,
+    updateSubtask,
     deleteSubtask,
     addComment,
     comments,
@@ -60,6 +61,8 @@ export const TaskModal: React.FC = () => {
 
   // Subtask and Comment state
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
+  const [newSubtaskStartDate, setNewSubtaskStartDate] = useState('');
+  const [newSubtaskDueDate, setNewSubtaskDueDate] = useState('');
   const [newCommentText, setNewCommentText] = useState('');
 
   // AI Task Estimator State
@@ -82,6 +85,8 @@ export const TaskModal: React.FC = () => {
       setAssigneeId(selectedTask.assigneeIds?.[0] || '');
       setStartDate(selectedTask.startDate || '');
       setDueDate(selectedTask.dueDate || '');
+      setNewSubtaskStartDate(selectedTask.startDate || '');
+      setNewSubtaskDueDate(selectedTask.dueDate || '');
       setEstimatedHours(selectedTask.estimatedHours || 8);
       setEstimation(null);
       setSolutionAdvice(null);
@@ -135,8 +140,14 @@ export const TaskModal: React.FC = () => {
 
   const handleAddSubtask = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newSubtaskTitle.trim()) return;
-    addSubtask(selectedTask.id, newSubtaskTitle.trim());
+    if (!newSubtaskTitle.trim() || !selectedTask) return;
+    addSubtask(
+      selectedTask.id, 
+      newSubtaskTitle.trim(), 
+      'General',
+      newSubtaskStartDate || selectedTask.startDate,
+      newSubtaskDueDate || selectedTask.dueDate
+    );
     setNewSubtaskTitle('');
   };
 
@@ -531,7 +542,7 @@ export const TaskModal: React.FC = () => {
                 {selectedTask.subtasks.map((st) => (
                   <div
                     key={st.id}
-                    className={`flex items-center justify-between p-2.5 rounded-xl border transition gap-2 min-w-0 ${
+                    className={`flex flex-col sm:flex-row sm:items-center justify-between p-2.5 rounded-xl border transition gap-2 min-w-0 ${
                       st.completed 
                         ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/40 text-slate-500 line-through' 
                         : 'bg-slate-50 dark:bg-slate-950/60 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200'
@@ -544,25 +555,53 @@ export const TaskModal: React.FC = () => {
                         onChange={() => toggleSubtask(selectedTask.id, st.id)}
                         className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 shrink-0"
                       />
-                      <span className="text-xs break-words min-w-0 leading-tight">{st.title}</span>
+                      <span className="text-xs break-words min-w-0 leading-tight font-medium">{st.title}</span>
                     </label>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteSubtask(selectedTask.id, st.id);
-                      }}
-                      className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition shrink-0 opacity-70 hover:opacity-100"
-                      title="Hapus sub-tugas"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+
+                    {/* Deadline (Start & End Date) & Delete Button */}
+                    <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0 pl-6 sm:pl-0">
+                      <div className="flex items-center gap-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-2 py-1 text-[11px] shadow-2xs">
+                        <div className="flex items-center gap-1">
+                          <span className="text-[10px] text-slate-400 font-mono">Mulai:</span>
+                          <input
+                            type="date"
+                            value={st.startDate || selectedTask.startDate || ''}
+                            onChange={(e) => updateSubtask(selectedTask.id, st.id, { startDate: e.target.value })}
+                            className="bg-transparent border-none text-[11px] text-slate-700 dark:text-slate-300 focus:outline-none cursor-pointer font-mono"
+                            title="Tanggal Mulai Sub-Tugas"
+                          />
+                        </div>
+                        <span className="text-slate-300 dark:text-slate-700">|</span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-[10px] text-slate-400 font-mono">Tenggat:</span>
+                          <input
+                            type="date"
+                            value={st.dueDate || selectedTask.dueDate || ''}
+                            onChange={(e) => updateSubtask(selectedTask.id, st.id, { dueDate: e.target.value })}
+                            className="bg-transparent border-none text-[11px] text-slate-700 dark:text-slate-300 focus:outline-none cursor-pointer font-mono"
+                            title="Tenggat Waktu Sub-Tugas"
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteSubtask(selectedTask.id, st.id);
+                        }}
+                        className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition shrink-0 opacity-70 hover:opacity-100 cursor-pointer"
+                        title="Hapus sub-tugas"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
 
-              {/* Add Subtask Form */}
-              <form onSubmit={handleAddSubtask} className="flex gap-2 pt-1 min-w-0">
+              {/* Add Subtask Form with Start & End Date Pickers */}
+              <form onSubmit={handleAddSubtask} className="flex flex-col sm:flex-row gap-2 pt-1 min-w-0">
                 <input
                   type="text"
                   placeholder="Tambah sub-tugas baru..."
@@ -570,13 +609,36 @@ export const TaskModal: React.FC = () => {
                   onChange={(e) => setNewSubtaskTitle(e.target.value)}
                   className="flex-1 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 min-w-0"
                 />
-                <button
-                  type="submit"
-                  className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-bold text-white transition flex items-center justify-center gap-1 shadow-xs shrink-0"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Tambah</span>
-                </button>
+                <div className="flex items-center gap-1.5 shrink-0 flex-wrap sm:flex-nowrap">
+                  <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-2.5 py-1.5 text-xs shadow-2xs">
+                    <div className="flex items-center gap-1">
+                      <span className="text-[10px] text-slate-400 font-mono">Mulai:</span>
+                      <input
+                        type="date"
+                        value={newSubtaskStartDate}
+                        onChange={(e) => setNewSubtaskStartDate(e.target.value)}
+                        className="bg-transparent border-none text-xs text-slate-700 dark:text-slate-300 focus:outline-none cursor-pointer font-mono"
+                      />
+                    </div>
+                    <span className="text-slate-300 dark:text-slate-700">|</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-[10px] text-slate-400 font-mono">Tenggat:</span>
+                      <input
+                        type="date"
+                        value={newSubtaskDueDate}
+                        onChange={(e) => setNewSubtaskDueDate(e.target.value)}
+                        className="bg-transparent border-none text-xs text-slate-700 dark:text-slate-300 focus:outline-none cursor-pointer font-mono"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="submit"
+                    className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-bold text-white transition flex items-center justify-center gap-1 shadow-xs shrink-0 cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Tambah</span>
+                  </button>
+                </div>
               </form>
             </div>
 

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
 import { 
   Task, 
+  Subtask,
   Project, 
   User, 
   Comment, 
@@ -126,7 +127,8 @@ interface ProjectContextType {
   deleteTask: (taskId: string) => void;
   moveTaskStatus: (taskId: string, newStatus: TaskStatus) => void;
   toggleSubtask: (taskId: string, subtaskId: string) => void;
-  addSubtask: (taskId: string, title: string, category?: string) => void;
+  addSubtask: (taskId: string, title: string, category?: string, startDate?: string, dueDate?: string) => void;
+  updateSubtask: (taskId: string, subtaskId: string, updates: Partial<Subtask>) => void;
   deleteSubtask: (taskId: string, subtaskId: string) => void;
   addComment: (taskId: string, content: string) => void;
 
@@ -588,18 +590,36 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
     updateTask(taskId, { subtasks: updatedSubtasks });
   };
 
-  const addSubtask = (taskId: string, title: string, category: string = 'General') => {
+  const addSubtask = (
+    taskId: string, 
+    title: string, 
+    category: string = 'General',
+    startDate?: string,
+    dueDate?: string
+  ) => {
     const targetTask = tasks.find(t => t.id === taskId);
     if (!targetTask) return;
 
-    const newSubtask = {
+    const newSubtask: Subtask = {
       id: `sub-${Date.now()}`,
       title,
       completed: false,
       category: category as any,
+      startDate: startDate || targetTask.startDate,
+      dueDate: dueDate || targetTask.dueDate,
     };
 
     updateTask(taskId, { subtasks: [...targetTask.subtasks, newSubtask] });
+  };
+
+  const updateSubtask = (taskId: string, subtaskId: string, updates: Partial<Subtask>) => {
+    const targetTask = tasks.find(t => t.id === taskId);
+    if (!targetTask) return;
+
+    const updatedSubtasks = targetTask.subtasks.map(st =>
+      st.id === subtaskId ? { ...st, ...updates } : st
+    );
+    updateTask(taskId, { subtasks: updatedSubtasks });
   };
 
   const deleteSubtask = (taskId: string, subtaskId: string) => {
@@ -799,6 +819,7 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
         moveTaskStatus,
         toggleSubtask,
         addSubtask,
+        updateSubtask,
         deleteSubtask,
         addComment,
         isCreateModalOpen,
