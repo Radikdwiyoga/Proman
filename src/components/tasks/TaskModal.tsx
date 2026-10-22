@@ -35,6 +35,7 @@ export const TaskModal: React.FC = () => {
     moveTaskStatus,
     toggleSubtask,
     addSubtask,
+    deleteSubtask,
     addComment,
     comments,
     users,
@@ -59,7 +60,6 @@ export const TaskModal: React.FC = () => {
 
   // Subtask and Comment state
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
-  const [newSubtaskCategory, setNewSubtaskCategory] = useState<any>('General');
   const [newCommentText, setNewCommentText] = useState('');
 
   // AI Task Estimator State
@@ -136,7 +136,7 @@ export const TaskModal: React.FC = () => {
   const handleAddSubtask = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newSubtaskTitle.trim()) return;
-    addSubtask(selectedTask.id, newSubtaskTitle, newSubtaskCategory);
+    addSubtask(selectedTask.id, newSubtaskTitle.trim());
     setNewSubtaskTitle('');
   };
 
@@ -546,46 +546,37 @@ export const TaskModal: React.FC = () => {
                       />
                       <span className="text-xs break-words min-w-0 leading-tight">{st.title}</span>
                     </label>
-                    {st.category && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 shrink-0">
-                        {st.category}
-                      </span>
-                    )}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteSubtask(selectedTask.id, st.id);
+                      }}
+                      className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition shrink-0 opacity-70 hover:opacity-100"
+                      title="Hapus sub-tugas"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 ))}
               </div>
 
               {/* Add Subtask Form */}
-              <form onSubmit={handleAddSubtask} className="flex flex-wrap sm:flex-nowrap gap-2 pt-1 min-w-0">
+              <form onSubmit={handleAddSubtask} className="flex gap-2 pt-1 min-w-0">
                 <input
                   type="text"
                   placeholder="Tambah sub-tugas baru..."
                   value={newSubtaskTitle}
                   onChange={(e) => setNewSubtaskTitle(e.target.value)}
-                  className="w-full sm:flex-1 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 min-w-0"
+                  className="flex-1 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 min-w-0"
                 />
-                <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
-                  <select
-                    value={newSubtaskCategory}
-                    onChange={(e) => setNewSubtaskCategory(e.target.value)}
-                    className="flex-1 sm:w-auto px-2.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 focus:outline-none shrink-0"
-                  >
-                    <option value="General">General</option>
-                    <option value="Frontend">Frontend</option>
-                    <option value="Backend">Backend</option>
-                    <option value="Design">Design</option>
-                    <option value="Operations">Operations</option>
-                    <option value="QA">QA</option>
-                    <option value="Marketing">Marketing</option>
-                  </select>
-                  <button
-                    type="submit"
-                    className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-bold text-white transition flex items-center justify-center gap-1 shadow-xs shrink-0"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Tambah</span>
-                  </button>
-                </div>
+                <button
+                  type="submit"
+                  className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-bold text-white transition flex items-center justify-center gap-1 shadow-xs shrink-0"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Tambah</span>
+                </button>
               </form>
             </div>
 

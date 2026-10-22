@@ -127,6 +127,7 @@ interface ProjectContextType {
   moveTaskStatus: (taskId: string, newStatus: TaskStatus) => void;
   toggleSubtask: (taskId: string, subtaskId: string) => void;
   addSubtask: (taskId: string, title: string, category?: string) => void;
+  deleteSubtask: (taskId: string, subtaskId: string) => void;
   addComment: (taskId: string, content: string) => void;
 
   // AI Triggers & Modals State
@@ -601,6 +602,14 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
     updateTask(taskId, { subtasks: [...targetTask.subtasks, newSubtask] });
   };
 
+  const deleteSubtask = (taskId: string, subtaskId: string) => {
+    const targetTask = tasks.find(t => t.id === taskId);
+    if (!targetTask) return;
+
+    const updatedSubtasks = targetTask.subtasks.filter(st => st.id !== subtaskId);
+    updateTask(taskId, { subtasks: updatedSubtasks });
+  };
+
   const addComment = (taskId: string, content: string) => {
     const newComment: Comment = {
       id: `comm-${Date.now()}`,
@@ -790,6 +799,7 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
         moveTaskStatus,
         toggleSubtask,
         addSubtask,
+        deleteSubtask,
         addComment,
         isCreateModalOpen,
         setIsCreateModalOpen,
