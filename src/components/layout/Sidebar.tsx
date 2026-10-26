@@ -457,7 +457,7 @@ export const Sidebar: React.FC = () => {
       <aside 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`hidden md:flex flex-col justify-between shrink-0 h-full select-none bg-linear-to-b from-[#1D4ED8] via-[#1E40AF] to-[#1E3A8A] dark:from-[#0F172A] dark:to-[#0B1120] text-white border-r border-blue-900/30 dark:border-slate-800 transition-all duration-300 ease-in-out z-20 ${
+        className={`no-print hidden md:flex flex-col justify-between shrink-0 h-full select-none bg-linear-to-b from-[#1D4ED8] via-[#1E40AF] to-[#1E3A8A] dark:from-[#0F172A] dark:to-[#0B1120] text-white border-r border-blue-900/30 dark:border-slate-800 transition-all duration-300 ease-in-out z-20 ${
           isExpanded ? 'w-64 shadow-xl' : 'w-18'
         }`}
       >
@@ -466,7 +466,7 @@ export const Sidebar: React.FC = () => {
 
       {/* Mobile Off-Canvas Drawer */}
       {isMobileSidebarOpen && (
-        <div className="fixed inset-0 z-50 md:hidden flex animate-fade-in">
+        <div className="no-print fixed inset-0 z-50 md:hidden flex animate-fade-in">
           <div 
             onClick={() => setIsMobileSidebarOpen(false)}
             className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity" 

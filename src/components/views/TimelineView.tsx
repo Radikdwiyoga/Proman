@@ -15,7 +15,8 @@ import {
   ExternalLink,
   CheckCircle2,
   ListTodo,
-  Filter
+  Filter,
+  Printer
 } from 'lucide-react';
 import { Task, Subtask, TaskStatus, TaskPriority, User } from '../../types';
 import { UserAvatar } from '../common/UserAvatar';
@@ -252,9 +253,39 @@ export const TimelineView: React.FC = () => {
   }, [allProjectTasks, users]);
 
   // Parent tasks in this project (for the Task Filter dropdown)
+  // Adjusted by selected PIC (assignee) & hideCompleted setting
   const parentTasksList = useMemo(() => {
-    return allProjectTasks.filter(t => !t.parentId);
-  }, [allProjectTasks]);
+    let list = allProjectTasks.filter(t => !t.parentId);
+
+    if (hideCompleted) {
+      list = list.filter(t => t.status !== 'done');
+    }
+
+    if (selectedAssigneeId !== 'all') {
+      list = list.filter(t => {
+        const isAssignedParent = (t.assigneeIds || []).includes(selectedAssigneeId);
+        const isAssignedSubtask = (t.subtasks || []).some(st => st.assigneeId === selectedAssigneeId);
+        return isAssignedParent || isAssignedSubtask;
+      });
+    }
+
+    return list;
+  }, [allProjectTasks, selectedAssigneeId, hideCompleted]);
+
+  // When changing PIC / Assignee, reset task filter to 'all' so that PIC's full task list is visible
+  useEffect(() => {
+    setSelectedTaskIdFilter('all');
+  }, [selectedAssigneeId]);
+
+  // If the currently selected task is no longer in parentTasksList, reset to 'all'
+  useEffect(() => {
+    if (selectedTaskIdFilter !== 'all') {
+      const exists = parentTasksList.some(t => t.id === selectedTaskIdFilter);
+      if (!exists) {
+        setSelectedTaskIdFilter('all');
+      }
+    }
+  }, [parentTasksList, selectedTaskIdFilter]);
 
   // Filter tasks based on:
   // 1. hideCompleted: exclude tasks with status === 'done'
@@ -775,9 +806,9 @@ export const TimelineView: React.FC = () => {
   }, [projectTasks]);
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden p-3 sm:p-5 space-y-3 sm:space-y-4 text-slate-800 dark:text-readable">
-      {/* Top Header Bar & Single Project Filter Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3 shrink-0 pb-1">
+    <div className="timeline-view-root flex-1 flex flex-col h-full overflow-hidden p-3 sm:p-5 space-y-3 sm:space-y-4 text-slate-800 dark:text-readable print:p-0 print:space-y-2 print:overflow-visible print:h-auto">
+      {/* Top Header Bar & Single Project Filter Controls (Hidden in print) */}
+      <div className="no-print flex flex-wrap items-center justify-between gap-3 shrink-0 pb-1">
         <div className="flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <div className="p-2 rounded-lg bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400">
@@ -838,7 +869,7 @@ export const TimelineView: React.FC = () => {
             </div>
           </div>
 
-          {/* 3. Filter per Tugas */}
+          {/* 3. Filter per Tugas (Hanya tugas milik PIC terpilih) */}
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-xs">
             <ListTodo className="w-4 h-4 text-indigo-500 shrink-0" />
             <div className="flex flex-col">
@@ -899,7 +930,7 @@ export const TimelineView: React.FC = () => {
           </div>
         </div>
 
-        {/* View Mode & Zoom Toggle Buttons */}
+        {/* View Mode, Zoom & Print Controls */}
         <div className="flex items-center gap-2 flex-wrap">
           {/* Quick Scroll Navigation */}
           <div className="flex items-center gap-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 p-1 rounded-lg shadow-xs">
@@ -949,13 +980,86 @@ export const TimelineView: React.FC = () => {
               {language === 'en' ? 'Weekly' : 'Mingguan'}
             </button>
           </div>
+
+          {/* 5. Print PDF Button */}
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold transition shadow-xs cursor-pointer"
+            title={language === 'en' ? 'Print or export Timeline & Gantt Chart to PDF' : 'Cetak atau ekspor Timeline & Gantt Chart ke PDF'}
+          >
+            <Printer className="w-3.5 h-3.5 shrink-0" />
+            <span>{language === 'en' ? 'Print PDF' : 'Cetak PDF'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Printable Header Banner (Only visible during print / PDF export) */}
+      <div className="hidden print:flex flex-col gap-2 pb-3 mb-2 border-b-2 border-slate-300 bg-white text-slate-900">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-black text-base">
+              P
+            </div>
+            <div>
+              <h1 className="text-base font-black text-slate-900 tracking-tight leading-tight">ProMan Enterprise Workspace</h1>
+              <p className="text-[11px] font-semibold text-slate-500">Timeline &amp; Gantt Chart WBS Report</p>
+            </div>
+          </div>
+          <div className="text-right text-[10px] text-slate-600">
+            <div>
+              <span className="text-slate-400 font-medium">{language === 'en' ? 'Printed on: ' : 'Dicetak pada: '}</span>
+              <span className="font-bold text-slate-800">
+                {new Date().toLocaleDateString(language === 'en' ? 'en-US' : 'id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </span>
+            </div>
+            <div className="font-mono text-slate-500">
+              {new Date().toLocaleTimeString(language === 'en' ? 'en-US' : 'id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-4 gap-2 p-2 rounded-lg bg-slate-50 border border-slate-200 text-xs">
+          <div>
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+              {language === 'en' ? 'Project' : 'Proyek'}
+            </span>
+            <span className="font-extrabold text-slate-900 truncate block">{activeProject?.name || '-'}</span>
+          </div>
+          <div>
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+              {language === 'en' ? 'PIC / Assignee' : 'PIC / Penanggung Jawab'}
+            </span>
+            <span className="font-bold text-slate-900 truncate block">
+              {selectedAssigneeId === 'all' 
+                ? (language === 'en' ? 'All People' : 'Semua Orang') 
+                : (users.find(u => u.id === selectedAssigneeId)?.name || selectedAssigneeId)}
+            </span>
+          </div>
+          <div>
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+              {language === 'en' ? 'Task Scope' : 'Cakupan Tugas'}
+            </span>
+            <span className="font-bold text-slate-900 truncate block">
+              {selectedTaskIdFilter === 'all' 
+                ? (language === 'en' ? 'All Tasks' : 'Semua Tugas') 
+                : (allProjectTasks.find(t => t.id === selectedTaskIdFilter)?.title || selectedTaskIdFilter)}
+            </span>
+          </div>
+          <div>
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+              {language === 'en' ? 'Summary' : 'Ringkasan'}
+            </span>
+            <span className="font-bold text-slate-900">
+              {totalParents} {language === 'en' ? 'Tasks' : 'Tugas'} • {totalSubtasksCount} {language === 'en' ? 'Sub-tasks' : 'Sub-tugas'}
+            </span>
+          </div>
         </div>
       </div>
 
       {/* Main Gantt Canvas Container */}
       <div 
         ref={scrollContainerRef}
-        className="flex-1 overflow-x-auto overflow-y-auto rounded-xl bg-white dark:bg-slate-950 backdrop-blur border border-slate-200 dark:border-slate-800 shadow-sm relative flex flex-col"
+        className="timeline-canvas-container flex-1 overflow-x-auto overflow-y-auto rounded-xl bg-white dark:bg-slate-950 backdrop-blur border border-slate-200 dark:border-slate-800 shadow-sm relative flex flex-col print:overflow-visible print:border print:border-slate-300 print:shadow-none print:h-auto print:max-h-none"
         style={{
           WebkitOverflowScrolling: 'touch',
           touchAction: 'pan-x pan-y',

@@ -278,3 +278,103 @@
   box-shadow: 0 4px 16px rgba(9, 13, 22, 0.12), 0 16px 40px rgba(9, 13, 22, 0.18);
 }
 
+/* ============================================================
+   PRINT / PDF EXPORT STYLES (Timeline & Gantt Chart WBS)
+   ============================================================ */
+@media print {
+  @page {
+    size: landscape;
+    margin: 8mm;
+  }
+
+  /* Hide app chrome, sidebars, navigation, drawers, modals during print */
+  aside,
+  nav,
+  header,
+  .no-print,
+  #copilot-drawer,
+  .modal-backdrop,
+  button:not(.print-keep),
+  select:not(.print-keep) {
+    display: none !important;
+  }
+
+  html, body, #root, #root > div {
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 11px !important;
+  }
+
+  main {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .timeline-view-root {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .timeline-canvas-container {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+  }
+
+  .sticky-wbs-column {
+    position: static !important;
+    background: #f8fafc !important;
+    border-right: 1px solid #cbd5e1 !important;
+  }
+
+  /* Ensure color reproduction (bars, lines, badges) */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-shadow: none !important;
+  }
+
+  /* Dark mode overrides for high-contrast white paper print */
+  .dark {
+    color-scheme: light !important;
+  }
+
+  .dark .timeline-canvas-container,
+  .dark .bg-slate-950,
+  .dark .bg-slate-900,
+  .dark .bg-slate-900\/60,
+  .dark .bg-slate-900\/40 {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  .dark .text-white,
+  .dark .text-slate-100,
+  .dark .text-slate-200,
+  .dark .text-slate-300 {
+    color: #0f172a !important;
+  }
+
+  .dark .border-slate-800,
+  .dark .border-slate-800\/60,
+  .dark .border-slate-800\/80,
+  .dark .border-white\/10 {
+    border-color: #e2e8f0 !important;
+  }
+}
+

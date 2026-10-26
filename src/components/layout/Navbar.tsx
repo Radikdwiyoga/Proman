@@ -97,7 +97,7 @@ export const Navbar: React.FC = () => {
   }, [systemSettings?.timezone]);
 
   return (
-    <div className="flex flex-col z-20 shrink-0 select-none">
+    <div className="no-print flex flex-col z-20 shrink-0 select-none">
       <header className="h-16 px-4 sm:px-6 flex items-center justify-between border-b border-slate-200/60 dark:border-white/8 bg-white/70 dark:bg-canvas/60 backdrop-blur-md text-slate-800 dark:text-readable transition-colors">
         
         {/* Left: Mobile Drawer Trigger & "Welcome, [Name]" matching Reference */}
