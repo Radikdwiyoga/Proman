@@ -156,7 +156,7 @@ export const Navbar: React.FC = () => {
             onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
             className={`p-2 rounded-full border md:hidden transition cursor-pointer ${
               isMobileSearchOpen
-                ? 'bg-[#2563EB] text-white border-blue-500'
+                ? 'bg-brand-blue-accent text-white border-blue-500'
                 : 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700 text-slate-600 dark:text-slate-300'
             }`}
             title={t('navbar.searchTasks')}
@@ -169,7 +169,7 @@ export const Navbar: React.FC = () => {
             onClick={() => setIsCopilotOpen(!isCopilotOpen)}
             className={`relative p-2 sm:px-3 sm:py-2 rounded-full border transition shadow-2xs flex items-center gap-1.5 cursor-pointer ${
               isCopilotOpen 
-                ? 'bg-[#2563EB] text-white border-blue-600 shadow-sm' 
+                ? 'bg-brand-blue-accent text-white border-blue-600 shadow-sm' 
                 : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200/80 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50'
             }`}
             title={t('navbar.copilotTooltip')}

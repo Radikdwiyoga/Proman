@@ -209,7 +209,7 @@ export const TimelineView: React.FC = () => {
   const [hideCompleted, setHideCompleted] = useState<boolean>(true);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const highlightTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const highlightTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // 1. Single Project Mode Enforcement:
   // Must require exactly 1 specific project. If 'all' or invalid, pick first active project.
@@ -879,7 +879,7 @@ export const TimelineView: React.FC = () => {
               <select
                 value={selectedTaskIdFilter}
                 onChange={(e) => setSelectedTaskIdFilter(e.target.value)}
-                className="bg-transparent border-none text-xs font-bold text-slate-900 dark:text-slate-100 focus:outline-none cursor-pointer pr-3 max-w-[120px] sm:max-w-[180px] truncate"
+                className="bg-transparent border-none text-xs font-bold text-slate-900 dark:text-slate-100 focus:outline-none cursor-pointer pr-3 max-w-30 sm:max-w-45 truncate"
               >
                 <option value="all" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
                   {language === 'en' ? 'All Tasks' : 'Semua Tugas'}
@@ -1108,7 +1108,7 @@ export const TimelineView: React.FC = () => {
                           col.isToday
                             ? 'bg-blue-500/15 text-blue-700 dark:text-blue-400 font-extrabold border-blue-400/60'
                             : col.isWeekend
-                            ? 'bg-slate-100/40 dark:bg-white/[0.02] text-slate-400'
+                            ? 'bg-slate-100/40 dark:bg-white/2 text-slate-400'
                             : 'text-slate-600 dark:text-slate-400'
                         }`}
                       >
@@ -1233,7 +1233,7 @@ export const TimelineView: React.FC = () => {
                                 name={row.assignee.name}
                                 size="xs"
                               />
-                              <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-300 truncate max-w-[65px] hidden sm:inline">
+                              <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-300 truncate max-w-16.25 hidden sm:inline">
                                 {row.assignee.name.split(' ')[0]}
                               </span>
                             </div>
@@ -1341,7 +1341,7 @@ export const TimelineView: React.FC = () => {
                                   col.isToday
                                     ? 'bg-blue-500/5 dark:bg-blue-500/10'
                                     : col.isWeekend
-                                    ? 'bg-slate-50/50 dark:bg-white/[0.015]'
+                                    ? 'bg-slate-50/50 dark:bg-white/1.5'
                                     : ''
                                 }`}
                               />

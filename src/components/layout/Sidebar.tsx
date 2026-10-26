@@ -378,7 +378,7 @@ export const Sidebar: React.FC = () => {
                     setIsProfileMenuOpen(false);
                   }} 
                 />
-                <div className="absolute bottom-[calc(100%+8px)] left-0 right-0 p-1.5 rounded-2xl bg-[#1E3A8A] dark:bg-[#0F172A] border border-blue-400/30 shadow-2xl space-y-1 animate-in fade-in slide-in-from-bottom-2 duration-150 z-30">
+                <div className="absolute bottom-[calc(100%+8px)] left-0 right-0 p-1.5 rounded-2xl bg-brand-blue-deep dark:bg-surface border border-blue-400/30 shadow-2xl space-y-1 animate-in fade-in slide-in-from-bottom-2 duration-150 z-30">
                   {/* Language Toggle in Profile Menu */}
                   <button
                     onClick={() => {
@@ -457,7 +457,7 @@ export const Sidebar: React.FC = () => {
       <aside 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`no-print hidden md:flex flex-col justify-between shrink-0 h-full select-none bg-linear-to-b from-[#1D4ED8] via-[#1E40AF] to-[#1E3A8A] dark:from-[#0F172A] dark:to-[#0B1120] text-white border-r border-blue-900/30 dark:border-slate-800 transition-all duration-300 ease-in-out z-20 ${
+        className={`no-print hidden md:flex flex-col justify-between shrink-0 h-full select-none bg-linear-to-b from-[#1D4ED8] via-[#1E40AF] to-brand-blue-deep dark:from-[#0F172A] dark:to-[#0B1120] text-white border-r border-blue-900/30 dark:border-slate-800 transition-all duration-300 ease-in-out z-20 ${
           isExpanded ? 'w-64 shadow-xl' : 'w-18'
         }`}
       >
@@ -471,7 +471,7 @@ export const Sidebar: React.FC = () => {
             onClick={() => setIsMobileSidebarOpen(false)}
             className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity" 
           />
-          <div className="relative w-72 max-w-[85vw] bg-linear-to-b from-[#1D4ED8] via-[#1E40AF] to-[#1E3A8A] dark:from-[#0F172A] dark:to-[#0B1120] text-white flex flex-col justify-between h-full shadow-2xl z-10 animate-slide-right">
+          <div className="relative w-72 max-w-[85vw] bg-linear-to-b from-[#1D4ED8] via-[#1E40AF] to-brand-blue-deep dark:from-[#0F172A] dark:to-[#0B1120] text-white flex flex-col justify-between h-full shadow-2xl z-10 animate-slide-right">
             <div className="p-3.5 border-b border-white/10 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <img src="/proman-icon.png" alt="ProMan" className="w-7 h-7 object-contain bg-white rounded-lg p-1" />
