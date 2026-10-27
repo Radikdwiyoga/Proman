@@ -43,7 +43,6 @@ export const TaskModal: React.FC = () => {
     projects,
     currentUser,
     applyRiskMitigation,
-    setIsCopilotOpen,
     showToast,
   } = useProject();
 
@@ -856,18 +855,6 @@ export const TaskModal: React.FC = () => {
                 </div>
               )}
             </div>
-
-            {/* Copilot Deep Query */}
-            <button
-              onClick={() => {
-                setSelectedTaskId(null);
-                setIsCopilotOpen(true);
-              }}
-              className="w-full py-2.5 px-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-orange-950/70 border border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-center gap-2 transition"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Tanyakan Tugas Ini ke Copilot</span>
-            </button>
           </div>
         </div>
 

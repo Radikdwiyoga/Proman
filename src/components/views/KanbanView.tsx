@@ -5,7 +5,6 @@ import { TaskCard } from '../tasks/TaskCard';
 import { TaskStatus, TaskPriority } from '../../types';
 import { 
   Filter, 
-  Sparkles, 
   X, 
   FolderKanban, 
   Users, 
@@ -23,7 +22,6 @@ export const KanbanView: React.FC = () => {
     filteredTasks,
     setIsCreateModalOpen,
     openCreateTaskModal,
-    setIsAIBreakdownModalOpen,
     users,
     projects,
     currentProject,
@@ -139,7 +137,7 @@ export const KanbanView: React.FC = () => {
           </div>
         </div>
 
-        {/* Right: Filters, AI Breakdown, Create Task Buttons */}
+        {/* Right: Filters, Create Task Buttons */}
         <div className="flex items-center gap-2 shrink-0">
           {/* Filter Toggle Button */}
           <button
@@ -155,16 +153,6 @@ export const KanbanView: React.FC = () => {
             {hasActiveFilters && (
               <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
             )}
-          </button>
-
-          {/* AI Breakdown Button */}
-          <button
-            onClick={() => setIsAIBreakdownModalOpen(true)}
-            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 hover:bg-slate-50 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-2xs transition active:scale-95 cursor-pointer"
-            title="AI Sub-tugas Breakdown"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-            <span>AI Plan</span>
           </button>
 
           {/* Create Task Button (Royal Blue Pill matching Login Page) */}

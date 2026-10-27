@@ -225,8 +225,8 @@ export const INITIAL_TASKS: Task[] = [
   {
     id: 'task-104',
     projectId: 'proj-1',
-    title: 'Modul AI Multi-Disiplin Breakdown (IT, Ops, Marketing, HR)',
-    description: 'Fitur pemecah ide menjadi sub-tugas terstruktur untuk ranah Operasional, Marketing, HR, Finance, dan Software.',
+    title: 'Modul Multi-Disiplin Inisiatif Operasional (IT, Ops, Marketing, HR)',
+    description: 'Sistem koordinasi terstruktur untuk ranah Operasional, Marketing, HR, Finance, dan Software.',
     status: 'review',
     priority: 'urgent',
     assigneeIds: ['user-2', 'user-6'],
@@ -306,7 +306,7 @@ export const INITIAL_COMMENTS: Comment[] = [
     id: 'comm-3',
     taskId: 'task-104',
     userId: 'user-admin',
-    content: 'Fitur AI breakdown untuk domain Operasional dan Marketing bekerja sangat presisi.',
+    content: 'Sistem koordinasi untuk domain Operasional dan Marketing bekerja sangat presisi.',
     createdAt: '2026-08-18T16:00:00Z',
   }
 ];

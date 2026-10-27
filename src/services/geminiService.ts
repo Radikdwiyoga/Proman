@@ -1,7 +1,6 @@
 import OpenAI from 'openai';
-import { Task, User, Project, ExecutiveSummary, CopilotMessage, TaskEffortEstimation, AISolutionAdvice } from '../types';
-import { generateAITaskBreakdown, generateExecutiveSummary, queryProjectCopilot, GeneratedBreakdown, simulateTaskEffortEstimation, simulateAISolutionAdvice } from '../utils/aiSimulator';
-import { APP_FEATURES_KNOWLEDGE, HOW_TO_GUIDES, FEW_SHOT_EXAMPLES, formatUsersForPrompt } from '../data/copilotKnowledge';
+import { Task, User, Project, ExecutiveSummary, TaskEffortEstimation, AISolutionAdvice } from '../types';
+import { generateExecutiveSummary, simulateTaskEffortEstimation, simulateAISolutionAdvice } from '../utils/aiSimulator';
 
 // Helper to get active API keys (from runtime storage or environment variables)
 export const getGroqApiKey = (): string => {
@@ -283,67 +282,6 @@ Pertanyaan / Hambatan:
 };
 
 /**
- * 1. AI Task Breakdown Engine
- */
-export const generateLiveAITaskBreakdown = async (
-  prompt: string,
-  users: User[]
-): Promise<GeneratedBreakdown> => {
-  const fallback = generateAITaskBreakdown(prompt, users);
-
-  const userNames = users.map(u => `${u.name} (id: ${u.id}, role: ${u.role}, dept: ${u.department})`).join(', ');
-
-  const systemInstruction = `Anda adalah Enterprise AI Project Architect. Tugas Anda adalah memecah inisiatif/tugas/ide apapun yang diinputkan pengguna menjadi daftar sub-tugas yang SANGAT JELAS, SPESIFIK, REALISTIS, dan ACTIONABLE sesuai dengan konteks input secara presisi.
-
-Analisis secara otomatis apakah inisiatif ini masuk ke ranah Operasional, IT/Teknologi, Marketing, HR, Finance, Logistik, atau Bisnis Umum.
-
-Daftar anggota tim yang tersedia: ${userNames}.
-Pilih satu ID anggota tim yang paling cocok dengan bidang tugas ini.
-
-Wajib kembalikan format JSON murni TANPA markdown formatting tambahan (hanya raw JSON) dengan skema:
-{
-  "title": "Judul tugas yang jelas, formal, dan mencerminkan input pengguna",
-  "description": "Deskripsi lengkap dan detail mengenai latar belakang, sasaran utama, dan target hasil penyelesaian tugas (2-3 kalimat)",
-  "domain": "operations" | "marketing" | "hr" | "finance" | "technology" | "event" | "general",
-  "priority": "low" | "medium" | "high" | "urgent",
-  "recommendedAssigneeId": "ID salah satu anggota tim dari daftar di atas yang paling sesuai",
-  "tags": ["Tag1", "Tag2", "Tag3"],
-  "rationale": "Alasan singkat mengapa anggota tim tersebut direkomendasikan",
-  "subtasks": [
-    { "title": "Langkah sub-tugas 1 yang spesifik dan langsung dapat dieksekusi", "completed": false, "category": "Frontend" | "Backend" | "Design" | "QA" | "Operations" | "Logistics" | "Marketing" | "HR" | "Finance" | "Legal" | "General" },
-    { "title": "Langkah sub-tugas 2...", "completed": false, "category": "..." },
-    { "title": "Langkah sub-tugas 3...", "completed": false, "category": "..." },
-    { "title": "Langkah sub-tugas 4...", "completed": false, "category": "..." }
-  ]
-}`;
-
-  const result = await executeLLMWithFallback(
-    {
-      messages: [
-        { role: 'system', content: systemInstruction },
-        { role: 'user', content: `Pecah inisiatif berikut menjadi 4-6 langkah sub-tugas nyata, detail, dan profesional:\n"${prompt}"` },
-      ],
-      temperature: 0.3,
-      responseFormatJson: true,
-    },
-    'Task Breakdown'
-  );
-
-  if (result?.content) {
-    try {
-      const parsed = JSON.parse(extractJson(result.content)) as GeneratedBreakdown;
-      if (parsed.title && Array.isArray(parsed.subtasks) && parsed.subtasks.length > 0) {
-        return parsed;
-      }
-    } catch (e) {
-      console.warn('[Task Breakdown] JSON parse error, falling back to simulator:', e);
-    }
-  }
-
-  return fallback;
-};
-
-/**
  * 2. Live Executive Summary & Briefing Generator
  */
 export const generateLiveExecutiveSummary = async (
@@ -415,96 +353,4 @@ Wajib kembalikan format raw JSON:
   }
 
   return fallback;
-};
-
-/**
- * 3. Live Context-Aware Project Copilot Assistant Chat
- */
-export const queryLiveProjectCopilot = async (
-  queryText: string,
-  tasks: Task[],
-  users: User[],
-  history: CopilotMessage[] = []
-): Promise<CopilotMessage> => {
-  const userMap = new Map(users.map(u => [u.id, u]));
-
-  const detailedTasks = tasks.map(t => {
-    const assignees = (t.assigneeIds || []).map(id => userMap.get(id)?.name || id).join(', ') || 'Unassigned';
-    const subtaskDetails = (t.subtasks || []).map(st => `${st.title} (${st.completed ? 'Selesai' : 'Belum'})`).join('; ');
-    return `- ID: ${t.id}
-  Judul: "${t.title}"
-  Status: ${t.status.toUpperCase()} | Prioritas: ${t.priority.toUpperCase()}
-  PIC / Penanggung Jawab: ${assignees}
-  Tenggat Waktu: ${t.dueDate}
-  Sub-tugas: [${subtaskDetails || 'Tidak ada sub-tugas'}]
-  ${t.aiRisk ? `Risiko: Skor ${t.aiRisk.riskScore}/100 (${t.aiRisk.reason})` : ''}`;
-  }).join('\n\n');
-
-  const detailedUsers = formatUsersForPrompt(users);
-
-  const admin = users.find(u => u.role?.toLowerCase() === 'admin');
-  const adminName = admin?.name || 'Belum ada admin terdaftar';
-
-  const systemInstruction = `Anda adalah "ProMan AI Copilot", asisten AI manajemen proyek enterprise resmi untuk aplikasi ProMan.
-Anda memiliki akses data real-time lengkap ke database proyek, anggota tim, dan seluruh tugas yang ada.
-
-=== DATABASE ANGGOTA TIM SAAT INI ===
-${detailedUsers}
-
-=== DATABASE SELURUH TUGAS SAAT INI ===
-${detailedTasks}
-
-=== PENGETAHUAN FITUR APLIKASI ===
-${APP_FEATURES_KNOWLEDGE}
-
-=== PANDUAN CARA PENGGUNAAN (HOW-TO) ===
-${HOW_TO_GUIDES}
-
-=== INFO KHUSUS ===
-- Nama Admin sistem saat ini: ${adminName}. Untuk pertanyaan seputar admin, server backend, atau eskalasi teknis, arahkan ke nama ini.
-
-=== CONTOH GAYA JAWAB YANG DIHARAPKAN ===
-${FEW_SHOT_EXAMPLES.replace('{ADMIN_NAME}', adminName)}
-
-=== ATURAN PENTING MENJAWAB ===
-- UTAMAKAN menjawab pertanyaan tentang cara penggunaan, menu, panduan sistem, login/logout, ubah password, dark mode, hak akses/role, dan fitur aplikasi secara presisi mengacu pada bagian "PANDUAN CARA PENGGUNAAN (HOW-TO)", "PENGETAHUAN FITUR APLIKASI", dan "CONTOH GAYA JAWAB YANG DIHARAPKAN".
-- Untuk pertanyaan tentang tugas seseorang, cari namanya di database anggota tim & daftar tugas di atas, sebutkan jabatan/departemen, lalu daftarkan tugasnya lengkap dengan status & tenggat waktu.
-- Untuk pertanyaan tentang risiko keterlambatan atau sprint, sebutkan tugas dengan prioritas tinggi/urgent atau risiko tinggi dan berikan rekomendasi solusi.
-- Untuk pertanyaan tentang kapasitas/overload/beban kerja, sebutkan anggota tim yang alokasinya melebihi 100% beban normal.
-- Selalu gunakan bahasa Indonesia yang ramah, profesional, ringkas, jelas, dan terstruktur dengan format Markdown (bold, list bernomor/bullet points).`;
-
-  const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-    { role: 'system', content: systemInstruction },
-    ...history.map(m => ({
-      role: m.sender === 'assistant' ? 'assistant' as const : 'user' as const,
-      content: m.content,
-    })),
-    { role: 'user', content: queryText },
-  ];
-
-  const result = await executeLLMWithFallback(
-    {
-      messages,
-      temperature: 0.3,
-    },
-    'Project Copilot Chat'
-  );
-
-  if (result?.content) {
-    return {
-      id: `copilot-${Date.now()}`,
-      sender: 'assistant',
-      content: result.content,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      suggestions: [
-        'Tampilkan tugas yang berisiko',
-        'Siapa anggota tim yang sedang overload?',
-        'Buatkan ringkasan status eksekutif',
-        'Bantu pecah tugas baru dengan AI'
-      ]
-    };
-  }
-
-  // Fallback to local simulator
-  return queryProjectCopilot(queryText, tasks, users);
 };

@@ -16,9 +16,7 @@ import { ResourceAllocationView } from './components/ai/ResourceAllocationView';
 import { AdminSettingsView } from './components/admin/AdminSettingsView';
 import { TaskModal } from './components/tasks/TaskModal';
 import { CreateTaskModal } from './components/tasks/CreateTaskModal';
-import { AITaskBreakdownModal } from './components/ai/AITaskBreakdownModal';
 import { StatusSummarizerModal } from './components/ai/StatusSummarizerModal';
-import { ProjectCopilotDrawer } from './components/ai/ProjectCopilotDrawer';
 import { ChangePasswordModal } from './components/auth/ChangePasswordModal';
 
 const AppCore: React.FC = () => {
@@ -75,14 +73,11 @@ const AppCore: React.FC = () => {
         >
           {renderActiveView()}
         </main>
-
-        <ProjectCopilotDrawer />
       </div>
 
-      {/* Global Interactive Modals & Drawers */}
+      {/* Global Interactive Modals */}
       <TaskModal />
       <CreateTaskModal />
-      <AITaskBreakdownModal />
       <StatusSummarizerModal />
       <ChangePasswordModal 
         isOpen={isChangePasswordModalOpen} 

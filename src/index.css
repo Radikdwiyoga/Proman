@@ -292,7 +292,6 @@
   nav,
   header,
   .no-print,
-  #copilot-drawer,
   .modal-backdrop,
   button:not(.print-keep),
   select:not(.print-keep) {

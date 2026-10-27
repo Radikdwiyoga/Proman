@@ -57,9 +57,6 @@ export const translations = {
     navbar: {
       welcome: 'Selamat datang,',
       searchTasks: 'Cari tugas atau inisiatif...',
-      copilot: 'Copilot',
-      copilotTooltip: 'Buka ProMan AI Copilot Assistant',
-      notifications: 'AI Breakdown & Tools',
       toggleTheme: 'Ubah Tema',
       lightMode: 'Mode Terang',
       darkMode: 'Mode Gelap',
@@ -285,9 +282,6 @@ export const translations = {
     navbar: {
       welcome: 'Welcome,',
       searchTasks: 'Search tasks or initiatives...',
-      copilot: 'Copilot',
-      copilotTooltip: 'Open ProMan AI Copilot Assistant',
-      notifications: 'AI Breakdown & Tools',
       toggleTheme: 'Toggle Theme',
       lightMode: 'Light Mode',
       darkMode: 'Dark Mode',

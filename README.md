@@ -1,6 +1,6 @@
 # 🚀 ProMan — Intelligent Enterprise Project Management System
 
-**ProMan** adalah platform manajemen proyek modern dan sistem tata kelola operasional berbasis AI (*ProMan AI*) dan real-time database (*Firebase Firestore & Auth*). Dirancang khusus untuk memonitor, mengalokasikan beban kerja, memitigasi risiko keterlambatan, dan mengotomasi breakdown inisiatif proyek dalam skala enterprise.
+**ProMan** adalah platform manajemen proyek modern dan sistem tata kelola operasional berbasis AI (*ProMan AI*) dan real-time database (*Firebase Firestore & Auth*). Dirancang khusus untuk memonitor, mengalokasikan beban kerja, memitigasi risiko keterlambatan, dan mengoptimasi eksekusi inisiatif proyek dalam skala enterprise.
 
 🌐 **Live URL**: [https://proman-83c57.web.app](https://proman-83c57.web.app)  
 📦 **Repository**: [https://github.com/Radikdwiyoga/PromanAI](https://github.com/Radikdwiyoga/PromanAI)
@@ -36,12 +36,10 @@
 * **Auto-Hide Icon Sidebar**: Navigasi samping ringkas (*icon-only mode*) yang otomatis melebar saat di-*hover* dan dapat dikunci (*pin*).
 
 ### 3. 🤖 ProMan AI Intelligence Suite
-* **AI Task Breakdown Engine**: Memecah ide/inisiatif operasional menjadi sub-tugas terstruktur, kategori departemen, estimasi jam kerja, dan rekomendasi PIC pelaksana secara instan.
-* **AI Smart Estimator & Due Date**: Menganalisis judul & deskripsi tugas untuk memberikan rekomendasi tingkat kompleksitas (*Simple, Moderate, Complex*), jam kerja, dan tanggal deadline ideal.
-* **Predictive Risk & Workload Intelligence**: Analisis risiko keterlambatan proyek dan distribusi kapasitas jam kerja tim secara cerdas dan objektif.
-* **AI Solution & Troubleshooting Advisor**: Konsultasi instan berbasis AI di dalam setiap tiket tugas saat terjadi kendala teknis/operasional.
+* **AI Smart Estimator & Due Date**: Menganalisis judul & deskripsi tugas untuk memberikan rekomendasi tingkat kompleksitas (*Simple, Moderate, Complex*), estimasi jam kerja, dan tanggal tenggat ideal.
+* **Predictive Risk & Workload Intelligence**: Analisis risiko keterlambatan proyek dan distribusi kapasitas jam kerja tim secara objektif untuk mencegah burnout.
+* **AI Solution & Troubleshooting Advisor**: Konsultasi taktis berbasis AI di dalam setiap tiket tugas untuk rekomendasi langkah solusi saat terjadi kendala operasional.
 * **Auto-Status Summary (Laporan Eksekutif)**: Ringkasan capaian proyek, analisis *bottleneck*, risiko delay, dan rekomendasi aksi yang dapat langsung dicetak atau diekspor ke PDF.
-* **Project Copilot Assistant**: AI chatbot interaktif dengan pengetahuan kontekstual mengenai seluruh isi project, daftar tiket, dan anggota tim yang sedang aktif.
 
 ### 4. 🏢 Manajemen Multi-Project & Global Board
 * **Global Board**: Melihat seluruh tugas lintas project secara komprehensif dalam satu papan kerja.
@@ -89,7 +87,7 @@
    Menggunakan *Firestore Realtime Listeners (`onSnapshot`)* sehingga setiap perubahan status tugas, penambahan komentar, pembuatan project, atau update progres langsung terlihat oleh seluruh pengguna seketika.
 
 2. **Dukungan AI Terintegrasi Penuh (Bukan Sekadar Chatbot)**  
-   ProMan AI hadir langsung di alur kerja operasional: estimasi tugas saat pembuatan tiket, pemecahan tugas inisiatif besar, pemberian solusi kendala teknis, hingga penyusunan laporan mingguan/bulanan berformat eksekutif.
+   ProMan AI hadir langsung di alur kerja operasional: estimasi durasi tugas saat pembuatan tiket, rekomendasi solusi kendala operasional/teknis, pemantauan risiko keterlambatan, hingga penyusunan laporan eksekutif berkala.
 
 3. **Keamanan & Privasi Enterprise**  
    Dilengkapi *Inactivity Session Timeout (10 menit)*, proteksi approval akun baru oleh Super Admin, enkripsi sesi berbasis *local persistence*, serta autentikasi penuh berbasis Firebase Auth. Setiap akses Firestore diverifikasi ulang oleh *Security Rules* di sisi server, bukan hanya disembunyikan di antarmuka.
@@ -239,7 +237,7 @@ Rekap yang lebih panjang dari batas 4096 karakter Telegram akan dipecah otomatis
 src/
 ├── components/
 │   ├── admin/          # Admin Settings & User Management
-│   ├── ai/             # ProMan AI Suite (Breakdown, Copilot, Summarizer, Dashboards)
+│   ├── ai/             # ProMan AI Suite (Executive Summarizer, Risk & Resource Allocation)
 │   ├── auth/           # Login, Register, & Change Password Modal
 │   ├── common/         # UserAvatar, Reusable Components
 │   ├── layout/         # Navbar, Auto-Hide Sidebar, Toast
@@ -251,7 +249,6 @@ src/
 │   ├── ThemeContext.tsx      # Dark / Light Mode Provider
 │   └── LanguageContext.tsx   # Dual Language (ID / EN) Provider
 ├── data/
-│   ├── copilotKnowledge.ts  # ProMan AI Domain Knowledge Base
 │   └── initialData.ts       # Mock Seeder & Initial Structures
 ├── services/
 │   ├── authService.ts       # Firebase Authentication & Session Service
@@ -286,7 +283,7 @@ ProMan tidak lagi menyediakan akun demo dengan password bawaan yang tertulis di 
 | Peran | Email Login | Akses Utama |
 |---|---|---|
 | **Super Admin** | `admin@bitcorp.id` | Tata Kelola Enterprise, Admin Settings, Approval User, Konfigurasi AI |
-| **Team Member** | `radik.dwiyoga@bitcorp.id` | Papan Kanban, Kalender, Timeline, Copilot Assistant |
+| **Team Member** | `radik.dwiyoga@bitcorp.id` | Papan Kanban, Kalender, Timeline, Manajemen Tugas |
 
 ### Cara membuat akun baru
 

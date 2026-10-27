@@ -9,7 +9,6 @@ import {
   TaskStatus, 
   TaskPriority, 
   ExecutiveSummary, 
-  CopilotMessage, 
   SystemSettings 
 } from '../types';
 import { 
@@ -20,7 +19,7 @@ import {
   INITIAL_ACTIVITY_LOGS,
   INITIAL_SYSTEM_SETTINGS
 } from '../data/initialData';
-import { calculateUserWorkloads, generateExecutiveSummary, GeneratedBreakdown } from '../utils/aiSimulator';
+import { calculateUserWorkloads, generateExecutiveSummary } from '../utils/aiSimulator';
 import { 
   seedDatabaseIfEmpty,
   subscribeToProjects,
@@ -47,7 +46,7 @@ import {
   logoutFromFirebase,
   subscribeToAuthChanges,
 } from '../services/authService';
-import { generateLiveExecutiveSummary, queryLiveProjectCopilot } from '../services/geminiService';
+import { generateLiveExecutiveSummary } from '../services/geminiService';
 import { 
   sendTaskCreatedNotification, 
   sendTaskUpdatedNotification, 
@@ -138,24 +137,15 @@ interface ProjectContextType {
   createModalInitialStatus: TaskStatus;
   setCreateModalInitialStatus: (status: TaskStatus) => void;
   openCreateTaskModal: (status?: TaskStatus) => void;
-  isAIBreakdownModalOpen: boolean;
-  setIsAIBreakdownModalOpen: (open: boolean) => void;
   isSummaryModalOpen: boolean;
   setIsSummaryModalOpen: (open: boolean) => void;
-  isCopilotOpen: boolean;
-  setIsCopilotOpen: (open: boolean) => void;
   isChangePasswordModalOpen: boolean;
   setIsChangePasswordModalOpen: (open: boolean) => void;
   
   // AI Operations
-  applyAIBreakdown: (breakdown: GeneratedBreakdown) => Task;
   applyRiskMitigation: (taskId: string, actionType: string, targetAssigneeId?: string, bufferDays?: number) => void;
   executiveSummary: ExecutiveSummary;
   refreshExecutiveSummary: () => void;
-  
-  // Copilot Chat
-  copilotMessages: CopilotMessage[];
-  sendCopilotQuery: (query: string) => void;
   
   // Toast Notifications
   toastMessage: { text: string; type: 'success' | 'info' | 'warning' } | null;
@@ -192,9 +182,7 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
     setIsCreateModalOpen(true);
   };
 
-  const [isAIBreakdownModalOpen, setIsAIBreakdownModalOpen] = useState<boolean>(false);
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState<boolean>(false);
-  const [isCopilotOpen, setIsCopilotOpen] = useState<boolean>(false);
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState<boolean>(false);
 
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'info' | 'warning' } | null>(null);
@@ -650,36 +638,6 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
     }
   };
 
-  const applyAIBreakdown = (breakdown: GeneratedBreakdown): Task => {
-    const newTask: Task = {
-      id: `task-${Date.now()}`,
-      projectId: currentProjectId === 'all' ? (projects[0]?.id || 'proj-1') : currentProjectId,
-      title: breakdown.title,
-      description: breakdown.description,
-      status: 'todo',
-      priority: breakdown.priority,
-      assigneeIds: [breakdown.recommendedAssigneeId],
-      startDate: new Date().toISOString().slice(0, 10),
-      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-      tags: breakdown.tags,
-      subtasks: breakdown.subtasks.map((st, i) => ({
-        id: `sub-${Date.now()}-${i}`,
-        title: st.title,
-        completed: false,
-        category: st.category,
-      })),
-      attachments: [],
-      commentsCount: 0,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    setTasks(prev => [newTask, ...prev]);
-    createTaskInDb(newTask);
-    showToast(`AI Berhasil Memecah & Menjadwalkan: "${newTask.title}"`, 'success');
-    return newTask;
-  };
-
   const applyRiskMitigation = (taskId: string, actionType: string, targetAssigneeId?: string, bufferDays: number = 3) => {
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
@@ -744,39 +702,6 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
     showToast('Laporan eksekutif berhasil diperbarui!', 'success');
   };
 
-  const [copilotMessages, setCopilotMessages] = useState<CopilotMessage[]>([
-    {
-      id: 'copilot-init',
-      sender: 'assistant',
-      content: `Halo! Saya ProMan AI Copilot. Saya siap membantu mengelola proyek, menganalisis risiko keterlambatan, atau memantau tugas tim Anda.`,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      suggestions: [
-        'Apa tugas paling mendesak?',
-        'Siapa yang mengalami overload?',
-        'Buatkan ringkasan status eksekutif',
-        'Bantu pecah tugas baru'
-      ]
-    }
-  ]);
-
-  const sendCopilotQuery = async (queryText: string) => {
-    const userMsg: CopilotMessage = {
-      id: `copilot-u-${Date.now()}`,
-      sender: 'user',
-      content: queryText,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    setCopilotMessages(prev => [...prev, userMsg]);
-
-    try {
-      const botReply = await queryLiveProjectCopilot(queryText, tasks, users);
-      setCopilotMessages(prev => [...prev, botReply]);
-    } catch (e) {
-      console.error('Copilot error:', e);
-    }
-  };
-
   return (
     <ProjectContext.Provider
       value={{
@@ -827,20 +752,13 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
         createModalInitialStatus,
         setCreateModalInitialStatus,
         openCreateTaskModal,
-        isAIBreakdownModalOpen,
-        setIsAIBreakdownModalOpen,
         isSummaryModalOpen,
         setIsSummaryModalOpen,
-        isCopilotOpen,
-        setIsCopilotOpen,
         isChangePasswordModalOpen,
         setIsChangePasswordModalOpen,
-        applyAIBreakdown,
         applyRiskMitigation,
         executiveSummary,
         refreshExecutiveSummary,
-        copilotMessages,
-        sendCopilotQuery,
         toastMessage,
         showToast,
       }}

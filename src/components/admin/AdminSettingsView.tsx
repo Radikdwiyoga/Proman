@@ -704,7 +704,7 @@ export const AdminSettingsView: React.FC = () => {
                     <ul className="space-y-2 text-[11px] text-slate-700 dark:text-slate-300">
                       <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[2.5]" /> Akses Papan Kanban, Timeline Gantt, &amp; Kalender Schedule</li>
                       <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[2.5]" /> Pembuatan, pembaruan, dan pemindahan status tugas</li>
-                      <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[2.5]" /> Eksekusi AI Task Breakdown &amp; Copilot Assistant</li>
+                      <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[2.5]" /> Akses AI Solution Advisor &amp; Estimasi Durasi Jam Kerja</li>
                       <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[2.5]" /> Penambahan komentar, checklist sub-tugas, &amp; pelacakan jam</li>
                       <li className="flex items-center gap-2 text-slate-400 dark:text-slate-500"><X className="w-3.5 h-3.5 text-slate-400 shrink-0" /> Terproteksi dari akses panel pengaturan sistem &amp; tata kelola admin</li>
                     </ul>

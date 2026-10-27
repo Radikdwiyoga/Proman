@@ -147,20 +147,6 @@ export interface Project {
   memberIds: string[];
 }
 
-export interface CopilotMessage {
-  id: string;
-  sender: 'user' | 'assistant' | 'system';
-  content: string;
-  timestamp: string;
-  suggestions?: string[];
-  relatedTaskIds?: string[];
-  actionLink?: {
-    type: 'view_task' | 'open_risk' | 'open_workload' | 'filter_status' | 'open_settings' | 'open_projects';
-    payload: string;
-    label: string;
-  };
-}
-
 export interface ExecutiveSummary {
   id: string;
   projectId: string;

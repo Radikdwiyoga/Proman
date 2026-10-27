@@ -3,10 +3,8 @@ import { useProject } from '../../context/ProjectContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { 
-  Sparkles, 
   Plus, 
   Search, 
-  Bot, 
   ChevronDown, 
   X, 
   Sun, 
@@ -78,9 +76,6 @@ export const Navbar: React.FC = () => {
     filters,
     setFilters,
     setIsCreateModalOpen,
-    setIsAIBreakdownModalOpen,
-    setIsCopilotOpen,
-    isCopilotOpen,
     setIsMobileSidebarOpen,
   } = useProject();
 
@@ -149,7 +144,7 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Actions: Mobile Search, Copilot, Time, Bell, Language, Theme */}
+        {/* Right Actions: Mobile Search, Time, Language, Theme */}
         <div className="flex items-center gap-1.5 sm:gap-2">
           {/* Mobile Search Toggle Button */}
           <button
@@ -162,21 +157,6 @@ export const Navbar: React.FC = () => {
             title={t('navbar.searchTasks')}
           >
             <Search className="w-4 h-4" />
-          </button>
-
-          {/* AI Copilot Toggle Button */}
-          <button
-            onClick={() => setIsCopilotOpen(!isCopilotOpen)}
-            className={`relative p-2 sm:px-3 sm:py-2 rounded-full border transition shadow-2xs flex items-center gap-1.5 cursor-pointer ${
-              isCopilotOpen 
-                ? 'bg-brand-blue-accent text-white border-blue-600 shadow-sm' 
-                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200/80 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50'
-            }`}
-            title={t('navbar.copilotTooltip')}
-          >
-            <Bot className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            <span className="hidden sm:inline text-xs font-semibold">{t('navbar.copilot')}</span>
-            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shrink-0" />
           </button>
 
           {/* Live Operational Time Display */}
@@ -192,16 +172,6 @@ export const Navbar: React.FC = () => {
               {currentTime.label}
             </span>
           </div>
-
-          {/* Notification Bell (Matching Reference Icon) */}
-          <button
-            onClick={() => setIsAIBreakdownModalOpen(true)}
-            className="p-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 shadow-2xs transition cursor-pointer relative"
-            title={t('navbar.notifications')}
-          >
-            <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-blue-500 ring-2 ring-white dark:ring-slate-900" />
-          </button>
 
           {/* Language Switcher Pill Button */}
           <button
