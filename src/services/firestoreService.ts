@@ -12,7 +12,7 @@ import {
   writeBatch 
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { Project, Task, User, Comment, ActivityLog, SystemSettings } from '../types';
+import { Project, Task, User, Comment, ActivityLog, SystemSettings, AppNotification } from '../types';
 import { 
   INITIAL_PROJECTS, 
   INITIAL_USERS, 
@@ -28,6 +28,7 @@ const TASKS_COL = 'tasks';
 const USERS_COL = 'users';
 const COMMENTS_COL = 'comments';
 const ACTIVITY_LOGS_COL = 'activity_logs';
+const NOTIFICATIONS_COL = 'notifications';
 const SETTINGS_DOC = 'settings/system';
 
 /**
@@ -160,6 +161,19 @@ export const subscribeToSystemSettings = (callback: (settings: SystemSettings) =
   });
 };
 
+export const subscribeToNotifications = (callback: (notifications: AppNotification[]) => void) => {
+  const q = query(collection(db, NOTIFICATIONS_COL), orderBy('createdAt', 'desc'), limit(100));
+  return onSnapshot(q, (snapshot) => {
+    const list: AppNotification[] = [];
+    snapshot.forEach(doc => {
+      list.push(doc.data() as AppNotification);
+    });
+    callback(list);
+  }, (error) => {
+    console.error('Error subscribing to notifications:', error);
+  });
+};
+
 // ==================== CRUD OPERATIONS ====================
 
 // Projects
@@ -213,4 +227,26 @@ export const addActivityLogInDb = async (log: ActivityLog): Promise<void> => {
 // Settings
 export const updateSystemSettingsInDb = async (settings: Partial<SystemSettings>): Promise<void> => {
   await setDoc(doc(db, 'settings', 'system'), settings, { merge: true });
+};
+
+// Notifications
+export const addNotificationToDb = async (notification: AppNotification): Promise<void> => {
+  await setDoc(doc(db, NOTIFICATIONS_COL, notification.id), notification);
+};
+
+export const markNotificationAsReadInDb = async (notificationId: string): Promise<void> => {
+  await updateDoc(doc(db, NOTIFICATIONS_COL, notificationId), { isRead: true });
+};
+
+export const markAllNotificationsAsReadInDb = async (notificationIds: string[]): Promise<void> => {
+  if (notificationIds.length === 0) return;
+  const batch = writeBatch(db);
+  notificationIds.forEach(id => {
+    batch.update(doc(db, NOTIFICATIONS_COL, id), { isRead: true });
+  });
+  await batch.commit();
+};
+
+export const deleteNotificationFromDb = async (notificationId: string): Promise<void> => {
+  await deleteDoc(doc(db, NOTIFICATIONS_COL, notificationId));
 };

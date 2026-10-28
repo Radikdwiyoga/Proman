@@ -94,6 +94,15 @@ service cloud.firestore {
       allow update, delete: if isSuperAdmin();
     }
 
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn();
+      // Semua user yang login boleh membuat notifikasi (misal: mention / penugasan / komentar).
+      allow create: if isSignedIn();
+      // Update dan delete hanya oleh penerima notifikasi atau Super Admin.
+      allow update, delete: if isSuperAdmin()
+        || (isSignedIn() && resource.data.userId == request.auth.uid);
+    }
+
     // ── Pengaturan sistem ──────────────────────────────────────────────
     match /settings/{docId} {
       allow read: if isSignedIn();

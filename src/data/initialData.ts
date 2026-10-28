@@ -1,4 +1,4 @@
-import { Project, User, Task, Comment, ActivityLog, SystemSettings } from '../types';
+import { Project, User, Task, Comment, ActivityLog, SystemSettings, AppNotification } from '../types';
 
 export const INITIAL_SYSTEM_SETTINGS: SystemSettings = {
   companyName: 'ProMan Enterprise',
@@ -336,4 +336,35 @@ export const INITIAL_ACTIVITY_LOGS: ActivityLog[] = [
     details: 'Desain Sistem Komponen UI & Dark/Light Mode selesai',
     timestamp: '2026-08-08T17:30:00Z',
   },
+];
+
+export const INITIAL_NOTIFICATIONS: AppNotification[] = [
+  {
+    id: 'notif-1',
+    userId: 'user-admin',
+    actorId: 'user-4',
+    actorName: 'Haeruddin HS',
+    actorAvatar: '/avatars/haeruddin.png',
+    type: 'mention',
+    taskId: 'task-101',
+    taskTitle: 'Standardisasi SOP Operasional & Rantai Pasok',
+    commentId: 'comm-1',
+    content: '@Radik Dwiyoga tolong review validasi dokumen checklist sebelum kita kirim ke manajemen.',
+    isRead: false,
+    createdAt: '2026-08-19T09:15:00Z',
+  },
+  {
+    id: 'notif-2',
+    userId: 'user-4',
+    actorId: 'user-admin',
+    actorName: 'Radik Dwiyoga',
+    actorAvatar: '/avatars/radik.png',
+    type: 'mention',
+    taskId: 'task-102',
+    taskTitle: 'Ekspansi Pembukaan Kantor Cabang Regional Timur',
+    commentId: 'comm-2',
+    content: '@Haeruddin HS bagaimana estimasi timeline untuk penyelesaian izin lokasi?',
+    isRead: true,
+    createdAt: '2026-08-18T14:30:00Z',
+  }
 ];

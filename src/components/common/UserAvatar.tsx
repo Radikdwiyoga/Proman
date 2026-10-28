@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 
 interface UserAvatarProps {
   src?: string | null;
-  name: string;
+  name?: string;
+  user?: { name: string; avatar?: string | null; id?: string; [key: string]: any };
   className?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   showOnlineStatus?: boolean;
@@ -51,11 +52,15 @@ const getPaletteForName = (name: string): string => {
 export const UserAvatar: React.FC<UserAvatarProps> = ({
   src,
   name,
+  user,
   className = '',
   size = 'md',
   showOnlineStatus = false
 }) => {
   const [hasError, setHasError] = useState(false);
+
+  const resolvedName = name || user?.name || 'User';
+  const resolvedSrc = src !== undefined ? src : user?.avatar;
 
   const sizeClasses = {
     xs: 'w-6 h-6 text-[10px]',
@@ -65,23 +70,23 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     xl: 'w-16 h-16 text-lg',
   };
 
-  const initials = getInitials(name);
-  const isDefault = isDefaultAvatar(src);
-  const palette = getPaletteForName(name);
+  const initials = getInitials(resolvedName);
+  const isDefault = isDefaultAvatar(resolvedSrc);
+  const palette = getPaletteForName(resolvedName);
 
   return (
     <div className={`relative inline-flex shrink-0 ${className}`}>
-      {!isDefault && !hasError && src ? (
+      {!isDefault && !hasError && resolvedSrc ? (
         <img
-          src={src}
-          alt={name}
+          src={resolvedSrc}
+          alt={resolvedName}
           onError={() => setHasError(true)}
           className={`${sizeClasses[size]} rounded-full object-cover border border-slate-200 dark:border-slate-700 shadow-xs`}
         />
       ) : (
         <div
           className={`${sizeClasses[size]} rounded-full ${palette} font-bold flex items-center justify-center border border-white/20 shadow-xs select-none tracking-tight shrink-0`}
-          title={name}
+          title={resolvedName}
         >
           <span>{initials}</span>
         </div>

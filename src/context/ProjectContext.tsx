@@ -9,7 +9,8 @@ import {
   TaskStatus, 
   TaskPriority, 
   ExecutiveSummary, 
-  SystemSettings 
+  SystemSettings,
+  AppNotification
 } from '../types';
 import { 
   INITIAL_PROJECTS, 
@@ -17,7 +18,8 @@ import {
   INITIAL_TASKS, 
   INITIAL_COMMENTS, 
   INITIAL_ACTIVITY_LOGS,
-  INITIAL_SYSTEM_SETTINGS
+  INITIAL_SYSTEM_SETTINGS,
+  INITIAL_NOTIFICATIONS
 } from '../data/initialData';
 import { calculateUserWorkloads, generateExecutiveSummary } from '../utils/aiSimulator';
 import { 
@@ -38,7 +40,12 @@ import {
   updateUserInDb,
   addCommentToDb,
   addActivityLogInDb,
-  updateSystemSettingsInDb
+  updateSystemSettingsInDb,
+  subscribeToNotifications,
+  addNotificationToDb,
+  markNotificationAsReadInDb,
+  markAllNotificationsAsReadInDb,
+  deleteNotificationFromDb
 } from '../services/firestoreService';
 import {
   createAuthAccount,
@@ -129,7 +136,15 @@ interface ProjectContextType {
   addSubtask: (taskId: string, title: string, category?: string, startDate?: string, dueDate?: string) => void;
   updateSubtask: (taskId: string, subtaskId: string, updates: Partial<Subtask>) => void;
   deleteSubtask: (taskId: string, subtaskId: string) => void;
-  addComment: (taskId: string, content: string) => void;
+  addComment: (taskId: string, content: string, explicitMentionedUserIds?: string[]) => void;
+
+  // In-App Notifications & Mentions
+  notifications: AppNotification[];
+  userNotifications: AppNotification[];
+  unreadNotificationsCount: number;
+  markNotificationAsRead: (notificationId: string) => void;
+  markAllNotificationsAsRead: () => void;
+  deleteNotification: (notificationId: string) => void;
 
   // AI Triggers & Modals State
   isCreateModalOpen: boolean;
@@ -184,6 +199,7 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState<boolean>(false);
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState<boolean>(false);
+  const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
 
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'info' | 'warning' } | null>(null);
 
@@ -273,6 +289,10 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
       setSystemSettings(loadedSettings);
     });
 
+    const unsubNotifs = subscribeToNotifications((loadedNotifs) => {
+      setNotifications(loadedNotifs);
+    });
+
     return () => {
       unsubProjects();
       unsubTasks();
@@ -280,6 +300,7 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
       unsubComments();
       unsubLogs();
       unsubSettings();
+      unsubNotifs();
     };
   }, [isAuthenticated]);
 
@@ -618,13 +639,25 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
     updateTask(taskId, { subtasks: updatedSubtasks });
   };
 
-  const addComment = (taskId: string, content: string) => {
+  const addComment = (taskId: string, content: string, explicitMentionedUserIds?: string[]) => {
+    const mentionedIds = new Set<string>(explicitMentionedUserIds || []);
+
+    // Also scan comment text for @Name matching existing users
+    users.forEach(u => {
+      const escapedName = u.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const pattern = new RegExp(`@${escapedName}\\b`, 'i');
+      if (pattern.test(content)) {
+        mentionedIds.add(u.id);
+      }
+    });
+
     const newComment: Comment = {
       id: `comm-${Date.now()}`,
       taskId,
       userId: currentUser.id,
       content,
-      createdAt: new Date().toISOString(),
+      mentions: Array.from(mentionedIds),
+      createdAt: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
     };
     setComments(prev => [...prev, newComment]);
     addCommentToDb(newComment);
@@ -635,6 +668,37 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
       // Telegram notification (fire-and-forget)
       sendCommentNotification(targetTask, newComment, currentUser.name)
         .catch(err => console.warn('[Telegram] comment notification failed:', err));
+    }
+
+    // Dispatch in-app notification to each mentioned user (excluding author)
+    const notifiedNames: string[] = [];
+    mentionedIds.forEach(targetUserId => {
+      if (targetUserId !== currentUser.id) {
+        const targetUser = users.find(u => u.id === targetUserId);
+        if (targetUser) {
+          notifiedNames.push(targetUser.name);
+          const newNotif: AppNotification = {
+            id: `notif-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+            userId: targetUserId,
+            actorId: currentUser.id,
+            actorName: currentUser.name,
+            actorAvatar: currentUser.avatar,
+            type: 'mention',
+            taskId,
+            taskTitle: targetTask?.title || 'Tugas Proyek',
+            commentId: newComment.id,
+            content,
+            isRead: false,
+            createdAt: new Date().toISOString(),
+          };
+          setNotifications(prev => [newNotif, ...prev]);
+          addNotificationToDb(newNotif).catch(err => console.warn('Failed to save notification to db:', err));
+        }
+      }
+    });
+
+    if (notifiedNames.length > 0) {
+      showToast(`Notifikasi mention terkirim ke: ${notifiedNames.join(', ')}`, 'success');
     }
   };
 
@@ -702,6 +766,34 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
     showToast('Laporan eksekutif berhasil diperbarui!', 'success');
   };
 
+  const userNotifications = useMemo(() => {
+    return notifications
+      .filter(n => n.userId === currentUser.id)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [notifications, currentUser.id]);
+
+  const unreadNotificationsCount = useMemo(() => {
+    return userNotifications.filter(n => !n.isRead).length;
+  }, [userNotifications]);
+
+  const markNotificationAsRead = (notificationId: string) => {
+    setNotifications(prev => prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n));
+    markNotificationAsReadInDb(notificationId).catch(err => console.warn('Failed to mark read in db:', err));
+  };
+
+  const markAllNotificationsAsRead = () => {
+    const unreadIds = userNotifications.filter(n => !n.isRead).map(n => n.id);
+    setNotifications(prev => prev.map(n => n.userId === currentUser.id ? { ...n, isRead: true } : n));
+    if (unreadIds.length > 0) {
+      markAllNotificationsAsReadInDb(unreadIds).catch(err => console.warn('Failed to mark all read in db:', err));
+    }
+  };
+
+  const deleteNotification = (notificationId: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== notificationId));
+    deleteNotificationFromDb(notificationId).catch(err => console.warn('Failed to delete notif in db:', err));
+  };
+
   return (
     <ProjectContext.Provider
       value={{
@@ -747,6 +839,12 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
         updateSubtask,
         deleteSubtask,
         addComment,
+        notifications,
+        userNotifications,
+        unreadNotificationsCount,
+        markNotificationAsRead,
+        markAllNotificationsAsRead,
+        deleteNotification,
         isCreateModalOpen,
         setIsCreateModalOpen,
         createModalInitialStatus,

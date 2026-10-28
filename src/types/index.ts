@@ -66,6 +66,21 @@ export interface Comment {
   attachments?: Attachment[];
 }
 
+export interface AppNotification {
+  id: string;
+  userId: string; // Recipient user ID
+  actorId: string; // Sender user ID
+  actorName: string;
+  actorAvatar?: string;
+  type: 'mention' | 'assignment' | 'comment';
+  taskId: string;
+  taskTitle: string;
+  commentId?: string;
+  content: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
 export interface ActivityLog {
   id: string;
   taskId?: string;

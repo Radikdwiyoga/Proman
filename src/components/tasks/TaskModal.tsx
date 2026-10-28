@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useProject } from '../../context/ProjectContext';
 import { 
   X, 
@@ -21,10 +21,12 @@ import {
   Copy,
   Layers,
   Save,
-  Check
+  Check,
+  AtSign
 } from 'lucide-react';
-import { TaskPriority, TaskStatus, TaskEffortEstimation, AISolutionAdvice } from '../../types';
+import { TaskPriority, TaskStatus, TaskEffortEstimation, AISolutionAdvice, User } from '../../types';
 import { estimateLiveTaskEffortAndDueDate, getLiveAISolutionAdvice } from '../../services/geminiService';
+import { UserAvatar } from '../common/UserAvatar';
 
 export const TaskModal: React.FC = () => {
   const {
@@ -63,6 +65,143 @@ export const TaskModal: React.FC = () => {
   const [newSubtaskStartDate, setNewSubtaskStartDate] = useState('');
   const [newSubtaskDueDate, setNewSubtaskDueDate] = useState('');
   const [newCommentText, setNewCommentText] = useState('');
+
+  // Mention in comments state
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isMentionOpen, setIsMentionOpen] = useState(false);
+  const [mentionQuery, setMentionQuery] = useState<string | null>(null);
+  const [mentionPosition, setMentionPosition] = useState<number | null>(null);
+  const [selectedMentionIndex, setSelectedMentionIndex] = useState(0);
+
+  const filteredMentionUsers = useMemo(() => {
+    if (mentionQuery === null) return [];
+    const q = mentionQuery.toLowerCase();
+    return users.filter(u =>
+      u.name.toLowerCase().includes(q) ||
+      u.role.toLowerCase().includes(q) ||
+      u.department.toLowerCase().includes(q)
+    ).slice(0, 6);
+  }, [users, mentionQuery]);
+
+  const insertMention = (user: User) => {
+    if (mentionPosition === null) return;
+    const before = newCommentText.slice(0, mentionPosition);
+    const after = newCommentText.slice(mentionPosition + 1 + (mentionQuery?.length || 0));
+    const newText = `${before}@${user.name} ${after}`;
+    setNewCommentText(newText);
+    setIsMentionOpen(false);
+    setMentionQuery(null);
+    setMentionPosition(null);
+
+    setTimeout(() => {
+      if (textareaRef.current) {
+        const nextPos = before.length + user.name.length + 2;
+        textareaRef.current.focus();
+        textareaRef.current.setSelectionRange(nextPos, nextPos);
+      }
+    }, 10);
+  };
+
+  const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    setNewCommentText(val);
+
+    const cursor = e.target.selectionStart;
+    const textBeforeCursor = val.slice(0, cursor);
+    const lastAt = textBeforeCursor.lastIndexOf('@');
+
+    if (lastAt !== -1) {
+      const prevChar = lastAt > 0 ? textBeforeCursor[lastAt - 1] : ' ';
+      if (/\s/.test(prevChar)) {
+        const query = textBeforeCursor.slice(lastAt + 1);
+        if (!query.includes('\n') && query.length <= 25) {
+          setMentionQuery(query);
+          setMentionPosition(lastAt);
+          setIsMentionOpen(true);
+          setSelectedMentionIndex(0);
+          return;
+        }
+      }
+    }
+
+    setIsMentionOpen(false);
+    setMentionQuery(null);
+  };
+
+  const handleCommentKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (isMentionOpen && filteredMentionUsers.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedMentionIndex(prev => (prev + 1) % filteredMentionUsers.length);
+        return;
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedMentionIndex(prev => (prev - 1 + filteredMentionUsers.length) % filteredMentionUsers.length);
+        return;
+      }
+      if (e.key === 'Enter' || e.key === 'Tab') {
+        e.preventDefault();
+        insertMention(filteredMentionUsers[selectedMentionIndex]);
+        return;
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setIsMentionOpen(false);
+        return;
+      }
+    }
+
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      handleAddComment(e);
+    }
+  };
+
+  const renderCommentWithMentions = (content: string) => {
+    const names = users.map(u => u.name);
+    if (names.length === 0) return content;
+
+    const sortedNames = [...names].sort((a, b) => b.length - a.length);
+    const regex = new RegExp(`@(${sortedNames.map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`, 'gi');
+
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = regex.exec(content)) !== null) {
+      const matchStart = match.index;
+      const matchEnd = regex.lastIndex;
+
+      if (matchStart > lastIndex) {
+        parts.push(content.substring(lastIndex, matchStart));
+      }
+
+      const matchedName = match[1];
+      const isCurrentUser = matchedName.toLowerCase() === currentUser.name.toLowerCase();
+
+      parts.push(
+        <span
+          key={matchStart}
+          className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md font-bold text-[11px] align-baseline transition ${
+            isCurrentUser
+              ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 ring-1 ring-amber-400/60 shadow-2xs'
+              : 'bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 ring-1 ring-blue-300/40 dark:ring-blue-700/40'
+          }`}
+        >
+          <span className="opacity-70 font-semibold">@</span>
+          <span>{matchedName}</span>
+        </span>
+      );
+
+      lastIndex = matchEnd;
+    }
+
+    if (lastIndex < content.length) {
+      parts.push(content.substring(lastIndex));
+    }
+
+    return parts.length > 0 ? parts : content;
+  };
 
   // AI Task Estimator State
   const [isEstimating, setIsEstimating] = useState(false);
@@ -653,27 +792,85 @@ export const TaskModal: React.FC = () => {
               {/* Add Comment Input */}
               <form onSubmit={handleAddComment} className="space-y-2">
                 <div className="relative">
+                  {/* Mention Autocomplete Dropdown */}
+                  {isMentionOpen && filteredMentionUsers.length > 0 && (
+                    <div 
+                      className="absolute z-50 bottom-full mb-1 left-0 w-64 max-h-48 overflow-y-auto bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-600 rounded-xl shadow-xl py-1 divide-y divide-slate-100 dark:divide-slate-800 animate-in fade-in zoom-in-95 duration-100"
+                    >
+                      <div className="px-2.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50 dark:bg-slate-800/60 flex items-center justify-between">
+                        <span>Pilih Anggota Tim (@)</span>
+                        <span className="text-[9px] text-emerald-600 dark:text-emerald-400">↑↓ navigasi • Enter</span>
+                      </div>
+                      {filteredMentionUsers.map((user, idx) => {
+                        const isSelected = idx === selectedMentionIndex;
+                        return (
+                          <button
+                            key={user.id}
+                            type="button"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              insertMention(user);
+                            }}
+                            className={`w-full flex items-center gap-2.5 px-3 py-1.5 text-left text-xs transition cursor-pointer ${
+                              isSelected 
+                                ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-900 dark:text-emerald-200' 
+                                : 'hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300'
+                            }`}
+                          >
+                            <UserAvatar user={user} size="sm" />
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold truncate leading-tight">{user.name}</p>
+                              <p className="text-[10px] text-slate-400 truncate leading-tight">{user.role}</p>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
                   <textarea
+                    ref={textareaRef}
                     rows={3}
-                    placeholder="Tulis update progres atau koordinasi tim... (Tekan Enter untuk membuat baris baru)"
+                    placeholder="Tulis update progres atau mention tim dengan @... (Tekan Enter untuk baris baru)"
                     value={newCommentText}
-                    onChange={(e) => setNewCommentText(e.target.value)}
-                    onKeyDown={(e) => {
-                      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                        handleAddComment(e);
-                      }
-                    }}
+                    onChange={handleCommentChange}
+                    onKeyDown={handleCommentKeyDown}
                     className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition leading-relaxed resize-y min-h-[72px]"
                   />
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[10.5px] text-slate-400">
-                    💡 Tip: <strong>Enter</strong> untuk baris baru, <strong>Ctrl + Enter</strong> untuk kirim cepat.
-                  </span>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (textareaRef.current) {
+                          const val = newCommentText;
+                          const pos = textareaRef.current.selectionStart || val.length;
+                          const nextText = val.slice(0, pos) + '@' + val.slice(pos);
+                          setNewCommentText(nextText);
+                          setMentionQuery('');
+                          setIsMentionOpen(true);
+                          setSelectedMentionIndex(0);
+                          setTimeout(() => {
+                            textareaRef.current?.focus();
+                            textareaRef.current?.setSelectionRange(pos + 1, pos + 1);
+                          }, 10);
+                        }
+                      }}
+                      className="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[11px] font-medium transition flex items-center gap-1 cursor-pointer"
+                      title="Sebutkan anggota tim (@)"
+                    >
+                      <AtSign className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                      <span>Mention</span>
+                    </button>
+                    <span className="text-[10.5px] text-slate-400 hidden sm:inline">
+                      💡 Tip: Ketik <strong>@</strong> untuk mention tim. <strong>Ctrl + Enter</strong> kirim cepat.
+                    </span>
+                  </div>
                   <button
                     type="submit"
                     disabled={!newCommentText.trim()}
-                    className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-xs font-bold text-white transition flex items-center gap-1.5 shadow-sm active:scale-95"
+                    className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-xs font-bold text-white transition flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span>Kirim Komentar</span>
@@ -688,10 +885,15 @@ export const TaskModal: React.FC = () => {
                   return (
                     <div key={com.id} className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-1.5">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-slate-900 dark:text-white">{author?.name || 'Anggota Tim'}</span>
+                        <div className="flex items-center gap-2">
+                          <UserAvatar user={author || { id: com.userId, name: 'Anggota Tim' }} size="sm" />
+                          <span className="font-bold text-slate-900 dark:text-white">{author?.name || 'Anggota Tim'}</span>
+                        </div>
                         <span className="text-[10px] text-slate-400 font-mono">{com.createdAt}</span>
                       </div>
-                      <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap break-words">{com.content}</p>
+                      <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap break-words pl-8 sm:pl-8">
+                        {renderCommentWithMentions(com.content)}
+                      </p>
                     </div>
                   );
                 })}
